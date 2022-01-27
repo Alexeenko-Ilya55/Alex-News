@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     android:nestedScrollingEnabled="true"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:showIn="navigation_view"
-    >
+    tools:showIn="navigation_view">
     <group android:checkableBehavior="single">
 
         <item
@@ -37,12 +35,6 @@
                 android:id="@+id/categoryMyNews"
                 android:icon="@drawable/mynews_icon"/>
 
-
-            <item android:title="@string/menu_category_Entertainment"
-                android:id="@+id/categoryEntertainment"
-                android:icon="@drawable/entert_icon"/>
-
-
             <item android:title="@string/menu_category_Technologies"
                 android:id="@+id/categoryTechnologies"
                 android:icon="@drawable/technologies_icon" />
@@ -51,13 +43,14 @@
                 android:id="@+id/categorySport"
             android:icon="@drawable/sport_icon" />
 
-            <item android:title="@string/menu_category_Global"
-            android:id="@+id/categoryGlobal"
-            android:icon="@drawable/global_icon" />
 
             <item android:title="@string/menu_category_Business"
                 android:id="@+id/categoryBusiness"
                 android:icon="@drawable/business_icon" />
+
+            <item android:title="@string/menu_category_Global"
+            android:id="@+id/categoryGlobal"
+            android:icon="@drawable/global_icon" />
 
             <item android:title="@string/menu_category_Health"
             android:id="@+id/categoryHealth"
@@ -66,6 +59,10 @@
             <item android:title="@string/menu_category_Science"
                 android:id="@+id/categoryScience"
                 android:icon="@drawable/science_icon" />
+
+            <item android:title="@string/menu_category_Entertainment"
+                android:id="@+id/categoryEntertainment"
+                android:icon="@drawable/entert_icon"/>
 
 
 

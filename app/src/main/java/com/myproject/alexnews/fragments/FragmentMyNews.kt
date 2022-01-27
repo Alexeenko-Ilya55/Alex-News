@@ -99,7 +99,6 @@ class FragmentMyNews : Fragment() {
                     @SuppressLint("NotifyDataSetChanged")
                     override fun onResponse(response: DataFromApi) {
                         dataList.clear()
-                       // Toast.makeText(context,response.articles.size.toString(),Toast.LENGTH_SHORT).show()
                         dataList.addAll(response.articles)
                         init(dataList)
                     }
@@ -107,7 +106,7 @@ class FragmentMyNews : Fragment() {
                     override fun onError(anError: ANError?) {
                         Toast.makeText(
                             context,
-                            "Нет подключения к интернету",
+                            "Возникли проблемы с  подключением к интернету",
                             Toast.LENGTH_SHORT
                         ).show()
                     }

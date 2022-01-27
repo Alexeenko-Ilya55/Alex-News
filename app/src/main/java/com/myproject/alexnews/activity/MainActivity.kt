@@ -19,16 +19,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     object AB{ lateinit var mToggle: ActionBarDrawerToggle}
     lateinit var  binding: ActivityMainBinding
+    lateinit var  fragmentMain: FragmentMain
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        fragmentMain = FragmentMain(null)
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.fragment_container, FragmentSearch())
+                .add(R.id.fragment_container, fragmentMain)
                 .commit()
         }
 
@@ -95,18 +97,18 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.menuSearch -> {
                openFragment(FragmentSearch())
             }
-            R.id.menuNews -> openFragment(FragmentMain())
+            R.id.menuNews -> openFragment(FragmentMain(null))
             R.id.menuNotes -> openFragment(FragmentNotes())
             R.id.menuBookmarks-> openFragment(FragmentBookmarks())
             R.id.menuSettings -> openFragment(FragmentSettings())
-            R.id.categoryGlobal -> Toast.makeText(this," Search id", Toast.LENGTH_SHORT).show()
-            R.id.categoryBusiness -> Toast.makeText(this," Search id", Toast.LENGTH_SHORT).show()
-            R.id.categoryHealth -> Toast.makeText(this," Search id", Toast.LENGTH_SHORT).show()
-            R.id.categoryMyNews -> Toast.makeText(this," Search id", Toast.LENGTH_SHORT).show()
-            R.id.categoryEntertainment -> Toast.makeText(this," Search id", Toast.LENGTH_SHORT).show()
-            R.id.categoryScience -> Toast.makeText(this," Search id", Toast.LENGTH_SHORT).show()
-            R.id.categorySport -> Toast.makeText(this," Search id", Toast.LENGTH_SHORT).show()
-            R.id.categoryTechnologies -> Toast.makeText(this," Search id", Toast.LENGTH_SHORT).show()
+            R.id.categoryGlobal -> fragmentMain.navVP(4)
+            R.id.categoryBusiness -> fragmentMain.navVP(3)
+            R.id.categoryHealth -> fragmentMain.navVP(5)
+            R.id.categoryMyNews -> fragmentMain.navVP(0)
+            R.id.categoryEntertainment -> fragmentMain.navVP(7)
+            R.id.categoryScience -> fragmentMain.navVP(6)
+            R.id.categorySport -> fragmentMain.navVP(2)
+            R.id.categoryTechnologies -> fragmentMain.navVP(1)
             R.id.aboutApp -> openFragment(FragmentAboutApp())
             R.id.messageProgrammer -> openFragment(FragmentMessegetoProgrammer())
         }

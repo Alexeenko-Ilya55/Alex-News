@@ -26,9 +26,10 @@ import com.myproject.alexnews.databinding.FragmentMainBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.model.DataFromApi
 import org.jetbrains.anko.doAsync
+import java.text.FieldPosition
 
 
-class FragmentMain : Fragment() {
+class FragmentMain(val myPosition: Int?) : Fragment() {
 
     private lateinit var viewPagerAdapter: ViewPagerAdapter
     lateinit var binding: FragmentMainBinding
@@ -48,20 +49,34 @@ class FragmentMain : Fragment() {
         savedInstanceState: Bundle?
     ): View?{
         binding = FragmentMainBinding.inflate(inflater, container, false)
+
+        viewPagerAdapter = ViewPagerAdapter(context as FragmentActivity)
+        // binding.viewPager.setPageTransformer(ZoomOutPageTransformer())
+        binding.viewPager.adapter = viewPagerAdapter
+        binding.viewPager.offscreenPageLimit = 7
+
+        TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            tab.text = tabNames[position]
+        }.attach()
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if(myPosition!=null) binding.viewPager.setCurrentItem(myPosition,true)
 
-        viewPagerAdapter = ViewPagerAdapter(context as FragmentActivity)
-        binding.viewPager.adapter = viewPagerAdapter
-
-        TabLayoutMediator(binding.tabLayout,binding.viewPager){tab,position ->
-            tab.text = tabNames[position]
-        }.attach()
     }
+     fun navVP(pos: Int){
+         if(this.isVisible)
+        binding.viewPager.setCurrentItem(pos,true)
+         else {
+             parentFragmentManager.beginTransaction().replace(R.id.fragment_container,FragmentMain(pos)).commit()
 
+         }
+     }
 }
+
+
 
 
 
