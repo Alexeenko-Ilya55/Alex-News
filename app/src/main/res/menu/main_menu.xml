@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/Bookmark"
+        app:showAsAction="ifRoom"
+        android:id="@+id/asa"
+        android:icon="@drawable/bookmarks_action_bar" />
+
+    <item android:title="@string/changeMyNews"
+        app:showAsAction="never"
+        android:id="@+id/change_myNews" />
+
+    <item android:title="@string/menu_Settings"
+        app:showAsAction="never"
+        android:id="@+id/menuSettings"/>
+
+</menu>

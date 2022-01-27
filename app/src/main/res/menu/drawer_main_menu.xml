@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    android:nestedScrollingEnabled="true"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view"
+    >
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/menuSearch"
+            android:icon="@drawable/search_icon"
+            android:title="@string/menu_Search" />
+
+        <item android:title="@string/menu_News"
+            android:id="@+id/menuNews"
+            android:icon="@drawable/news_icon" />
+
+        <item android:title="@string/menu_Bookmarks"
+            android:id="@+id/menuBookmarks"
+            android:icon="@drawable/bookmark_icon" />
+
+        <item android:title="@string/menu_Notes"
+            android:id="@+id/menuNotes"
+            android:icon="@drawable/notes_icon" />
+
+        <item android:title="@string/menu_Settings"
+            android:id="@+id/menuSettings"
+            android:icon="@drawable/settings_icon" />
+
+
+    </group>
+
+    <item android:title="@string/menu_Category">
+        <menu>
+            <item android:title="@string/menu_category_MyNews"
+                android:id="@+id/categoryMyNews"
+                android:icon="@drawable/mynews_icon"/>
+
+
+            <item android:title="@string/menu_category_Entertainment"
+                android:id="@+id/categoryEntertainment"
+                android:icon="@drawable/entert_icon"/>
+
+
+            <item android:title="@string/menu_category_Technologies"
+                android:id="@+id/categoryTechnologies"
+                android:icon="@drawable/technologies_icon" />
+
+            <item android:title="@string/menu_category_Sport"
+                android:id="@+id/categorySport"
+            android:icon="@drawable/sport_icon" />
+
+            <item android:title="@string/menu_category_Global"
+            android:id="@+id/categoryGlobal"
+            android:icon="@drawable/global_icon" />
+
+            <item android:title="@string/menu_category_Business"
+                android:id="@+id/categoryBusiness"
+                android:icon="@drawable/business_icon" />
+
+            <item android:title="@string/menu_category_Health"
+            android:id="@+id/categoryHealth"
+            android:icon="@drawable/health_icon" />
+
+            <item android:title="@string/menu_category_Science"
+                android:id="@+id/categoryScience"
+                android:icon="@drawable/science_icon" />
+
+
+
+        </menu>
+    </item>
+    <item android:title="@string/menu_Other">
+        <menu>
+            <item android:title="@string/menu_message_to_programmer"
+                android:id="@+id/messageProgrammer"/>
+
+            <item android:title="@string/menu_about_app"
+                android:id="@+id/aboutApp" />
+        </menu>
+    </item>
+</menu>

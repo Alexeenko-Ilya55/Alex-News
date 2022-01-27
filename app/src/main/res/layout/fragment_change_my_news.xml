@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:context=".fragments.FragmentChangeMyNews">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="108dp"
+                    android:src="@drawable/business"
+                    app:layout_constraintEnd_toEndOf="@+id/Change_my_news_checkBox_business"
+                    app:layout_constraintStart_toStartOf="@+id/Change_my_news_checkBox_business"
+                    app:layout_constraintTop_toTopOf="@+id/Change_my_news_checkBox_business" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="108dp"
+                    android:src="@drawable/global"
+                    app:layout_constraintEnd_toEndOf="@+id/Change_my_news_checkBox_global"
+                    app:layout_constraintStart_toStartOf="@+id/Change_my_news_checkBox_global"
+                    app:layout_constraintTop_toTopOf="@+id/Change_my_news_checkBox_global" />
+
+                <CheckBox
+                    android:id="@+id/Change_my_news_checkBox_global"
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="bottom"
+                    android:text="@string/menu_category_Global"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline2"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <CheckBox
+                    android:id="@+id/Change_my_news_checkBox_business"
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="bottom"
+                    android:text="@string/menu_category_Business"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintGuide_percent="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+
+                    android:layout_width="0dp"
+                    android:layout_height="108dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/sport"
+                    app:layout_constraintEnd_toEndOf="@+id/Change_my_news_checkBox_sports"
+                    app:layout_constraintStart_toStartOf="@+id/Change_my_news_checkBox_sports"
+                    app:layout_constraintTop_toTopOf="@+id/Change_my_news_checkBox_sports" />
+
+                <ImageView
+
+                    android:layout_width="0dp"
+                    android:layout_height="108dp"
+                    android:src="@drawable/technologies"
+                    app:layout_constraintEnd_toEndOf="@+id/Change_my_news_checkBox_technologies"
+                    app:layout_constraintStart_toStartOf="@+id/Change_my_news_checkBox_technologies"
+                    app:layout_constraintTop_toTopOf="@+id/Change_my_news_checkBox_technologies" />
+
+                <CheckBox
+                    android:id="@+id/Change_my_news_checkBox_sports"
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="bottom"
+                    android:text="@string/menu_category_Sport"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/guideline1"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <CheckBox
+                    android:id="@+id/Change_my_news_checkBox_technologies"
+                    android:layout_width="0dp"
+                    android:layout_height="140dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="bottom"
+                    android:text="@string/menu_category_Technologies"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/guideline1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintGuide_percent="0.50121653"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="108dp"
+            android:src="@drawable/science"
+            app:layout_constraintEnd_toEndOf="@+id/Change_my_news_checkBox_science"
+            app:layout_constraintStart_toStartOf="@+id/Change_my_news_checkBox_science"
+            app:layout_constraintTop_toTopOf="@+id/Change_my_news_checkBox_science" />
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="108dp"
+            android:src="@drawable/health"
+            app:layout_constraintEnd_toEndOf="@+id/Change_my_news_checkBox_health"
+            app:layout_constraintStart_toStartOf="@+id/Change_my_news_checkBox_health"
+            app:layout_constraintTop_toTopOf="@+id/Change_my_news_checkBox_health" />
+
+        <CheckBox
+            android:id="@+id/Change_my_news_checkBox_science"
+            android:layout_width="0dp"
+            android:layout_height="140dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="bottom"
+            android:text="@string/menu_category_Science"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline3"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <CheckBox
+            android:id="@+id/Change_my_news_checkBox_health"
+            android:layout_width="0dp"
+            android:layout_height="140dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="bottom"
+            android:text="@string/menu_category_Health"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintGuide_percent="0.50121653"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="0dp"
+            android:layout_height="108dp"
+            android:src="@drawable/enterteiment"
+            app:layout_constraintEnd_toEndOf="@+id/Change_my_news_checkBox_entertainment"
+            app:layout_constraintStart_toStartOf="@+id/Change_my_news_checkBox_entertainment"
+            app:layout_constraintTop_toTopOf="@+id/Change_my_news_checkBox_entertainment" />
+
+        <CheckBox
+            android:id="@+id/Change_my_news_checkBox_entertainment"
+            android:layout_width="0dp"
+            android:layout_height="140dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="bottom"
+            android:text="@string/menu_category_Entertainment"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline4"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:foregroundGravity="center"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintGuide_percent="0.50121653"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:id="@+id/AddAllCategories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/AddAllCategories"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </LinearLayout>
+</ScrollView>

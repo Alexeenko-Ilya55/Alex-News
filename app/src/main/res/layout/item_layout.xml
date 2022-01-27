@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/imageNews"
+        android:layout_width="117dp"
+        android:layout_height="97dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/heading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="-5dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
+        android:textColor="?attr/colorOnSecondary"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/Bookmark_Item_Button"
+        app:layout_constraintStart_toEndOf="@+id/imageNews"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="144dp"
+        android:layout_height="17dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="12dp"
+        android:fontFamily="sans-serif-light"
+        android:foregroundGravity="bottom"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/heading"
+        app:layout_constraintTop_toBottomOf="@+id/heading"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageButton
+        android:id="@+id/Bookmark_Item_Button"
+        android:layout_width="45dp"
+        android:layout_height="39dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginEnd="8dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/item_bookmark" />
+</androidx.constraintlayout.widget.ConstraintLayout>

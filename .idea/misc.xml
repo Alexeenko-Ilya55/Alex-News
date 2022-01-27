@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/Logo.xml" value="0.11621621621621622" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/auto_icon.xml" value="0.25885416666666666" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/bookmark_enable_icon_item.xml" value="0.14358108108108109" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/bookmark_icon.xml" value="0.25885416666666666" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/bookmarks_action_bar.xml" value="0.1679054054054054" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/business_icon.xml" value="0.3828125" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/entert_icon.xml" value="0.3828125" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/global_icon.xml" value="0.3828125" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/health_icon.xml" value="0.3828125" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/item_bookmark.xml" value="0.3828125" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/logo.xml" value="0.12398648648648648" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/menu.xml" value="0.2483108108108108" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/myNews_icon.xml" value="0.3828125" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/mynews_icon.xml" value="0.2708333333333333" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/news_icon.xml" value="0.25885416666666666" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/noImage.xml" value="0.1793918918918919" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/no_image.xml" value="0.1793918918918919" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/notes_icon.xml" value="0.25885416666666666" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/science_icon.xml" value="0.3828125" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/search_icon.xml" value="0.25885416666666666" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/settings_icon.xml" value="0.25885416666666666" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/sport_icon.xml" value="0.3828125" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-anydpi/technologies_icon.xml" value="0.3828125" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2483108108108108" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable/auto_icon.xml" value="0.25885416666666666" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable/finance_icon.xml" value="0.25885416666666666" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable/ic_launcher_background.xml" value="0.25885416666666666" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable/ic_menu_gallery.xml" value="0.2483108108108108" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable/ic_menu_slideshow.xml" value="0.2483108108108108" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable/mynews_icon.xml" value="0.25885416666666666" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable/searchview_back.xml" value="0.2838541666666667" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/drawable/side_nav_bar.xml" value="0.25885416666666666" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/action_bar_main.xml" value="0.33" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/activity.xml" value="0.40207075064710956" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/activity_about_app.xml" value="0.14831081081081082" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/activity_bookmarks.xml" value="0.23783783783783785" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/activity_main.xml" value="0.3063583815028902" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/activity_navigation.xml" value="0.36666666666666664" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/activity_settings.xml" value="0.15743243243243243" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/activity_start.xml" value="0.17466216216216215" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/app_bar_navigation.xml" value="0.36666666666666664" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/appbar.xml" value="0.23783783783783785" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/content_navigation.xml" value="0.36666666666666664" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/content_news.xml" value="0.2490740740740741" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/content_news2.xml" value="0.23783783783783785" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/fragment_about_app.xml" value="0.1" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/fragment_bookmarks.xml" value="0.16486486486486487" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/fragment_change_my_news.xml" value="0.2607184241019699" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/fragment_content_news.xml" value="0.175" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/fragment_gallery.xml" value="0.36666666666666664" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/fragment_home.xml" value="0.36666666666666664" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/fragment_main.xml" value="0.16486486486486487" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/fragment_my_news.xml" value="0.1608108108108108" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/fragment_notes.xml" value="0.16486486486486487" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/fragment_search.xml" value="0.15013404825737264" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/fragment_settings.xml" value="0.264" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/fragment_slideshow.xml" value="0.36666666666666664" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/fragment_tabbed.xml" value="0.22864583333333333" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/item_layout.xml" value="0.33" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/nav_header_navigation.xml" value="0.36666666666666664" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/switch_item.xml" value="0.23783783783783785" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/switch_layout.xml" value="0.23783783783783785" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/swith_item.xml" value="0.23783783783783785" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/menu/activity_main_drawer.xml" value="0.36666666666666664" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/menu/drawer_main_menu.xml" value="0.36666666666666664" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/menu/main_menu.xml" value="0.23783783783783785" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/menu/navigation.xml" value="0.36666666666666664" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2483108108108108" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2483108108108108" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/mipmap-anydpi-v26/launcher_icon.xml" value="0.2483108108108108" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/mipmap-anydpi-v26/launcher_icon_round.xml" value="0.2483108108108108" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/xml/root_preferences.xml" value="0.152" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
