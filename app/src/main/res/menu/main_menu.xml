@@ -5,9 +5,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <item android:title="@string/Search"
+        app:showAsAction="ifRoom"
+        android:id="@+id/menuSearch"
+        android:icon="@drawable/search_action_bar"/>
+
     <item android:title="@string/Bookmark"
         app:showAsAction="ifRoom"
-        android:id="@+id/asa"
+        android:id="@+id/menuBookmarks"
         android:icon="@drawable/bookmarks_action_bar" />
 
     <item android:title="@string/changeMyNews"

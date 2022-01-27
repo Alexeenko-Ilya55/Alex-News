@@ -10,6 +10,7 @@ object Settings{
     var categoryHealth = true
     var categoryScience = true
     var categoryEntertainment = true
+    var offlineMode = false
 
 
 

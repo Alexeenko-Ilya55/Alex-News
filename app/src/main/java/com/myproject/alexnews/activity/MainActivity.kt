@@ -75,12 +75,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(AB.mToggle.onOptionsItemSelected(item))
             return true
-
-        if(item.itemId == R.id.menuSettings)
-            openFragment(FragmentSettings())
-
-        if(item.itemId == R.id.change_myNews)
-            openFragment(FragmentChangeMyNews())
+        when(item.itemId){
+            R.id.menuSettings -> openFragment(FragmentSettings())
+            R.id.change_myNews -> openFragment(FragmentChangeMyNews())
+            R.id.menuBookmarks -> openFragment(FragmentBookmarks())
+            R.id.menuSearch -> openFragment(FragmentSearch())
+        }
 
         return super.onOptionsItemSelected(item)
     }
@@ -97,7 +97,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.menuNews -> openFragment(FragmentMain())
             R.id.menuNotes -> openFragment(FragmentNotes())
-           // R.id.menuBookmarks-> openFragment(FragmentBookmarks())
+            R.id.menuBookmarks-> openFragment(FragmentBookmarks())
             R.id.menuSettings -> openFragment(FragmentSettings())
             R.id.categoryGlobal -> Toast.makeText(this," Search id", Toast.LENGTH_SHORT).show()
             R.id.categoryBusiness -> Toast.makeText(this," Search id", Toast.LENGTH_SHORT).show()

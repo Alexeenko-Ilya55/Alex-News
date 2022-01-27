@@ -20,6 +20,6 @@ data class Article(
     @SerializedName("urlToImage")
     var urlToImage: String,
 
-    var bookmarkEnable:Boolean = true,
+    var bookmarkEnable:Boolean = false,
     var notes:String? =null
 )
