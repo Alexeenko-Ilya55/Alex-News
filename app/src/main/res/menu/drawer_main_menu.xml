@@ -12,7 +12,7 @@
 
         <item android:title="@string/menu_News"
             android:id="@+id/menuNews"
-            android:icon="@drawable/news_icon" />
+            android:icon="@drawable/news_icon"/>
 
         <item android:title="@string/menu_Bookmarks"
             android:id="@+id/menuBookmarks"
@@ -21,6 +21,10 @@
         <item android:title="@string/menu_Notes"
             android:id="@+id/menuNotes"
             android:icon="@drawable/notes_icon" />
+
+        <item android:title="@string/menuNewsSources"
+            android:id="@+id/NewsSources"
+            android:icon="@drawable/menu_news_sources"/>
 
         <item android:title="@string/menu_Settings"
             android:id="@+id/menuSettings"

@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.view.doOnAttach
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.myproject.alexnews.activity.MainActivity
 import com.myproject.alexnews.R
@@ -35,6 +36,7 @@ class FragmentContentNews(private val urlPage: String) : Fragment() {
                 WebView.loadUrl(urlPage)
                 settings.safeBrowsingEnabled = true
                 settings.javaScriptEnabled = true
+                WebView.doOnAttach {  }
             }
 
             floatingActionButton.setOnClickListener {
@@ -45,13 +47,6 @@ class FragmentContentNews(private val urlPage: String) : Fragment() {
                     this.type = "text/plain"
                 }
                 startActivity(shareIntent)
-
-
-//                val intent = Intent(Intent.ACTION_SEND)
-//                intent.type = "text/plain"
-//                intent.putExtra("Share this",urlPage)
-//                val chooser = Intent.createChooser(intent,"Share using....")
-//                startActivity(chooser)
             }
         }
         return binding.root

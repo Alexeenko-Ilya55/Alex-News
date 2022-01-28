@@ -1,6 +1,7 @@
 package com.myproject.alexnews.fragments
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -19,6 +20,7 @@ import com.myproject.alexnews.databinding.FragmentSearchBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.model.DataFromApi
 import com.myproject.alexnews.model.Str
+import com.myproject.alexnews.takeData.Api
 import org.jetbrains.anko.doAsync
 
 
@@ -26,8 +28,8 @@ class FragmentSearch : Fragment() {
 
     lateinit var binding: FragmentSearchBinding
     lateinit var adapter: RecyclerAdapter
-    private val dataList: MutableList<Article> = mutableListOf()
-    lateinit var v:View
+//    private val dataList: MutableList<Article> = mutableListOf()
+//    lateinit var v:View
 
 
     override fun onCreateView(
@@ -46,11 +48,9 @@ class FragmentSearch : Fragment() {
 
                 binding.searchView.clearFocus()
                 val url = "https://newsapi.org/v2/"+"everything?" + "q=$p0" + Str.API_KEY
-                Toast.makeText(context,url,Toast.LENGTH_LONG).show()
                 apiRequest(url)
                 return false
             }
-
             override fun onQueryTextChange(p0: String?): Boolean {
                 return false
             }
@@ -67,9 +67,10 @@ class FragmentSearch : Fragment() {
             adapter.notifyDataSetChanged()
         }
     }
-
-    private fun apiRequest(url:String){
+    fun apiRequest(url:String) {
+        val dataList: MutableList<Article> = mutableListOf()
         doAsync {
+
             AndroidNetworking.initialize(context)
             AndroidNetworking.get(url)
                 .build()
@@ -77,8 +78,12 @@ class FragmentSearch : Fragment() {
                     @SuppressLint("NotifyDataSetChanged")
                     override fun onResponse(response: DataFromApi) {
                         dataList.clear()
-                         Toast.makeText(context,response.articles.size.toString(),Toast.LENGTH_SHORT).show()
                         dataList.addAll(response.articles)
+                        if(response.articles.isEmpty()) {
+                            Toast.makeText(context, "По данному запросу ничего не найдено",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                         init(dataList)
                     }
 

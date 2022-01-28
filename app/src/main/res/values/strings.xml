@@ -53,6 +53,7 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="AddAllCategories">Добавить все категории</string>
     <string name="Search">Поиск</string>
+    <string name="menuNewsSources">Источник новостей</string>
 
 
 </resources>

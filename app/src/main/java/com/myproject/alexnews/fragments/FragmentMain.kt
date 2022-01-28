@@ -64,14 +64,12 @@ class FragmentMain(val myPosition: Int?) : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if(myPosition!=null) binding.viewPager.setCurrentItem(myPosition,true)
-
     }
      fun navVP(pos: Int){
          if(this.isVisible)
         binding.viewPager.setCurrentItem(pos,true)
          else {
              parentFragmentManager.beginTransaction().replace(R.id.fragment_container,FragmentMain(pos)).commit()
-
          }
      }
 }

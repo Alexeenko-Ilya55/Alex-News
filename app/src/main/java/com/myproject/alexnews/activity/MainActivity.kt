@@ -97,6 +97,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.menuSearch -> {
                openFragment(FragmentSearch())
             }
+            R.id.NewsSources -> openFragment(FragmentNewsFromSources())
             R.id.menuNews -> openFragment(FragmentMain(null))
             R.id.menuNotes -> openFragment(FragmentNotes())
             R.id.menuBookmarks-> openFragment(FragmentBookmarks())

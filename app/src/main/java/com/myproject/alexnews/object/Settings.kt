@@ -12,6 +12,4 @@ object Settings{
     var categoryEntertainment = true
     var offlineMode = false
 
-
-
 }
