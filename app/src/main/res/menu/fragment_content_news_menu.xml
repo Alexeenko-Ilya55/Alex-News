@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:id="@+id/notEnable">
+    <item android:title="@string/menu_Bookmarks"
+    android:id="@+id/menuBookmarks_content"
+    android:icon="@drawable/bookmark_action_bar_content"
+    app:showAsAction="always"
+        />
+    </group>
+
+    <group android:id="@+id/Enable">
+    <item android:title="@string/menu_Bookmarks"
+        android:id="@+id/menuBookmarks_content_enable"
+        android:icon="@drawable/bookmark_enable_icon_item"
+        app:showAsAction="always"
+        />
+    </group>
+</menu>

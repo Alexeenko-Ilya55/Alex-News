@@ -1,12 +1,60 @@
 <resources>
     <!-- Reply Preference -->
     <string-array name="reply_entries">
-        <item>Reply</item>
-        <item>Reply to all</item>
+        <item>Отображать только популярные заголовки</item>
+        <item>Отображать все новости</item>
     </string-array>
 
     <string-array name="reply_values">
-        <item>reply</item>
-        <item>reply_all</item>
+        <item>top_headlines</item>
+        <item>all_news</item>
     </string-array>
+
+
+    <string-array name="country_name">
+        <item>Россия</item>
+        <item>Беларусь</item>
+        <item>США</item>
+        <item>Австралия</item>
+        <item>Бразилия</item>
+        <item>Швейцария</item>
+        <item>Германия</item>
+        <item>Франция</item>
+        <item>Литва</item>
+        <item>Латвия</item>
+        <item>Китай</item>
+        <item>Норвегия</item>
+        <item>Польша</item>
+        <item>Португалия</item>
+        <item>Сербия</item>
+        <item>Швеция</item>
+        <item>Сингапур</item>
+        <item>Таиланд</item>
+        <item>Украина</item>
+        <item>Венесуэла</item>
+    </string-array>
+
+    <string-array name="country_index">
+        <item>ru</item>
+        <item>ru</item>
+        <item>us</item>
+        <item>au</item>
+        <item>br</item>
+        <item>ch</item>
+        <item>de</item>
+        <item>fr</item>
+        <item>lt</item>
+        <item>lv</item>
+        <item>cn</item>
+        <item>no</item>
+        <item>pl</item>
+        <item>pt</item>
+        <item>rs</item>
+        <item>se</item>
+        <item>sg</item>
+        <item>th</item>
+        <item>ua</item>
+        <item>ve</item>
+    </string-array>
+
 </resources>

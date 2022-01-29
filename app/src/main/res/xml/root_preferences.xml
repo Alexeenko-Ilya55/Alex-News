@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <PreferenceCategory app:title="Основные">
+
+        <ListPreference
+            app:defaultValue="ru"
+            app:entries="@array/country_name"
+            app:entryValues="@array/country_index"
+            app:key="country"
+            app:title="Выбор страны"
+            app:useSimpleSummaryProvider="true"
+            />
+
+       <ListPreference
+            app:defaultValue="headlines"
+            app:entries="@array/reply_entries"
+            app:entryValues="@array/reply_values"
+            app:key="TypeNewsContent"
+            app:title="Выбор отображения"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Уведомления">
+
+        <SwitchPreferenceCompat
+            app:key="notification"
+            app:title="Получать уведомления "
+            app:defaultValue="true"/>
+
+        <CheckBoxPreference
+            app:key="volume"
+            app:title="Звук"
+            app:summaryOff="Звуковое оповещение"
+            app:summaryOn="Звуковое оповещение"
+            app:defaultValue="true"/>
+        <CheckBoxPreference
+            app:key="vibration"
+            app:title="Вибрация"
+            app:summaryOff="Вибрация при уведомлении"
+            app:summaryOn="Вибрация при уведомлении"
+            app:defaultValue="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Оффлайн режим">
+
+        <SwitchPreferenceCompat
+            app:key="OfflineMode"
+            app:title="Оффлайн режим" />
+
+        <CheckBoxPreference
+            app:key="AutomaticDownload"
+            app:summaryOff="Активируйте, чтобы новости загружались автоматически"
+            app:summaryOn="Новости загружаются автоматически"
+            app:title="Загружать автоматически" />
+
+        <PreferenceScreen
+            app:key="DownloadNews"
+            app:title="Загрузить новости"/>
+
+        <Preference
+            app:key="DeleteNews"
+            app:title="Удалить загруженные новости"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/sync_header">
+
+        <SwitchPreferenceCompat
+            app:key="DarkMode"
+            app:title="Ночной режим" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

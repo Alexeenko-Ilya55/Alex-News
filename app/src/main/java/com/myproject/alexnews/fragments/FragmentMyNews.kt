@@ -7,19 +7,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
-import com.myproject.alexnews.`object`.DataNewsList
-import com.myproject.alexnews.`object`.Settings
-
+import com.myproject.alexnews.R
+import com.myproject.alexnews.`object`.Str
 import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentMyNewsBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.model.DataFromApi
-import com.myproject.alexnews.model.Str
-import com.myproject.alexnews.takeData.Api
 import org.jetbrains.anko.doAsync
 
 
@@ -29,14 +28,39 @@ class FragmentMyNews : Fragment() {
 
     private lateinit var binding: FragmentMyNewsBinding
     private lateinit var adapter: RecyclerAdapter
+    lateinit var countryIndex: String
+    lateinit var recView: RecyclerView
+    var headlinesType: String = "top-headlines?"
+    var dataList: MutableList<Article> = mutableListOf()
+    private lateinit var url: String
 
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        activity!!.setTitle(R.string.app_name)
+        val ps = PreferenceManager.getDefaultSharedPreferences(context!!)
+
+        headlinesType = when (ps.getString("TypeNewsContent", "")) {
+            "all_news" -> "everything?"
+            "top_headlines" -> "top-headlines?"
+            else -> "top-headlines?"
+        }
+        countryIndex = ps.getString("country", "").toString()
         binding = FragmentMyNewsBinding.inflate(inflater, container, false)
+        refreshInit()
         return binding.root
+    }
+
+    private fun refreshInit() {
+        binding.refresh.setColorSchemeResources(R.color.purple_200, R.color.purple_700)
+        binding.refresh.setOnRefreshListener {
+            dataList.clear()
+            apiRequest(url, true)
+            Toast.makeText(context, R.string.updatePage, Toast.LENGTH_SHORT).show()
+            binding.refresh.isRefreshing = false
+        }
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -46,7 +70,7 @@ class FragmentMyNews : Fragment() {
             adapter = RecyclerAdapter(dataLister, parentFragmentManager)
             adapter.notifyDataSetChanged()
             rcView.adapter = adapter
-
+            recView = rcView
         }
     }
 
@@ -65,35 +89,36 @@ class FragmentMyNews : Fragment() {
         }
     }
 
-    private fun generateUrl(s: String): String {
+    private fun generateUrl(s: String) {
 
         lateinit var url: String
         when (s) {
-            "MyNews" -> url = Str.URL_START + Str.COUNTRY + Str.API_KEY
+            "MyNews" -> url = Str.URL_START + headlinesType + "country=$countryIndex" + Str.API_KEY
             "Technologies" -> url =
-                Str.URL_START + Str.COUNTRY + "&" + Str.CATEGORY_TECHNOLOGY + Str.API_KEY
+                Str.URL_START + headlinesType + "country=$countryIndex" + "&" + Str.CATEGORY_TECHNOLOGY + Str.API_KEY
             "Sports" -> url =
-                Str.URL_START + Str.COUNTRY + "&" + Str.CATEGORY_SPORTS + Str.API_KEY
+                Str.URL_START + headlinesType + "country=$countryIndex" + "&" + Str.CATEGORY_SPORTS + Str.API_KEY
             "Business" -> url =
-                Str.URL_START + Str.COUNTRY + "&" + Str.CATEGORY_BUSINESS + Str.API_KEY
+                Str.URL_START + headlinesType + "country=$countryIndex" + "&" + Str.CATEGORY_BUSINESS + Str.API_KEY
             "Global" -> url =
-                Str.URL_START + Str.COUNTRY + "&" + Str.CATEGORY_GLOBAL + Str.API_KEY
+                Str.URL_START + headlinesType + "country=$countryIndex" + "&" + Str.CATEGORY_GLOBAL + Str.API_KEY
             "Health" -> url =
-                Str.URL_START + Str.COUNTRY + "&" + Str.CATEGORY_HEALTH + Str.API_KEY
+                Str.URL_START + headlinesType + "country=$countryIndex" + "&" + Str.CATEGORY_HEALTH + Str.API_KEY
             "Science" -> url =
-                Str.URL_START + Str.COUNTRY + "&" + Str.CATEGORY_SCIENCE + Str.API_KEY
+                Str.URL_START + headlinesType + "country=$countryIndex" + "&" + Str.CATEGORY_SCIENCE + Str.API_KEY
             "Enter" -> url =
-                Str.URL_START + Str.COUNTRY + "&" + Str.CATEGORY_ENTERTAINMENT + Str.API_KEY
+                Str.URL_START + headlinesType + "country=$countryIndex" + "&" + Str.CATEGORY_ENTERTAINMENT + Str.API_KEY
         }
-        return url
+        this.url = url
     }
 
     private fun updateInfo(strCategory: String) {
-        apiRequest(generateUrl(strCategory))
+        generateUrl(strCategory)
+        apiRequest(url, false)
     }
 
-    private fun apiRequest(url: String) {
-        val dataList: MutableList<Article> = mutableListOf()
+    private fun apiRequest(url: String, update: Boolean) {
+
         doAsync {
 
             AndroidNetworking.initialize(context)
@@ -104,7 +129,11 @@ class FragmentMyNews : Fragment() {
                     override fun onResponse(response: DataFromApi) {
                         dataList.clear()
                         dataList.addAll(response.articles)
-                        init(dataList)
+                        if (update)
+                            recView.adapter!!.notifyDataSetChanged()
+                        else
+                            init(dataList)
+
                     }
 
                     override fun onError(anError: ANError?) {

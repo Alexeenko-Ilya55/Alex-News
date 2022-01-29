@@ -1,8 +1,6 @@
 package com.myproject.alexnews.`object`
 
 object Settings{
-    var country: String = "ru"
-    var typeNews: String = "top-headlines?"
     var categoryTechnologies = true
     var categorySports = true
     var categoryBusiness = true

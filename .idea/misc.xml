@@ -76,13 +76,14 @@
         <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/layout/swith_item.xml" value="0.23783783783783785" />
         <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/menu/activity_main_drawer.xml" value="0.36666666666666664" />
         <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/menu/drawer_main_menu.xml" value="0.36666666666666664" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/menu/fragment_content_news.xml" value="0.36666666666666664" />
         <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/menu/main_menu.xml" value="0.23783783783783785" />
         <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/menu/navigation.xml" value="0.36666666666666664" />
         <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.2483108108108108" />
         <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2483108108108108" />
         <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/mipmap-anydpi-v26/launcher_icon.xml" value="0.2483108108108108" />
         <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/mipmap-anydpi-v26/launcher_icon_round.xml" value="0.2483108108108108" />
-        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/xml/root_preferences.xml" value="0.152" />
+        <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/xml/root_preferences.xml" value="0.22" />
       </map>
     </option>
   </component>

@@ -1,14 +1,14 @@
 package com.myproject.alexnews.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import com.myproject.alexnews.activity.MainActivity
-import com.myproject.alexnews.databinding.FragmentChangeMyNewsBinding
+import androidx.fragment.app.Fragment
+import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.Settings
+import com.myproject.alexnews.databinding.FragmentChangeMyNewsBinding
 
 
 class FragmentChangeMyNews : Fragment() {
@@ -26,8 +26,8 @@ class FragmentChangeMyNews : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        activity!!.setTitle(R.string.change)
         binding = FragmentChangeMyNewsBinding.inflate(inflater, container, false)
-        MainActivity.AB.mToggle.isDrawerIndicatorEnabled = false
         binding.apply {
             checkBoxBusiness = ChangeMyNewsCheckBoxBusiness
             checkBoxSports = ChangeMyNewsCheckBoxSports
@@ -55,21 +55,20 @@ class FragmentChangeMyNews : Fragment() {
         Settings.categoryHealth = checkBoxHealth.isChecked
         Settings.categoryScience = checkBoxScience.isChecked
         Settings.categoryEntertainment = checkBoxEntertainment.isChecked
-        MainActivity.AB.mToggle.isDrawerIndicatorEnabled = true
         super.onDestroy()
     }
 
-    fun onStartIsChecked(){
-        if(Settings.categoryBusiness) checkBoxBusiness.toggle()
-        if(Settings.categorySports) checkBoxSports.toggle()
-        if(Settings.categoryScience) checkBoxScience.toggle()
-        if(Settings.categoryEntertainment) checkBoxEntertainment.toggle()
-        if(Settings.categoryHealth) checkBoxHealth.toggle()
-        if(Settings.categoryGlobal) checkBoxGlobal.toggle()
-        if(Settings.categoryTechnologies) checkBoxTechnologies.toggle()
+    private fun onStartIsChecked() {
+        if (Settings.categoryBusiness) checkBoxBusiness.toggle()
+        if (Settings.categorySports) checkBoxSports.toggle()
+        if (Settings.categoryScience) checkBoxScience.toggle()
+        if (Settings.categoryEntertainment) checkBoxEntertainment.toggle()
+        if (Settings.categoryHealth) checkBoxHealth.toggle()
+        if (Settings.categoryGlobal) checkBoxGlobal.toggle()
+        if (Settings.categoryTechnologies) checkBoxTechnologies.toggle()
     }
 
-    fun onClick(){
+    private fun onClick() {
         if (checkBoxEntertainment.isChecked && checkBoxGlobal.isChecked &&
             checkBoxHealth.isChecked && checkBoxTechnologies.isChecked &&
             checkBoxBusiness.isChecked && checkBoxSports.isChecked

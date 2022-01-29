@@ -1,22 +1,27 @@
 package com.myproject.alexnews.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.myproject.alexnews.activity.MainActivity
-import com.myproject.alexnews.databinding.FragmentSettingsBinding
+import android.view.Menu
+import android.view.MenuInflater
+import android.widget.Toast
+import androidx.preference.PreferenceFragmentCompat
+import com.myproject.alexnews.R
 
+class FragmentSettings : PreferenceFragmentCompat() {
 
-class FragmentSettings : Fragment() {
+    @SuppressLint("RestrictedApi")
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        activity!!.setTitle(R.string.menu_Settings)
+        setPreferencesFromResource(R.xml.root_preferences, rootKey)
+        setHasOptionsMenu(true)
+        preferenceScreen.setOnExpandButtonClickListener {
+            Toast.makeText(context, "hello", Toast.LENGTH_SHORT).show()
+        }
+    }
 
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? = FragmentSettingsBinding.inflate(inflater, container, false).apply {
-
-
-    }.root
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.setGroupVisible(R.id.group_settings, false)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
 }

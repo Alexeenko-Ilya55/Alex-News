@@ -37,9 +37,11 @@
     <string name="changeMyNews" tools:ignore="ExtraTranslation">Изменить Мои новости</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
+    <string name="sync_header">Прочее</string>
 
     <!-- Messages Preferences -->
     <string name="signature_title">Your signature</string>
@@ -54,6 +56,10 @@
     <string name="AddAllCategories">Добавить все категории</string>
     <string name="Search">Поиск</string>
     <string name="menuNewsSources">Источник новостей</string>
+    <string name="News">Новости</string>
+    <string name="fromSource">От источника</string>
+    <string name="change">Мои новости</string>
+    <string name="updatePage">Страница обновлена</string>
 
 
 </resources>

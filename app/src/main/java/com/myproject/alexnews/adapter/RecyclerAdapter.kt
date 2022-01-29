@@ -44,28 +44,28 @@ class RecyclerAdapter(
     override fun onBindViewHolder(holder: RecyclerHolder, position: Int) {
         holder.apply {
             val data = articleList[position]
-            fillDataInItem(holder,data)
+            fillDataInItem(holder, data)
 
-            bookmarks.setOnClickListener{
+            bookmarks.setOnClickListener {
                 data.bookmarkEnable = !data.bookmarkEnable
-                if(data.bookmarkEnable) DataNewsList.dataList.add(data)
+                if (data.bookmarkEnable) DataNewsList.dataList.add(data)
                 else DataNewsList.dataList.remove(data)
                 notifyItemChanged(position)
             }
 
             itemView.setOnClickListener {
-                if(offlineMode) {
+                if (offlineMode) {
 
 
-                }else
-                goToContent(data)
+                } else
+                    goToContent(data)
             }
 
         }
     }
 
     @SuppressLint("SetTextI18n")
-    fun fillDataInItem(holder: RecyclerHolder,data: Article){
+    fun fillDataInItem(holder: RecyclerHolder, data: Article) {
         holder.apply {
             title.text = data.title.substringBeforeLast('-')
             time.text = data.publishedAt.substringAfterLast('-')
@@ -98,12 +98,12 @@ class RecyclerAdapter(
     }
 
     fun goToContent(data: Article) {
-        val fragment = FragmentMyNews()
-        fragment.arguments = Bundle().apply {
-            putString(ARG_OBJECT, data.url)
-        }
+//        val fragment = FragmentMyNews()
+//        fragment.arguments = Bundle().apply {
+//            putString(ARG_OBJECT, data.url)
+//        }
         parentFM.beginTransaction().addToBackStack(null)
-            .replace(R.id.fragment_container, FragmentContentNews(data.url)).commit()
+            .replace(R.id.fragment_container, FragmentContentNews(data.url, data)).commit()
     }
 
     private fun month(monthNumber: String): String {

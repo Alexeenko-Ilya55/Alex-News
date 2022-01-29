@@ -5,22 +5,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <group android:id="@+id/group_search">
     <item android:title="@string/Search"
         app:showAsAction="ifRoom"
         android:id="@+id/menuSearch"
         android:icon="@drawable/search_action_bar"/>
-
+    </group>
+    <group android:id="@+id/group_bookmsark">
     <item android:title="@string/Bookmark"
         app:showAsAction="ifRoom"
         android:id="@+id/menuBookmarks"
         android:icon="@drawable/bookmarks_action_bar" />
-
+    </group>
     <item android:title="@string/changeMyNews"
         app:showAsAction="never"
         android:id="@+id/change_myNews" />
-
+<group android:id="@+id/group_settings">
     <item android:title="@string/menu_Settings"
         app:showAsAction="never"
         android:id="@+id/menuSettings"/>
-
+</group>
 </menu>

@@ -14,7 +14,7 @@ import com.myproject.alexnews.fragments.FragmentMyNews
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.model.DataFromApi
 
-class ViewPagerAdapter(fragment: FragmentActivity): FragmentStateAdapter(fragment){
+class ViewPagerAdapter(fragment: FragmentActivity) : FragmentStateAdapter(fragment) {
 
     override fun getItemCount(): Int = 8
 
@@ -22,8 +22,8 @@ class ViewPagerAdapter(fragment: FragmentActivity): FragmentStateAdapter(fragmen
 
         val fragment = FragmentMyNews()
         fragment.arguments = Bundle().apply {
-            putInt(ARG_OBJECT,position)
+            putInt(ARG_OBJECT, position)
         }
-    return fragment
+        return fragment
     }
 }
