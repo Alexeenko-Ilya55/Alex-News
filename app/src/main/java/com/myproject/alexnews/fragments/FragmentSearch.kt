@@ -2,6 +2,7 @@ package com.myproject.alexnews.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.SearchView
 import android.widget.Toast
@@ -23,6 +24,7 @@ class FragmentSearch : Fragment() {
 
     lateinit var binding: FragmentSearchBinding
     lateinit var adapter: RecyclerAdapter
+    val dataList: MutableList<Article> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,16 +37,17 @@ class FragmentSearch : Fragment() {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if(dataList.size != 0)
+            init(dataList)
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 binding.searchView.clearFocus()
-                val url = "https://newsapi.org/v2/" + "everything?" + "q=$p0" + Str.API_KEY
+                val url = Str.URL_START + "everything?" + "q=$p0" + Str.API_KEY
                 apiRequest(url)
                 return false
             }
-
             override fun onQueryTextChange(p0: String?): Boolean {
                 return false
             }
@@ -62,9 +65,7 @@ class FragmentSearch : Fragment() {
     }
 
     fun apiRequest(url: String) {
-        val dataList: MutableList<Article> = mutableListOf()
         doAsync {
-
             AndroidNetworking.initialize(context)
             AndroidNetworking.get(url)
                 .build()
@@ -85,7 +86,7 @@ class FragmentSearch : Fragment() {
                     override fun onError(anError: ANError?) {
                         Toast.makeText(
                             context,
-                            "Нет подключения к интернету",
+                            "Отсуствует подключения к интернету",
                             Toast.LENGTH_SHORT
                         ).show()
                     }

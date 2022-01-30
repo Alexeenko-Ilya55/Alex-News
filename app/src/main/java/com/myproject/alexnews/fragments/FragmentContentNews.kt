@@ -29,8 +29,6 @@ class FragmentContentNews(private val urlPage: String, val data: Article) : Frag
 
         binding = FragmentContentNewsBinding.inflate(inflater, container, false)
 
-        MainActivity.AB.mToggle.isDrawerIndicatorEnabled = false
-
         binding.apply {
             WebView.webViewClient = WebViewClient()
             WebView.apply {
@@ -41,7 +39,6 @@ class FragmentContentNews(private val urlPage: String, val data: Article) : Frag
             }
 
             floatingActionButton.setOnClickListener {
-
                 val shareIntent = Intent().apply {
                     this.action = Intent.ACTION_SEND
                     this.putExtra(Intent.EXTRA_TEXT, urlPage)
@@ -51,11 +48,6 @@ class FragmentContentNews(private val urlPage: String, val data: Article) : Frag
             }
         }
         return binding.root
-    }
-
-    override fun onDestroy() {
-        MainActivity.AB.mToggle.isDrawerIndicatorEnabled = true
-        super.onDestroy()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

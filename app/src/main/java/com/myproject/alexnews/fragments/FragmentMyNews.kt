@@ -34,7 +34,6 @@ class FragmentMyNews : Fragment() {
     var dataList: MutableList<Article> = mutableListOf()
     private lateinit var url: String
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,11 +41,7 @@ class FragmentMyNews : Fragment() {
         activity!!.setTitle(R.string.app_name)
         val ps = PreferenceManager.getDefaultSharedPreferences(context!!)
 
-        headlinesType = when (ps.getString("TypeNewsContent", "")) {
-            "all_news" -> "everything?"
-            "top_headlines" -> "top-headlines?"
-            else -> "top-headlines?"
-        }
+        headlinesType = ps.getString("TypeNewsContent", "").toString()
         countryIndex = ps.getString("country", "").toString()
         binding = FragmentMyNewsBinding.inflate(inflater, container, false)
         refreshInit()
@@ -58,7 +53,6 @@ class FragmentMyNews : Fragment() {
         binding.refresh.setOnRefreshListener {
             dataList.clear()
             apiRequest(url, true)
-            Toast.makeText(context, R.string.updatePage, Toast.LENGTH_SHORT).show()
             binding.refresh.isRefreshing = false
         }
     }
@@ -133,15 +127,16 @@ class FragmentMyNews : Fragment() {
                             recView.adapter!!.notifyDataSetChanged()
                         else
                             init(dataList)
-
                     }
 
                     override fun onError(anError: ANError?) {
                         Toast.makeText(
                             context,
-                            "Нет подключения к интернету",
-                            Toast.LENGTH_SHORT
+                            "Отсуствует подключения к интернету, вы можете воспользоваться оффлайн режимом",
+                            Toast.LENGTH_LONG
                         ).show()
+                        parentFragmentManager.beginTransaction().addToBackStack(null)
+                            .replace(R.id.fragment_container,FragmentSettings()).commit()
                     }
                 })
         }

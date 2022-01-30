@@ -60,6 +60,9 @@
     <string name="fromSource">От источника</string>
     <string name="change">Мои новости</string>
     <string name="updatePage">Страница обновлена</string>
+    <string name="subject">Тема</string>
+    <string name="message">Сообщение</string>
+    <string name="Sent">Отправить</string>
 
 
 </resources>

@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
 import com.google.android.material.navigation.NavigationView
 import com.myproject.alexnews.R
-import com.myproject.alexnews.`object`.Str
 
 import com.myproject.alexnews.databinding.ActivityMainBinding
 import com.myproject.alexnews.fragments.*
@@ -21,30 +20,17 @@ import com.myproject.alexnews.fragments.*
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     SharedPreferences.OnSharedPreferenceChangeListener {
 
-    object AB {
-        lateinit var mToggle: ActionBarDrawerToggle
-    }
-
+    lateinit var mToggle: ActionBarDrawerToggle
     lateinit var binding: ActivityMainBinding
     lateinit var fragmentMain: FragmentMain
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        fragmentMain = FragmentMain(null)
-        if (savedInstanceState == null) {
-            supportFragmentManager
-                .beginTransaction()
-                .add(R.id.fragment_container, FragmentSearch())
-                .commit()
-        }
 
         binding.navView.bringToFront()
         binding.navView.isVerticalScrollBarEnabled
         binding.navView.setNavigationItemSelectedListener(this)
-
 
         when (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("DarkMode", false)) {
             true -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -55,16 +41,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .registerOnSharedPreferenceChangeListener(this)
 
         // Menu ActionBar
-        AB.mToggle =
+        mToggle =
             ActionBarDrawerToggle(this, binding.drawerLayout, R.string.open, R.string.close)
-        binding.drawerLayout.addDrawerListener(AB.mToggle)
-        AB.mToggle.syncState()
+        binding.drawerLayout.addDrawerListener(mToggle)
+        mToggle.syncState()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        super.onCreate(savedInstanceState)
+
+        fragmentMain = FragmentMain(null)
+        if (savedInstanceState == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.fragment_container, FragmentSearch())
+                .commit()
+        }
     }
 
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (AB.mToggle.onOptionsItemSelected(item))
+        if (mToggle.onOptionsItemSelected(item))
             return true
         when (item.itemId) {
             R.id.menuSettings -> openFragment(FragmentSettings())
@@ -100,7 +95,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.categorySport -> fragmentMain.navVP(2)
             R.id.categoryTechnologies -> fragmentMain.navVP(1)
             R.id.aboutApp -> openFragment(FragmentAboutApp())
-            R.id.messageProgrammer -> openFragment(FragmentMessegetoProgrammer())
+            R.id.messageProgrammer -> openFragment(FragmentMessageToProgrammer())
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)

@@ -25,6 +25,7 @@ class FragmentNewsFromSources : Fragment() {
 
     lateinit var binding: FragmentNewFromSourcesBinding
     private lateinit var adapter: RecyclerAdapter
+    val dataList: MutableList<Article> = mutableListOf()
 
 
     override fun onCreateView(
@@ -32,11 +33,14 @@ class FragmentNewsFromSources : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentNewFromSourcesBinding.inflate(inflater, container, false)
+        activity!!.setTitle(R.string.fromSource)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        activity!!.setTitle(R.string.fromSource)
+
+        if(dataList.size != 0)
+            init(dataList)
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 
             override fun onQueryTextSubmit(sourceName: String?): Boolean {
@@ -63,7 +67,6 @@ class FragmentNewsFromSources : Fragment() {
     }
 
     fun apiRequest(url: String) {
-        val dataList: MutableList<Article> = mutableListOf()
         doAsync {
 
             AndroidNetworking.initialize(context)
@@ -86,7 +89,7 @@ class FragmentNewsFromSources : Fragment() {
                     override fun onError(anError: ANError?) {
                         Toast.makeText(
                             context,
-                            "Неправильно введено имя источника",
+                            "Отсуствует подключение к интернету",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
