@@ -5,7 +5,7 @@
     android:id="@+id/ConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".to_delete.ContentNewsActivity"
+    tools:context=".fragments.FragmentContentNewsOffline"
     app:menu = "@menu/main_menu">
 
     <ScrollView
@@ -41,7 +41,7 @@
                 android:layout_marginTop="16dp"
                 android:fontFamily="sans-serif-medium"
                 android:text="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
-                android:textColor="#000000"
+                android:textColor="?attr/colorOnSecondary"
                 android:textSize="24sp" />
 
             <TextView
@@ -61,7 +61,7 @@
                 android:layout_marginBottom="10dp"
                 android:fontFamily="sans-serif-medium"
                 android:text="fdgbfgbfgb"
-                android:textColor="@color/black"
+                android:textColor="?attr/colorOnSecondary"
                 android:textSize="18sp" />
 
             <TextView
@@ -72,18 +72,8 @@
                 android:layout_marginBottom="20dp"
                 android:fontFamily="sans-serif-medium"
                 android:text="В подмосковной Лобне вместе с матерью живёт двадцатилетний Илья Горюнов. Илья — студент филологического факультета МГУ; мать Ильи, воспитавшая сына одна,  "
-                android:textColor="@color/black"
+                android:textColor="?attr/colorOnSecondary"
                 android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/author_news"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:fontFamily="sans-serif-medium"
-                android:gravity="end"
-                android:text="Автор: Илья Алексеенко"
-                android:textSize="14sp" />
 
         </LinearLayout>
     </ScrollView>

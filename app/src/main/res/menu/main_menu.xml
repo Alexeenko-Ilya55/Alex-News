@@ -7,7 +7,7 @@
 
     <group android:id="@+id/group_search">
     <item android:title="@string/Search"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:id="@+id/menuSearch"
         android:icon="@drawable/search_action_bar"/>
     </group>
@@ -17,6 +17,19 @@
         android:id="@+id/menuBookmarks"
         android:icon="@drawable/bookmarks_action_bar" />
     </group>
+    <group android:id="@+id/account">
+    <item android:title="@string/Auth"
+        app:showAsAction="never"
+        android:id="@+id/accountStatus"
+        />
+    </group>
+    <group android:id="@+id/accountAuth">
+        <item android:title="@string/logOut"
+            app:showAsAction="never"
+            android:id="@+id/accountStatusAuth"
+           />
+    </group>
+
     <item android:title="@string/changeMyNews"
         app:showAsAction="never"
         android:id="@+id/change_myNews" />

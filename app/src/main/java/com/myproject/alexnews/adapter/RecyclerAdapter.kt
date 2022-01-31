@@ -1,21 +1,23 @@
 package com.myproject.alexnews.adapter
 
 import android.annotation.SuppressLint
-import android.os.Bundle
-import android.provider.Settings
+import android.content.SharedPreferences
 import android.view.*
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
-import com.myproject.alexnews.`object`.DataNewsList
+import com.myproject.alexnews.`object`.ARTICLE_LIST
 import com.myproject.alexnews.`object`.Settings.offlineMode
-import com.myproject.alexnews.fragments.ARG_OBJECT
-import com.myproject.alexnews.fragments.FragmentContentNews
-import com.myproject.alexnews.fragments.FragmentMyNews
+import com.myproject.alexnews.dao.FirebaseDB
+import com.myproject.alexnews.fragments.*
 import com.myproject.alexnews.model.Article
 import com.squareup.picasso.Picasso
 
@@ -25,6 +27,8 @@ class RecyclerAdapter(
 ) : RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder>() {
 
     lateinit var v: View
+    private lateinit var auth: FirebaseAuth
+    lateinit var sp: SharedPreferences
 
     inner class RecyclerHolder(item: View) : RecyclerView.ViewHolder(item) {
         val context = item.context
@@ -32,11 +36,12 @@ class RecyclerAdapter(
         val time = item.findViewById<TextView>(R.id.time)
         val imageNews = item.findViewById<ImageView>(R.id.imageNews)
         val bookmarks = item.findViewById<ImageButton>(R.id.Bookmark_Item_Button)
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerHolder {
         v = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
+        auth = Firebase.auth
+        auth.currentUser
         return RecyclerHolder(v)
     }
 
@@ -44,29 +49,38 @@ class RecyclerAdapter(
     override fun onBindViewHolder(holder: RecyclerHolder, position: Int) {
         holder.apply {
             val data = articleList[position]
+            val db = FirebaseDB()
+            sp = PreferenceManager.getDefaultSharedPreferences(context)
             fillDataInItem(holder, data)
 
             bookmarks.setOnClickListener {
                 data.bookmarkEnable = !data.bookmarkEnable
-                if (data.bookmarkEnable) DataNewsList.dataList.add(data)
-                else DataNewsList.dataList.remove(data)
-                notifyItemChanged(position)
+                if(sp.getBoolean("OfflineMode",false)){
+                    if (data.bookmarkEnable)
+                        ARTICLE_LIST.add(data)
+                    else
+                        ARTICLE_LIST.remove(data)
+                }
+                else{
+                    if (data.bookmarkEnable) db.addToFirebase(data)
+                    else db.deleteFromFB(data.url)
+                }
+                notifyDataSetChanged()
             }
 
             itemView.setOnClickListener {
-                if (offlineMode) {
-
-
+                if (sp.getBoolean("OfflineMode", false)) {
+                    openFragment(FragmentContentNewsOffline(data))
                 } else
-                    goToContent(data)
+                    openFragment(FragmentContentNews(data))
             }
-
         }
     }
 
     @SuppressLint("SetTextI18n")
     fun fillDataInItem(holder: RecyclerHolder, data: Article) {
         holder.apply {
+            val ps = PreferenceManager.getDefaultSharedPreferences(context!!)
             title.text = data.title.substringBeforeLast('-')
             time.text = data.publishedAt.substringAfterLast('-')
                 .substringBefore('T') + " " +
@@ -74,15 +88,19 @@ class RecyclerAdapter(
                         data.publishedAt.substringAfter('-').substringBeforeLast('-')
                     ) + " в " + data.publishedAt.substring(11).substringBeforeLast(':')
 
-            if (data.urlToImage != null)
+            if (data.urlToImage != "")
                 Picasso.get().load(data.urlToImage).into(imageNews)
             else
                 imageNews.setImageResource(R.drawable.no_image)
 
             if (data.bookmarkEnable)
                 bookmarks.setImageResource(R.drawable.bookmark_enable_icon_item)
-            else
-                bookmarks.setImageResource(R.drawable.item_bookmark)
+            else {
+                if (ps.getBoolean("DarkMode",true))
+                    bookmarks.setImageResource(R.drawable.bookmark_action_bar_content)
+                else
+                    bookmarks.setImageResource(R.drawable.item_bookmark)
+            }
         }
     }
 
@@ -91,19 +109,19 @@ class RecyclerAdapter(
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun updateNews(list: MutableList<Article>) {
+    fun setNews(list: MutableList<Article>) {
         articleList.clear()
         articleList.addAll(list)
         notifyDataSetChanged()
     }
+    @SuppressLint("NotifyDataSetChanged")
+    fun update(){
+        notifyDataSetChanged()
+    }
 
-    fun goToContent(data: Article) {
-//        val fragment = FragmentMyNews()
-//        fragment.arguments = Bundle().apply {
-//            putString(ARG_OBJECT, data.url)
-//        }
+    private fun openFragment(fragment:Fragment) {
         parentFM.beginTransaction().addToBackStack(null)
-            .replace(R.id.fragment_container, FragmentContentNews(data.url, data)).commit()
+            .replace(R.id.fragment_container, fragment).commit()
     }
 
     private fun month(monthNumber: String): String {
@@ -123,4 +141,5 @@ class RecyclerAdapter(
         }
         return "Ошибка"
     }
+
 }

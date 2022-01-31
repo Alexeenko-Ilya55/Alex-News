@@ -63,6 +63,18 @@
     <string name="subject">Тема</string>
     <string name="message">Сообщение</string>
     <string name="Sent">Отправить</string>
+    <string name="No_internet">Отсуствует подключение к интернету. Активируйте оффлайн режим </string>
+
+
+    //From classes
+    <string name="onErorGoogleAuth">Вам не удалось войти в аккаунт. Проверьте интернет подключение и попробуйте еще раз</string>
+    <string name="onGoodGoogleAuth">Авторизация прошла успешно</string>
+    <string name="Auth">Авторизоваться</string>
+    <string name="logOut">Выйти из аккаунта</string>
+    <string name="youLogOut">Вы вышли из своего аккаунта</string>
+    <string name="adding_notes">Здесь вы можете оставить заметку</string>
+    <string name="InputPsw">Введите пароль</string>
+    <string name="Offline_mode">Оффлайн режим</string>
 
 
 </resources>

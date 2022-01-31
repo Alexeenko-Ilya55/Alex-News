@@ -1,25 +1,28 @@
 package com.myproject.alexnews.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import com.myproject.alexnews.`object`.TABLE_NAME
+
+@Entity(
+    tableName = TABLE_NAME
+)
 
 data class Article(
-    @SerializedName("author")
-    var author: String,
-    @SerializedName("content")
-    var content: String,
     @SerializedName("description")
-    var description: String,
+    var description: String=" ",
     @SerializedName("publishedAt")
-    var publishedAt: String,
-    @SerializedName("source")
-    var source: Source,
+    var publishedAt: String="",
     @SerializedName("title")
-    var title: String,
+    var title: String="",
     @SerializedName("url")
-    var url: String,
+    var url: String="",
     @SerializedName("urlToImage")
-    var urlToImage: String,
+    var urlToImage: String="",
 
-    var bookmarkEnable:Boolean = false,
-    var notes:String? =null
+    @PrimaryKey(autoGenerate = true)
+    var id:Int=0,
+    var notes:String = "",
+    var bookmarkEnable:Boolean = false
 )

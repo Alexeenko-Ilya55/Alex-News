@@ -8,17 +8,20 @@ import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
 import com.myproject.alexnews.R
-import com.myproject.alexnews.`object`.Str
+import com.myproject.alexnews.`object`.API_KEY
+import com.myproject.alexnews.`object`.URL_START
 import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentNewFromSourcesBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.model.DataFromApi
-import org.jetbrains.anko.doAsync
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class FragmentNewsFromSources : Fragment() {
@@ -45,7 +48,7 @@ class FragmentNewsFromSources : Fragment() {
 
             override fun onQueryTextSubmit(sourceName: String?): Boolean {
                 binding.searchView.clearFocus()
-                val url = Str.URL_START + "sources=$sourceName" + Str.API_KEY
+                val url = URL_START + "sources=$sourceName" + API_KEY
                 apiRequest(url)
                 return false
             }
@@ -67,8 +70,7 @@ class FragmentNewsFromSources : Fragment() {
     }
 
     fun apiRequest(url: String) {
-        doAsync {
-
+        lifecycleScope.launch(Dispatchers.IO) {
             AndroidNetworking.initialize(context)
             AndroidNetworking.get(url)
                 .build()

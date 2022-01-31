@@ -4,18 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.myproject.alexnews.R
 import com.myproject.alexnews.adapter.ViewPagerAdapter
 import com.myproject.alexnews.databinding.FragmentMainBinding
+import kotlin.properties.Delegates
 
 
-class FragmentMain(private val myPosition: Int?) : Fragment() {
+class FragmentMain() : Fragment() {
 
     private lateinit var viewPagerAdapter: ViewPagerAdapter
     lateinit var binding: FragmentMainBinding
+    var myPosition by Delegates.notNull<Int>()
     private val tabNames: Array<String> = arrayOf(
         "Мои новости",
         "Технологии",
@@ -31,11 +34,11 @@ class FragmentMain(private val myPosition: Int?) : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        myPosition = arguments!!.getInt("Pos")
         activity!!.setTitle(R.string.app_name)
         binding = FragmentMainBinding.inflate(inflater, container, false)
 
         viewPagerAdapter = ViewPagerAdapter(context as FragmentActivity)
-        // binding.viewPager.setPageTransformer(ZoomOutPageTransformer())
         binding.viewPager.adapter = viewPagerAdapter
         binding.viewPager.offscreenPageLimit = 7
 
@@ -43,21 +46,23 @@ class FragmentMain(private val myPosition: Int?) : Fragment() {
             tab.text = tabNames[position]
         }.attach()
 
-
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (myPosition != null) binding.viewPager.setCurrentItem(myPosition, true)
+        if (myPosition != 0) binding.viewPager.setCurrentItem(myPosition, true)
     }
 
     fun navVP(pos: Int) {
         if (this.isVisible)
             binding.viewPager.setCurrentItem(pos, true)
         else {
+            val fragment = FragmentMain()
+            fragment.arguments = Bundle().apply {
+                putInt("Pos",pos)
+            }
             parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, FragmentMain(pos)).commit()
+                .replace(R.id.fragment_container, fragment).commit()
         }
     }
 
