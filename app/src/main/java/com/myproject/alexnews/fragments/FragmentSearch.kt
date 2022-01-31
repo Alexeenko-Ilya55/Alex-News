@@ -7,16 +7,20 @@ import android.view.*
 import android.widget.SearchView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
 import com.myproject.alexnews.R
-import com.myproject.alexnews.`object`.Str
+import com.myproject.alexnews.`object`.API_KEY
+import com.myproject.alexnews.`object`.URL_START
 import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentSearchBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.model.DataFromApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.anko.doAsync
 
 
@@ -44,7 +48,7 @@ class FragmentSearch : Fragment() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 binding.searchView.clearFocus()
-                val url = Str.URL_START + "everything?" + "q=$p0" + Str.API_KEY
+                val url = URL_START + "everything?" + "q=$p0" + API_KEY
                 apiRequest(url)
                 return false
             }
@@ -65,7 +69,7 @@ class FragmentSearch : Fragment() {
     }
 
     fun apiRequest(url: String) {
-        doAsync {
+        lifecycleScope.launch(Dispatchers.IO) {
             AndroidNetworking.initialize(context)
             AndroidNetworking.get(url)
                 .build()
@@ -82,7 +86,6 @@ class FragmentSearch : Fragment() {
                         }
                         init(dataList)
                     }
-
                     override fun onError(anError: ANError?) {
                         Toast.makeText(
                             context,

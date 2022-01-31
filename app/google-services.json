@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "239067895942",
+    "firebase_url": "https://alex-news-c94c9-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "alex-news-c94c9",
+    "storage_bucket": "alex-news-c94c9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:239067895942:android:21ffa7b35046a576d4d907",
+        "android_client_info": {
+          "package_name": "com.myproject.alexnews"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "239067895942-vgd5a1652t1i7ut0jkvk3b0q4vsf0b31.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.myproject.alexnews",
+            "certificate_hash": "87437157380d8b1688e9bee6fcb2ed7cb6cac51d"
+          }
+        },
+        {
+          "client_id": "239067895942-v8asrg9f9ga0uj8c9jr0mifbv4d8mmuu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZnyfozBgw0qs-pWDsisYUJ7lH1QCGCVk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "239067895942-v8asrg9f9ga0uj8c9jr0mifbv4d8mmuu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -24,7 +24,7 @@
         android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="14dp"
         android:layout_marginBottom="20dp"
         android:backgroundTint="@color/purple_200"
 
@@ -37,6 +37,25 @@
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:tint="@color/design_default_color_on_primary"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/NotesButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="14dp"
+        android:layout_marginBottom="14dp"
+
+
+        android:backgroundTint="@color/purple_200"
+        android:clickable="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/notes_icon"
+        app:backgroundTint="@android:color/transparent"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/floatingActionButton"
+        app:layout_constraintEnd_toEndOf="@+id/WebView"
         app:tint="@color/design_default_color_on_primary"
         tools:ignore="SpeakableTextPresentCheck" />
 

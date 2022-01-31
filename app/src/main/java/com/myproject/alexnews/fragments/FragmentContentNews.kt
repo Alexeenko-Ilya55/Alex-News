@@ -3,29 +3,45 @@ package com.myproject.alexnews.fragments
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.provider.SyncStateContract.Helpers.update
+import android.util.Log
 import android.view.*
 import android.webkit.WebViewClient
-import android.widget.Toast
 import androidx.core.view.doOnAttach
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.DataNewsList
-import com.myproject.alexnews.activity.MainActivity
+import com.myproject.alexnews.`object`.NODE_USERS
+import com.myproject.alexnews.`object`.REF_DATABASE_ROOT
+import com.myproject.alexnews.adapter.RecyclerAdapter
+import com.myproject.alexnews.dao.FirebaseDB
 import com.myproject.alexnews.databinding.FragmentContentNewsBinding
 import com.myproject.alexnews.model.Article
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class FragmentContentNews(private val urlPage: String, val data: Article) : Fragment() {
 
     lateinit var binding: FragmentContentNewsBinding
+    private lateinit var auth: FirebaseAuth
+    private val  db = FirebaseDB()
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         activity!!.setTitle(R.string.News)
         setHasOptionsMenu(true)
+        auth = Firebase.auth
+        auth.currentUser
+
 
         binding = FragmentContentNewsBinding.inflate(inflater, container, false)
 
@@ -73,13 +89,18 @@ class FragmentContentNews(private val urlPage: String, val data: Article) : Frag
 
     private fun clickOnBookmark(item: MenuItem) {
         data.bookmarkEnable = !data.bookmarkEnable
-        Toast.makeText(context, data.bookmarkEnable.toString(), Toast.LENGTH_SHORT).show()
         if (data.bookmarkEnable) {
             item.setIcon(R.drawable.bookmark_enable_icon_item)
-            DataNewsList.dataList.add(data)
+            db.addToFirebase(data)
         } else {
             item.setIcon(R.drawable.bookmark_action_bar_content)
-            DataNewsList.dataList.remove(data)
+            db.deleteFromFB(data.url)
         }
+    }
+
+    override fun onDestroy() {
+
+
+        super.onDestroy()
     }
 }

@@ -15,7 +15,7 @@
             />
 
        <ListPreference
-            app:defaultValue="headlines"
+            app:defaultValue="top-headlines?"
             app:entries="@array/reply_entries"
             app:entryValues="@array/reply_values"
             app:key="TypeNewsContent"
@@ -56,14 +56,6 @@
             app:summaryOff="Активируйте, чтобы новости загружались автоматически"
             app:summaryOn="Новости загружаются автоматически"
             app:title="Загружать автоматически" />
-
-        <PreferenceScreen
-            app:key="DownloadNews"
-            app:title="Загрузить новости"/>
-
-        <Preference
-            app:key="DeleteNews"
-            app:title="Удалить загруженные новости"/>
 
     </PreferenceCategory>
 
