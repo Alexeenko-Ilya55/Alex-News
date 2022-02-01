@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +19,7 @@ import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.*
 import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.dao.AppDataBase
+import com.myproject.alexnews.dao.ArticleDao
 import com.myproject.alexnews.dao.ArticleRepositoryImpl
 import com.myproject.alexnews.databinding.FragmentMyNewsBinding
 import com.myproject.alexnews.model.Article
@@ -45,6 +45,7 @@ class FragmentMyNews : Fragment() {
     lateinit var repository: ArticleRepositoryImpl
     private lateinit var ps: SharedPreferences
     lateinit var category: String
+    lateinit var database: AppDataBase
 
 
     override fun onCreateView(
@@ -52,8 +53,9 @@ class FragmentMyNews : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         activity!!.setTitle(R.string.app_name)
-        val ps = PreferenceManager.getDefaultSharedPreferences(context!!)
-
+        ps = PreferenceManager.getDefaultSharedPreferences(context!!)
+        database = AppDataBase.buildsDatabase(context!!, DATABASE_NAME)
+        repository = ArticleRepositoryImpl(database.ArticleDao())
         headlinesType = ps.getString("TypeNewsContent", "").toString()
         countryIndex = ps.getString("country", "").toString()
         binding = FragmentMyNewsBinding.inflate(inflater, container, false)
@@ -73,16 +75,34 @@ class FragmentMyNews : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun init(dataLister: MutableList<Article>) {
-        binding.apply {
-            rcView.layoutManager = LinearLayoutManager(context)
-            adapter = RecyclerAdapter(dataLister, parentFragmentManager)
-            adapter.notifyDataSetChanged()
-            rcView.adapter = adapter
-            recView = rcView
-            if (ps.getBoolean("AutomaticDownload", false) &&
-                    !ps.getBoolean("OfflineMode",false))
-               if(position > 1) deleteAllFromDatabase()
+        lifecycleScope.launch(Dispatchers.Main) {
+            binding.apply {
+                rcView.layoutManager = LinearLayoutManager(context)
+                adapter = RecyclerAdapter(dataLister, parentFragmentManager)
+                adapter.notifyDataSetChanged()
+                rcView.adapter = adapter
+                recView = rcView
+                if (ps.getBoolean("AutomaticDownload", false) &&
+                    !ps.getBoolean("OfflineMode", false)
+                )
+                    if (position > 1) deleteAllFromDatabase()
                 insertArticles(dataLister)
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        position = arguments!!.getInt(ARG_OBJECT)
+        when(position){
+            0 -> updateInfo("MyNews")
+            1 -> updateInfo("Technologies")
+            2 -> updateInfo("Sports")
+            3 -> updateInfo("Business")
+            4 -> updateInfo("Global")
+            5 -> updateInfo("Health")
+            6 -> updateInfo("Science")
+            7 -> updateInfo("Enter")
         }
     }
 

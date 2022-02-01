@@ -249,7 +249,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     Toast.LENGTH_LONG).show()
         }
     }
-    fun fragmentCheckOnlineMode(){
+    private fun fragmentCheckOnlineMode(){
         if (sp.getBoolean("OfflineMode", false))
             openFragment(FragmentOffline())
         else {

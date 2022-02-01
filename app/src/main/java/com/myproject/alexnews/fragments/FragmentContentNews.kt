@@ -23,7 +23,7 @@ import com.myproject.alexnews.model.Article
 import java.util.concurrent.Executor
 
 
-class FragmentContentNews(private val urlPage: String, val data: Article) : Fragment() {
+class FragmentContentNews(val data: Article) : Fragment() {
 
     lateinit var binding: FragmentContentNewsBinding
 
@@ -54,7 +54,7 @@ class FragmentContentNews(private val urlPage: String, val data: Article) : Frag
         binding.apply {
             WebView.webViewClient = WebViewClient()
             WebView.apply {
-                WebView.loadUrl(urlPage)
+                WebView.loadUrl(myUrl)
                 settings.safeBrowsingEnabled = true
                 settings.javaScriptEnabled = true
                 WebView.doOnAttach { }
@@ -63,7 +63,7 @@ class FragmentContentNews(private val urlPage: String, val data: Article) : Frag
             floatingActionButton.setOnClickListener {
                 val shareIntent = Intent().apply {
                     this.action = Intent.ACTION_SEND
-                    this.putExtra(Intent.EXTRA_TEXT, urlPage)
+                    this.putExtra(Intent.EXTRA_TEXT, myUrl)
                     this.type = "text/plain"
                 }
                 startActivity(shareIntent)
