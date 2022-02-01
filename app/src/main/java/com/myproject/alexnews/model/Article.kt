@@ -8,21 +8,19 @@ import com.myproject.alexnews.`object`.TABLE_NAME
 @Entity(
     tableName = TABLE_NAME
 )
-
 data class Article(
     @SerializedName("description")
-    var description: String=" ",
+    var description: String?="",
     @SerializedName("publishedAt")
     var publishedAt: String="",
     @SerializedName("title")
     var title: String="",
+    @PrimaryKey
     @SerializedName("url")
     var url: String="",
     @SerializedName("urlToImage")
-    var urlToImage: String="",
+    var urlToImage: String?="",
 
-    @PrimaryKey(autoGenerate = true)
-    var id:Int=0,
-    var notes:String = "",
+    var notes:String?= "",
     var bookmarkEnable:Boolean = false
 )

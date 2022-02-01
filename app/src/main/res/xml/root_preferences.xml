@@ -14,13 +14,43 @@
             app:useSimpleSummaryProvider="true"
             />
 
-       <ListPreference
+        <ListPreference
             app:defaultValue="top-headlines?"
             app:entries="@array/reply_entries"
             app:entryValues="@array/reply_values"
             app:key="TypeNewsContent"
             app:title="Выбор отображения"
             app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Оффлайн режим">
+
+        <SwitchPreferenceCompat
+            app:key="OfflineMode"
+            app:title="Оффлайн режим" />
+
+        <CheckBoxPreference
+            app:key="AutomaticDownload"
+            app:summaryOff="Активируйте, чтобы новости загружались автоматически"
+            app:summaryOn="Новости загружаются автоматически"
+            app:title="Загружать автоматически"
+            app:defaultValue="true"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Заметки">
+        <SwitchPreferenceCompat
+            app:key="notPsw"
+            app:title="Аунтефикация на заметки" />
+
+        <EditTextPreference
+            android:key="PSW_Notes"
+            android:inputType = "numberPassword"
+            android:title="Изменить пароль"
+            android:dependency="notPsw"
+            android:imeOptions="flagNoExtractUi"
+            />
 
     </PreferenceCategory>
 
@@ -46,34 +76,7 @@
             android:dependency="notification"
             app:defaultValue="true"/>
     </PreferenceCategory>
-    <PreferenceCategory app:title="Заметки">
-        <SwitchPreferenceCompat
-            app:key="notPsw"
-            app:title="Пароль на заметки" />
 
-        <EditTextPreference
-            android:key="PSW_Notes"
-            android:inputType = "numberPassword"
-            android:title="Изменить пароль"
-            android:dependency="notPsw"
-            android:imeOptions="flagNoExtractUi"
-            />
-
-    </PreferenceCategory>
-
-    <PreferenceCategory app:title="Оффлайн режим">
-
-        <SwitchPreferenceCompat
-            app:key="OfflineMode"
-            app:title="Оффлайн режим" />
-
-        <CheckBoxPreference
-            app:key="AutomaticDownload"
-            app:summaryOff="Активируйте, чтобы новости загружались автоматически"
-            app:summaryOn="Новости загружаются автоматически"
-            app:title="Загружать автоматически" />
-
-    </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/sync_header">
 

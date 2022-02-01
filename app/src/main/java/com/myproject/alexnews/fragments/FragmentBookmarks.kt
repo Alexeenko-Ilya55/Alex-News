@@ -23,12 +23,9 @@ import com.myproject.alexnews.databinding.FragmentBookmarksBinding
 import com.myproject.alexnews.model.Article
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
+class FragmentBookmarks : Fragment() {
 
-class FragmentBookmarks() : Fragment() {
-
-    private var dataList: MutableList<Article> = mutableListOf()
     lateinit var binding: FragmentBookmarksBinding
 
     private lateinit var adapter: RecyclerAdapter

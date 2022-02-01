@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -51,34 +52,13 @@ class FragmentMyNews : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         activity!!.setTitle(R.string.app_name)
-        ps = PreferenceManager.getDefaultSharedPreferences(context!!)
+        val ps = PreferenceManager.getDefaultSharedPreferences(context!!)
 
         headlinesType = ps.getString("TypeNewsContent", "").toString()
         countryIndex = ps.getString("country", "").toString()
         binding = FragmentMyNewsBinding.inflate(inflater, container, false)
-
-        val database = AppDataBase.buildsDatabase(context!!, DATABASE_NAME)
-        repository = ArticleRepositoryImpl(database.ArticleDao())
-
         refreshInit()
         return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        arguments?.takeIf { it.containsKey(ARG_OBJECT) }?.apply {
-            position = getInt(ARG_OBJECT)
-            when (position) {
-                0 -> updateInfo("MyNews")
-                1 -> updateInfo("Technologies")
-                2 -> updateInfo("Sports")
-                3 -> updateInfo("Business")
-                4 -> updateInfo("Global")
-                5 -> updateInfo("Health")
-                6 -> updateInfo("Science")
-                7 -> updateInfo("Enter")
-            }
-        }
-
     }
 
     private fun refreshInit() {
@@ -99,11 +79,10 @@ class FragmentMyNews : Fragment() {
             adapter.notifyDataSetChanged()
             rcView.adapter = adapter
             recView = rcView
-            if (ps.getBoolean("AutomaticDownload", false)){
-               if(position<1)
-                   insertArticles(dataLister)
-            }
-            else deleteAllFromDatabase()
+            if (ps.getBoolean("AutomaticDownload", false) &&
+                    !ps.getBoolean("OfflineMode",false))
+               if(position > 1) deleteAllFromDatabase()
+                insertArticles(dataLister)
         }
     }
 
@@ -139,7 +118,6 @@ class FragmentMyNews : Fragment() {
             apiRequest(url, false)
         }
     }
-
 
     private fun apiRequest(url: String, update: Boolean) {
         lifecycleScope.launch(Dispatchers.IO) {

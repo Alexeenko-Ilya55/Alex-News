@@ -16,12 +16,12 @@ class FirebaseDB (){
             val uid = auth.currentUser?.uid.toString()
             val dataMap = mutableMapOf<String, Any>()
             dataMap[TITLE] = data.title
-            dataMap[DESCRIPTION] = data.description
+            dataMap[DESCRIPTION] = data.description.toString()
             dataMap[URL] = data.url
-            dataMap[URLTOIMAGE] = data.urlToImage
+            dataMap[URLTOIMAGE] = data.urlToImage.toString()
             dataMap[PUBLISHEDAT] = data.publishedAt
             dataMap[BOOKMARKENABLE] = data.bookmarkEnable
-            dataMap[NOTE] = data.notes
+            dataMap[NOTE] = data.notes.toString()
 
             val str = data.url.filter { it.isLetterOrDigit() }
 

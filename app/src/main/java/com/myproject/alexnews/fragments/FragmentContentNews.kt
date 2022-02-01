@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
-import android.hardware.biometrics.BiometricPrompt
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -21,13 +20,13 @@ import com.myproject.alexnews.R
 import com.myproject.alexnews.dao.FirebaseDB
 import com.myproject.alexnews.databinding.FragmentContentNewsBinding
 import com.myproject.alexnews.model.Article
-import java.util.concurrent.AbstractExecutorService
 import java.util.concurrent.Executor
 
 
-class FragmentContentNews(private val data: Article) : Fragment() {
+class FragmentContentNews(private val urlPage: String, val data: Article) : Fragment() {
 
     lateinit var binding: FragmentContentNewsBinding
+
     private lateinit var auth: FirebaseAuth
     private val db = FirebaseDB()
     private lateinit var ps: SharedPreferences
@@ -45,15 +44,17 @@ class FragmentContentNews(private val data: Article) : Fragment() {
         binding = FragmentContentNewsBinding.inflate(inflater, container, false)
 
         ps = PreferenceManager.getDefaultSharedPreferences(context!!)
+
         activity!!.setTitle(R.string.News)
         setHasOptionsMenu(true)
         auth = Firebase.auth
         auth.currentUser
 
+
         binding.apply {
             WebView.webViewClient = WebViewClient()
             WebView.apply {
-                WebView.loadUrl(myUrl)
+                WebView.loadUrl(urlPage)
                 settings.safeBrowsingEnabled = true
                 settings.javaScriptEnabled = true
                 WebView.doOnAttach { }
@@ -62,7 +63,7 @@ class FragmentContentNews(private val data: Article) : Fragment() {
             floatingActionButton.setOnClickListener {
                 val shareIntent = Intent().apply {
                     this.action = Intent.ACTION_SEND
-                    this.putExtra(Intent.EXTRA_TEXT, myUrl)
+                    this.putExtra(Intent.EXTRA_TEXT, urlPage)
                     this.type = "text/plain"
                 }
                 startActivity(shareIntent)

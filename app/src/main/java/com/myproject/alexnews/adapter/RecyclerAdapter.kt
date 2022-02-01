@@ -2,7 +2,9 @@ package com.myproject.alexnews.adapter
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,9 +17,9 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.ARTICLE_LIST
-import com.myproject.alexnews.`object`.Settings.offlineMode
 import com.myproject.alexnews.dao.FirebaseDB
-import com.myproject.alexnews.fragments.*
+import com.myproject.alexnews.fragments.FragmentContentNews
+import com.myproject.alexnews.fragments.FragmentContentNewsOffline
 import com.myproject.alexnews.model.Article
 import com.squareup.picasso.Picasso
 
@@ -36,6 +38,7 @@ class RecyclerAdapter(
         val time = item.findViewById<TextView>(R.id.time)
         val imageNews = item.findViewById<ImageView>(R.id.imageNews)
         val bookmarks = item.findViewById<ImageButton>(R.id.Bookmark_Item_Button)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerHolder {
@@ -74,6 +77,7 @@ class RecyclerAdapter(
                 } else
                     openFragment(FragmentContentNews(data))
             }
+
         }
     }
 
@@ -88,7 +92,7 @@ class RecyclerAdapter(
                         data.publishedAt.substringAfter('-').substringBeforeLast('-')
                     ) + " в " + data.publishedAt.substring(11).substringBeforeLast(':')
 
-            if (data.urlToImage != "")
+            if (data.urlToImage != null && data.urlToImage != "")
                 Picasso.get().load(data.urlToImage).into(imageNews)
             else
                 imageNews.setImageResource(R.drawable.no_image)
@@ -119,7 +123,7 @@ class RecyclerAdapter(
         notifyDataSetChanged()
     }
 
-    private fun openFragment(fragment:Fragment) {
+    private fun openFragment(fragment: Fragment) {
         parentFM.beginTransaction().addToBackStack(null)
             .replace(R.id.fragment_container, fragment).commit()
     }
@@ -141,5 +145,4 @@ class RecyclerAdapter(
         }
         return "Ошибка"
     }
-
 }
