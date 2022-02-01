@@ -84,9 +84,11 @@ class FragmentMyNews : Fragment() {
                 recView = rcView
                 if (ps.getBoolean("AutomaticDownload", false) &&
                     !ps.getBoolean("OfflineMode", false)
-                )
-                    if (position > 1) deleteAllFromDatabase()
-                insertArticles(dataLister)
+                ) {
+                    if (position > 1)
+                        insertArticles(dataLister)
+                }
+                else deleteAllFromDatabase()
             }
         }
     }

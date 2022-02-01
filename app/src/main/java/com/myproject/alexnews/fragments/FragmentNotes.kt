@@ -66,7 +66,6 @@ class FragmentNotes : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
     private fun takeFromFB(){
-        Log.d("MyLog",sp.getBoolean("OfflineMode", false).toString())
         if(sp.getBoolean("OfflineMode", false))
             initAdapter(ARTICLE_LIST)
         else {
