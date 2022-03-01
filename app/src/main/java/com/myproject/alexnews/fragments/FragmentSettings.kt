@@ -12,12 +12,9 @@ class FragmentSettings : PreferenceFragmentCompat() {
 
     @SuppressLint("RestrictedApi")
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-        activity!!.setTitle(R.string.menu_Settings)
+        requireActivity().setTitle(R.string.menu_Settings)
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         setHasOptionsMenu(true)
-        preferenceScreen.setOnExpandButtonClickListener {
-            Toast.makeText(context, "hello", Toast.LENGTH_SHORT).show()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

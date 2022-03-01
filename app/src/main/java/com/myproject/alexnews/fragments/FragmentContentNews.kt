@@ -12,14 +12,18 @@ import android.widget.EditText
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnAttach
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
+import com.myproject.alexnews.`object`.NOPASSWORD
+import com.myproject.alexnews.`object`.PASSWORD_NOTES
 import com.myproject.alexnews.dao.FirebaseDB
 import com.myproject.alexnews.databinding.FragmentContentNewsBinding
 import com.myproject.alexnews.model.Article
+import com.myproject.alexnews.viewModels.FragmentContentNewsViewModel
 import java.util.concurrent.Executor
 
 
@@ -35,6 +39,7 @@ class FragmentContentNews(val data: Article) : Fragment() {
     lateinit var executor: Executor
     lateinit var biometricPrompt: androidx.biometric.BiometricPrompt
     lateinit var promptInfo: androidx.biometric.BiometricPrompt.PromptInfo
+    lateinit var viewModel: FragmentContentNewsViewModel
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(
@@ -43,12 +48,14 @@ class FragmentContentNews(val data: Article) : Fragment() {
     ): View? {
         binding = FragmentContentNewsBinding.inflate(inflater, container, false)
 
-        ps = PreferenceManager.getDefaultSharedPreferences(context!!)
+        viewModel = ViewModelProvider(this)[FragmentContentNewsViewModel::class.java]
+        ps = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
-        activity!!.setTitle(R.string.News)
+        requireActivity().setTitle(R.string.News)
         setHasOptionsMenu(true)
         auth = Firebase.auth
         auth.currentUser
+        viewModel.init(db)
 
 
         binding.apply {
@@ -69,8 +76,7 @@ class FragmentContentNews(val data: Article) : Fragment() {
                 startActivity(shareIntent)
             }
             binding.NotesButton.setOnClickListener {
-
-                if (ps.getBoolean("notPsw", false) && data.notes !="") {
+                if (ps.getBoolean(NOPASSWORD, false) && data.notes !="") {
                     authTouchId()
                 }
                 else
@@ -88,16 +94,15 @@ class FragmentContentNews(val data: Article) : Fragment() {
             editText.setText(data.notes)
             with(builder) {
                 setTitle(R.string.menu_Notes)
-                setPositiveButton("ОК") { dialog, which ->
+                setPositiveButton(getString(R.string.ok)) { dialog, which ->
                     if (!(editText.text.toString() == "" && editText.text == null)) {
                         data.notes = editText.text.toString()
                         if (!data.bookmarkEnable) data.bookmarkEnable = true
-                        db.deleteFromFB(data.url)
-                        db.addToFirebase(data)
+                        viewModel.deleteFromFirebase(data.url)
+                        viewModel.addToFirebase(data)
                     }
                 }
-                setNegativeButton("Назад") { dialog, which ->
-                    Log.e("MyLog", "CloseEditText")
+                setNegativeButton(getString(R.string.goBack)) { dialog, which -> // TODO:  
                 }
                 setView(dialogLayout)
                 show()
@@ -109,14 +114,14 @@ class FragmentContentNews(val data: Article) : Fragment() {
             val dialogLayout = inflater.inflate(R.layout.edit_password_dialog, null)
             val editText = dialogLayout.findViewById<EditText>(R.id.myPassword)
             with(builder) {
-                setTitle("Введите пароль")
-                setPositiveButton("ОК") { dialog, which ->
-                        if (editText.text.toString() == ps.getString("PSW_Notes", ""))
+                setTitle(getString(R.string.InputPassword))
+                setPositiveButton(getString(R.string.ok)) { dialog, which ->
+                        if (editText.text.toString() == ps.getString(PASSWORD_NOTES, ""))
                             showEditTextNotes()
                         else
                             showEditTextPassword()
                 }
-                setNegativeButton("Назад") { dialog, which ->
+                setNegativeButton(getString(R.string.goBack)) { dialog, which ->
                         Log.e("MyLog", "CloseEditText")
                 }
                 setView(dialogLayout)
@@ -148,15 +153,15 @@ class FragmentContentNews(val data: Article) : Fragment() {
         data.bookmarkEnable = !data.bookmarkEnable
         if (data.bookmarkEnable) {
             item.setIcon(R.drawable.bookmark_enable_icon_item)
-            db.addToFirebase(data)
+            viewModel.addToFirebase(data)
         } else {
             item.setIcon(R.drawable.bookmark_action_bar_content)
-            db.deleteFromFB(data.url)
+            viewModel.deleteFromFirebase(data.url)
         }
     }
 
     private fun authTouchId(){
-        executor = ContextCompat.getMainExecutor(context!!)
+        executor = ContextCompat.getMainExecutor(requireContext())
         biometricPrompt = androidx.biometric.BiometricPrompt(this,executor,object :androidx.biometric.BiometricPrompt.AuthenticationCallback(){
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                 super.onAuthenticationError(errorCode, errString)
@@ -164,7 +169,6 @@ class FragmentContentNews(val data: Article) : Fragment() {
             }
             override fun onAuthenticationFailed() {
                 super.onAuthenticationFailed()
-                Log.d("MyLog","failed")
             }
             override fun onAuthenticationSucceeded(result: androidx.biometric.BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
@@ -172,8 +176,8 @@ class FragmentContentNews(val data: Article) : Fragment() {
             }
         })
         promptInfo = androidx.biometric.BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Биометрическая аунтефикация")
-            .setNegativeButtonText("Ввести пароль")
+            .setTitle(getString(R.string.Biometric_auth))
+            .setNegativeButtonText(getString(R.string.InputYourPassword))
             .build()
         biometricPrompt.authenticate(promptInfo)
     }

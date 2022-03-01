@@ -17,6 +17,19 @@ const val CATEGORY_SCIENCE = "category=science"
 const val CATEGORY_SPORTS = "category=sports"
 const val CATEGORY_TECHNOLOGY = "category=technology"
 const val CATEGORY_ENTERTAINMENT = "category=entertainment"
+const val CATEGORY_MYNEWS = "category=myNews"
+
+const val OFFLINE_MODE = "OfflineMode"
+const val DARK_MODE = "DarkMode"
+
+const val CONNECTION = "Связь"
+
+const val POSITION_VIEW_PAGER = "position"
+const val URIEMAIL= "mailto:alexeenko.ilya55@gmail.com"
+
+
+
+
 
 const val CHANNEL_ID = "myChannel"
 lateinit var REF_DATABASE_ROOT: DatabaseReference
@@ -35,9 +48,43 @@ const val BOOKMARKENABLE = "bookmarkEnable"
 
 const val TABLE_NAME = "News"
 const val DATABASE_NAME = "AlexNews"
+const val AUTOMATIC_DOWNLOAD = "AutomaticDownload"
+const val COUNTRY = "country"
+const val TYPENEWS = "TypeNewsContent"
+const val NOPASSWORD = "notPassword"
+const val PASSWORD_NOTES = "Password_Notes"
+
+const val ARG_OBJECT = "object"
 
 val ARTICLE_LIST: MutableList<Article> = mutableListOf()
 
 fun initFirebase() {
     REF_DATABASE_ROOT = FirebaseDatabase.getInstance().reference
+}
+
+
+enum class Page(val index:Int){
+    categoryMyNews(0),
+    categoryTechnology(1),
+    categorySports(2),
+    categoryBusiness(3),
+    categoryGlobal(4),
+    categoryHealth(5),
+    categoryScience(6),
+    categoryEntertainment(7)
+}
+
+enum class Month(val index: Int){
+    january(1),
+    february(2),
+    march(3),
+    april(4),
+    may(5),
+    june(6),
+    july(7),
+    august(8),
+    september(9),
+    october(10),
+    november(11),
+    december(12)
 }

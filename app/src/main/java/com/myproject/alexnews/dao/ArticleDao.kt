@@ -14,8 +14,8 @@ interface ArticleDao {
     suspend fun insert(article: Article)
 
     @Query("SELECT * FROM $TABLE_NAME")
-    suspend fun getAllArticles():MutableList<Article>
+     suspend fun getAllArticles():List<Article>
 
     @Query("DELETE FROM $TABLE_NAME")
-    suspend fun deleteAll()
+     suspend fun deleteAll()
 }

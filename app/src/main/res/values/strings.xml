@@ -30,9 +30,12 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="error_authentication">Ошибка аунтефикации, пgпробуйте еще раз</string>
 
     <string name="open">Open</string>
     <string name="close">Close</string>
+    <string name="goBack">Назад</string>
+    <string name="ok">ОК</string>
     <string name="Bookmark">Закладки</string>
     <string name="changeMyNews" tools:ignore="ExtraTranslation">Изменить Мои новости</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -64,6 +67,10 @@
     <string name="message">Сообщение</string>
     <string name="Sent">Отправить</string>
     <string name="No_internet">Отсуствует подключение к интернету. Активируйте оффлайн режим </string>
+    <string name="No_data">По данному запросу ничего не найдено </string>
+    <string name="Biometric_auth">Биометрическая аунтефикация</string>
+    <string name="Sources_nameMistake">Неправильно введено имя источника </string>
+
 
 
     //From classes
@@ -73,8 +80,29 @@
     <string name="logOut">Выйти из аккаунта</string>
     <string name="youLogOut">Вы вышли из своего аккаунта</string>
     <string name="adding_notes">Здесь вы можете оставить заметку</string>
-    <string name="InputPsw">Введите пароль</string>
+    <string name="InputPassword">Введите пароль</string>
+    <string name="InputYourPassword">Ввеcти пароль</string>
     <string name="Offline_mode">Оффлайн режим</string>
+
+    <string name="january">января</string>
+    <string name="february">февраля</string>
+    <string name="march">марта</string>
+    <string name="april">апреля</string>
+    <string name="may">мая</string>
+    <string name="june">июня</string>
+    <string name="july">июля</string>
+    <string name="august">августа</string>
+    <string name="september">сентября</string>
+    <string name="october">октября</string>
+    <string name="november">ноября</string>
+    <string name="december">декабря</string>
+
+    <string name="error"> Ошибка </string>
+
+
+
+
+
 
 
 </resources>

@@ -3,22 +3,22 @@ package com.myproject.alexnews.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import com.myproject.alexnews.`object`.TABLE_NAME
+import com.myproject.alexnews.`object`.*
 
 @Entity(
     tableName = TABLE_NAME
 )
 data class Article(
-    @SerializedName("description")
+    @SerializedName(DESCRIPTION)
     var description: String?="",
-    @SerializedName("publishedAt")
+    @SerializedName(PUBLISHEDAT)
     var publishedAt: String="",
-    @SerializedName("title")
+    @SerializedName(TITLE)
     var title: String="",
     @PrimaryKey
-    @SerializedName("url")
+    @SerializedName(URL)
     var url: String="",
-    @SerializedName("urlToImage")
+    @SerializedName(URLTOIMAGE)
     var urlToImage: String?="",
 
     var notes:String?= "",

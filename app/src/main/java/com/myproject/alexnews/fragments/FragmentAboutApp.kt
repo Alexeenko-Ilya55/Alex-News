@@ -16,6 +16,6 @@ class FragmentAboutApp : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? = FragmentAboutAppBinding.inflate(inflater, container, false).apply {
-        activity!!.setTitle(R.string.menu_about_app)
+        requireActivity().setTitle(R.string.menu_about_app)
     }.root
 }

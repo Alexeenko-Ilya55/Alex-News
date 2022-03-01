@@ -1,13 +1,11 @@
 package com.myproject.alexnews.activity
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.drawable.BitmapDrawable
-import android.os.Build.ID
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -19,8 +17,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -31,25 +27,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 
 import com.myproject.alexnews.R
-import com.myproject.alexnews.`object`.*
 import com.myproject.alexnews.`object`.*
 
 import com.myproject.alexnews.databinding.ActivityMainBinding
 import com.myproject.alexnews.fragments.*
-import com.myproject.alexnews.service.NotificationReceiver
 import java.util.*
-import com.myproject.alexnews.model.Article
-import com.squareup.picasso.Picasso
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.milliseconds
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     SharedPreferences.OnSharedPreferenceChangeListener {
@@ -71,23 +55,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         actionBarInit()
         signInAccountInit()
         initFirebase()
-        initNotification()
 
         fragmentMain = FragmentMain()
         fragmentMain.arguments = Bundle().apply {
-            putInt("Pos", 0)
+            putInt(POSITION_VIEW_PAGER, Page.categoryMyNews.index)
         }
         if(savedInstanceState == null) {
             fragmentCheckOnlineMode()
         }
-    }
-
-    private fun initNotification() {
-        val calendar = Calendar.getInstance()
-        val intent = Intent(this, NotificationReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(this,100,intent,PendingIntent.FLAG_UPDATE_CURRENT)
-        val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP,calendar.timeInMillis,AlarmManager.INTERVAL_DAY,pendingIntent)
     }
 
     private fun signInAccountInit(){
@@ -101,7 +76,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     firebaseAuthWithGoogle(account.idToken!!)
                 }
             } catch (e: ApiException) {
-                Toast.makeText(this,"Error, try again",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this,getString(R.string.error_authentication),Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -178,28 +153,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.menuNotes -> openFragment(FragmentNotes())
             R.id.menuBookmarks -> openFragment(FragmentBookmarks())
             R.id.menuSettings -> openFragment(FragmentSettings())
-            R.id.categoryGlobal -> if(!sp.getBoolean("OfflineMode", false)) fragmentMain.navVP(4)
-                                    else openFragment(FragmentOffline())
-            R.id.categoryBusiness -> if(!sp.getBoolean("OfflineMode", false)) fragmentMain.navVP(3)
-                                        else openFragment(FragmentOffline())
-            R.id.categoryHealth -> if(!sp.getBoolean("OfflineMode", false)) fragmentMain.navVP(5)
-                                    else openFragment(FragmentOffline())
-            R.id.categoryMyNews -> if(!sp.getBoolean("OfflineMode", false)) fragmentMain.navVP(0)
-                                    else openFragment(FragmentOffline())
-            R.id.categoryEntertainment -> if(!sp.getBoolean("OfflineMode", false)) fragmentMain.navVP(7)
-                                            else openFragment(FragmentOffline())
-            R.id.categoryScience -> if(!sp.getBoolean("OfflineMode", false)) fragmentMain.navVP(6)
-                                        else openFragment(FragmentOffline())
-            R.id.categorySport -> if(!sp.getBoolean("OfflineMode", false)) fragmentMain.navVP(2)
-                                    else openFragment(FragmentOffline())
-            R.id.categoryTechnologies -> if(!sp.getBoolean("OfflineMode", false)) fragmentMain.navVP(1)
-                                    else openFragment(FragmentOffline())
+            R.id.categoryGlobal -> checkOfflineMode(Page.categoryGlobal.index)
+            R.id.categoryBusiness -> checkOfflineMode(Page.categoryBusiness.index)
+            R.id.categoryHealth -> checkOfflineMode(Page.categoryHealth.index)
+            R.id.categoryMyNews -> checkOfflineMode(Page.categoryMyNews.index)
+            R.id.categoryEntertainment -> checkOfflineMode(Page.categoryEntertainment.index)
+            R.id.categoryScience -> checkOfflineMode(Page.categoryScience.index)
+            R.id.categorySport -> checkOfflineMode(Page.categorySports.index)
+            R.id.categoryTechnologies -> checkOfflineMode(Page.categoryTechnology.index)
             R.id.aboutApp -> openFragment(FragmentAboutApp())
             R.id.messageProgrammer -> openFragment(FragmentMessageToProgrammer())
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun checkOfflineMode(position: Int){
+        if(!sp.getBoolean(OFFLINE_MODE, false)) fragmentMain.navigationViewPager(position)
+        else openFragment(FragmentOffline())
     }
 
     private fun openFragment(fragment: Fragment) {
@@ -209,13 +181,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .replace(R.id.fragment_container, fragment)
             .commit()
     }
-
     override fun onSharedPreferenceChanged(sp: SharedPreferences?, key: String?) {
-        if (key == "DarkMode") {
-            when (sp?.getBoolean("DarkMode", false)) {
-                true -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                false -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
+        if (key == DARK_MODE) {
+            if (sp?.getBoolean(DARK_MODE, false)!!)
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            else
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
     }
 
@@ -225,6 +196,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onDestroy()
     }
 
+    // вынести из активити
     private fun getClient(): GoogleSignInClient {
         val gso = GoogleSignInOptions
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -250,7 +222,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
     private fun fragmentCheckOnlineMode(){
-        if (sp.getBoolean("OfflineMode", false))
+        if (sp.getBoolean(OFFLINE_MODE, false))
             openFragment(FragmentOffline())
         else {
             openFragment(fragmentMain)

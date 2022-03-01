@@ -6,12 +6,13 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.ARTICLE_LIST
+import com.myproject.alexnews.`object`.Month
 import com.myproject.alexnews.databinding.FragmentContentNewsOfflineBinding
 import com.myproject.alexnews.model.Article
 import com.squareup.picasso.Picasso
 
 
-class FragmentContentNewsOffline(val data: Article) : Fragment() {
+class FragmentContentNewsOffline(private val data: Article) : Fragment() {
 
     lateinit var binding : FragmentContentNewsOfflineBinding
 
@@ -21,7 +22,7 @@ class FragmentContentNewsOffline(val data: Article) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentContentNewsOfflineBinding.inflate(inflater,container,false)
-        activity!!.setTitle(R.string.News)
+        requireActivity().setTitle(R.string.News)
         setHasOptionsMenu(true)
 
         binding.apply{
@@ -41,22 +42,22 @@ class FragmentContentNewsOffline(val data: Article) : Fragment() {
         }
         return binding.root
     }
-    private fun month(monthNumber: String): String {
+     private fun month(monthNumber: String): String {
         when (monthNumber.toInt()) {
-            1 -> return "января"
-            2 -> return "февраля"
-            3 -> return "марта"
-            4 -> return "апреля"
-            5 -> return "мая"
-            6 -> return "июня"
-            7 -> return "июля"
-            8 -> return "августа"
-            9 -> return "сентября"
-            10 -> return "октября"
-            11 -> return "ноября"
-            12 -> return "декабря"
+            Month.january.index -> return getString(R.string.january)
+            Month.february.index -> return getString(R.string.february)
+            Month.march.index -> return getString(R.string.march)
+            Month.april.index -> return getString(R.string.april)
+            Month.may.index -> return getString(R.string.may)
+            Month.june.index -> return getString(R.string.june)
+            Month.july.index -> return getString(R.string.july)
+            Month.august.index -> return getString(R.string.august)
+            Month.september.index -> return getString(R.string.september)
+            Month.october.index -> return getString(R.string.october)
+            Month.november.index -> return getString(R.string.november)
+            Month.december.index -> return getString(R.string.december)
         }
-        return "Ошибка"
+        return getString(R.string.error)
     }
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.fragment_content_news_menu, menu)

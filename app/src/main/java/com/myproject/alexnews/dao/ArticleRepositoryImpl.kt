@@ -4,12 +4,12 @@ import com.myproject.alexnews.model.Article
 
 class ArticleRepositoryImpl(private val articleDao: ArticleDao) : ArticleRepository {
 
-    override suspend fun insert(articleList: MutableList<Article>) {
-        for(i in 0 until articleList.size)
-        articleDao.insert(articleList[i])
+    override suspend  fun insert(articleList: List<Article>) {
+        for(element in articleList)
+        articleDao.insert(element)
     }
 
-    override suspend fun getAllPersons() = articleDao.getAllArticles()
+    override suspend  fun  getAllPersons() = articleDao.getAllArticles()
 
     override suspend fun deleteAll() {
         articleDao.deleteAll()

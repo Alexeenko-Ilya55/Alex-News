@@ -1,13 +1,17 @@
 package com.myproject.alexnews.adapter
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.SharedPreferences
+import android.provider.Settings.Global.getString
+import android.provider.Settings.Secure.getString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.preference.PreferenceManager
@@ -17,15 +21,21 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.ARTICLE_LIST
+import com.myproject.alexnews.`object`.DARK_MODE
+import com.myproject.alexnews.`object`.Month
+import com.myproject.alexnews.`object`.OFFLINE_MODE
+import com.myproject.alexnews.activity.MainActivity
 import com.myproject.alexnews.dao.FirebaseDB
 import com.myproject.alexnews.fragments.FragmentContentNews
 import com.myproject.alexnews.fragments.FragmentContentNewsOffline
 import com.myproject.alexnews.model.Article
 import com.squareup.picasso.Picasso
+import kotlin.coroutines.coroutineContext
 
 class RecyclerAdapter(
-    private val articleList: MutableList<Article>,
-    private val parentFM: FragmentManager
+    private val articleList: List<Article>,
+    private val parentFM: FragmentManager,
+    private val context: Context
 ) : RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder>() {
 
     lateinit var v: View
@@ -58,7 +68,7 @@ class RecyclerAdapter(
 
             bookmarks.setOnClickListener {
                 data.bookmarkEnable = !data.bookmarkEnable
-                if(sp.getBoolean("OfflineMode",false)){
+                if(sp.getBoolean(OFFLINE_MODE,false)){
                     if (data.bookmarkEnable)
                         ARTICLE_LIST.add(data)
                     else
@@ -72,7 +82,7 @@ class RecyclerAdapter(
             }
 
             itemView.setOnClickListener {
-                if (sp.getBoolean("OfflineMode", false)) {
+                if (sp.getBoolean(OFFLINE_MODE, false)) {
                     openFragment(FragmentContentNewsOffline(data))
                 } else
                     openFragment(FragmentContentNews(data))
@@ -100,7 +110,7 @@ class RecyclerAdapter(
             if (data.bookmarkEnable)
                 bookmarks.setImageResource(R.drawable.bookmark_enable_icon_item)
             else {
-                if (ps.getBoolean("DarkMode",true))
+                if (ps.getBoolean(DARK_MODE,true))
                     bookmarks.setImageResource(R.drawable.bookmark_action_bar_content)
                 else
                     bookmarks.setImageResource(R.drawable.item_bookmark)
@@ -113,12 +123,6 @@ class RecyclerAdapter(
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setNews(list: MutableList<Article>) {
-        articleList.clear()
-        articleList.addAll(list)
-        notifyDataSetChanged()
-    }
-    @SuppressLint("NotifyDataSetChanged")
     fun update(){
         notifyDataSetChanged()
     }
@@ -130,19 +134,20 @@ class RecyclerAdapter(
 
     private fun month(monthNumber: String): String {
         when (monthNumber.toInt()) {
-            1 -> return "января"
-            2 -> return "февраля"
-            3 -> return "марта"
-            4 -> return "апреля"
-            5 -> return "мая"
-            6 -> return "июня"
-            7 -> return "июля"
-            8 -> return "августа"
-            9 -> return "сентября"
-            10 -> return "октября"
-            11 -> return "ноября"
-            12 -> return "декабря"
+            Month.january.index -> return context.getString(R.string.january)
+            Month.february.index -> return context.getString(R.string.february)
+            Month.march.index -> return context.getString(R.string.march)
+            Month.april.index -> return context.getString(R.string.april)
+            Month.may.index -> return context.getString(R.string.may)
+            Month.june.index -> return context.getString(R.string.june)
+            Month.july.index -> return context.getString(R.string.july)
+            Month.august.index -> return context.getString(R.string.august)
+            Month.september.index -> return context.getString(R.string.september)
+            Month.october.index -> return context.getString(R.string.october)
+            Month.november.index -> return context.getString(R.string.november)
+            Month.december.index -> return context.getString(R.string.december)
         }
-        return "Ошибка"
+        return context.getString(R.string.error)
     }
+
 }

@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.myproject.alexnews.R
+import com.myproject.alexnews.`object`.POSITION_VIEW_PAGER
 import com.myproject.alexnews.adapter.ViewPagerAdapter
 import com.myproject.alexnews.databinding.FragmentMainBinding
 import kotlin.properties.Delegates
@@ -19,33 +20,33 @@ class FragmentMain() : Fragment() {
     private lateinit var viewPagerAdapter: ViewPagerAdapter
     lateinit var binding: FragmentMainBinding
     var myPosition by Delegates.notNull<Int>()
-    private val tabNames: Array<String> = arrayOf(
-        "Мои новости",
-        "Технологии",
-        "Спорт",
-        "Бизнес",
-        "Мировые",
-        "Здоровье",
-        "Наука",
-        "Развлечения"
-    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        myPosition = arguments!!.getInt("Pos")
-        activity!!.setTitle(R.string.app_name)
+        myPosition = requireArguments().getInt(POSITION_VIEW_PAGER)
+        requireActivity().setTitle(R.string.app_name)
         binding = FragmentMainBinding.inflate(inflater, container, false)
 
         viewPagerAdapter = ViewPagerAdapter(context as FragmentActivity)
         binding.viewPager.adapter = viewPagerAdapter
         binding.viewPager.offscreenPageLimit = 7
 
+        val tabNames: Array<String> = arrayOf(
+            getString(R.string.menu_category_MyNews),
+            getString(R.string.menu_category_Technologies),
+            getString(R.string.menu_category_Sport),
+            getString(R.string.menu_category_Business),
+            getString(R.string.menu_category_Global),
+            getString(R.string.menu_category_Health),
+            getString(R.string.menu_category_Science),
+            getString(R.string.menu_category_Entertainment)
+        )
+
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
             tab.text = tabNames[position]
         }.attach()
-
         return binding.root
     }
 
@@ -53,13 +54,13 @@ class FragmentMain() : Fragment() {
         if (myPosition != 0) binding.viewPager.setCurrentItem(myPosition, true)
     }
 
-    fun navVP(pos: Int) {
+    fun navigationViewPager(positionViewPager: Int) {
         if (this.isVisible)
-            binding.viewPager.setCurrentItem(pos, true)
+            binding.viewPager.setCurrentItem(positionViewPager, true)
         else {
             val fragment = FragmentMain()
             fragment.arguments = Bundle().apply {
-                putInt("Pos",pos)
+                putInt(POSITION_VIEW_PAGER,positionViewPager)
             }
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment).commit()

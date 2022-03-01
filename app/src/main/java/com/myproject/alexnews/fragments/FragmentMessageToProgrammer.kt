@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.myproject.alexnews.`object`.CONNECTION
+import com.myproject.alexnews.`object`.URIEMAIL
 import com.myproject.alexnews.databinding.FragmentMessegetoProgrammerBinding
 
 class FragmentMessageToProgrammer : Fragment() {
@@ -18,14 +20,14 @@ class FragmentMessageToProgrammer : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMessegetoProgrammerBinding.inflate(inflater, container, false)
-        activity!!.setTitle("Связь")
+        requireActivity().title = CONNECTION
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
             btnSent.setOnClickListener {
-                val email = Intent(Intent.ACTION_VIEW, Uri.parse("mailto:alexeenko.ilya55@gmail.com"));
+                val email = Intent(Intent.ACTION_VIEW, Uri.parse(URIEMAIL));
                 email.putExtra(Intent.EXTRA_SUBJECT, subject.text.toString());
                 email.putExtra(Intent.EXTRA_TEXT, message.text.toString());
                 startActivity(email)
