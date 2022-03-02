@@ -8,12 +8,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myproject.alexnews.R
 import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentMyNewsBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentMyNewsViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 class FragmentMyNews : Fragment() {
 
@@ -30,9 +32,11 @@ class FragmentMyNews : Fragment() {
         viewModel = ViewModelProvider(this)[FragmentMyNewsViewModel::class.java]
         refreshInit()
         viewModel.loadNews(requireArguments(),requireContext())
-        viewModel.news.observe(viewLifecycleOwner, Observer {
-            init(it)
-        })
+        lifecycleScope.launchWhenStarted {
+            viewModel.news.collectLatest {
+                init(it)
+            }
+        }
         return binding.root
     }
 

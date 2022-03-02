@@ -28,6 +28,7 @@ import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentNotesViewModel
 import com.myproject.alexnews.viewModels.FragmentOfflineViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -48,9 +49,11 @@ class FragmentNotes : Fragment() {
         binding = FragmentNotesBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this)[FragmentNotesViewModel::class.java]
         viewModel.loadNews()
-        viewModel.news.observe(viewLifecycleOwner, Observer {
-            initAdapter(it)
-        })
+        lifecycleScope.launchWhenStarted {
+            viewModel.news.collectLatest {
+                initAdapter(it)
+            }
+        }
         return binding.root
     }
     @SuppressLint("NotifyDataSetChanged")

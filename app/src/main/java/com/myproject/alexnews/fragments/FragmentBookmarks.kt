@@ -26,6 +26,7 @@ import com.myproject.alexnews.databinding.FragmentBookmarksBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentBookmarksViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class FragmentBookmarks : Fragment() {
@@ -50,23 +51,21 @@ class FragmentBookmarks : Fragment() {
             initAdapter(ARTICLE_LIST)
         else {
             viewModel.loadNews()
-            viewModel.news.observe(viewLifecycleOwner, Observer {
-                initAdapter(it)
-            })
-        }
+            lifecycleScope.launchWhenCreated {
+                viewModel.sharedFlow.collectLatest {
+                    initAdapter(it)
+                }
+        }}
         return binding.root
     }
 
-
     @SuppressLint("NotifyDataSetChanged")
     fun initAdapter(dataList: List<Article>){
-        lifecycleScope.launch(Dispatchers.Main) {
             binding.rcViewBookmarks.layoutManager = LinearLayoutManager(context)
             adapter = RecyclerAdapter(dataList, parentFragmentManager,requireContext())
             binding.rcViewBookmarks.adapter = adapter
-            adapter.notifyDataSetChanged()
-        }
     }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.setGroupVisible(R.id.group_bookmsark, false)
         super.onCreateOptionsMenu(menu, inflater)

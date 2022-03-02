@@ -19,6 +19,7 @@ import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentBookmarksViewModel
 import com.myproject.alexnews.viewModels.FragmentOfflineViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -35,9 +36,11 @@ class FragmentOffline : Fragment() {
         binding = FragmentOfflineBinding.inflate(inflater,container,false)
         viewModel = ViewModelProvider(this)[FragmentOfflineViewModel::class.java]
         viewModel.loadNews()
-        viewModel.news.observe(viewLifecycleOwner, Observer {
-            init(it)
-        })
+        lifecycleScope.launchWhenStarted {
+            viewModel.news.collectLatest {
+                init(it)
+            }
+        }
         return binding.root
     }
 

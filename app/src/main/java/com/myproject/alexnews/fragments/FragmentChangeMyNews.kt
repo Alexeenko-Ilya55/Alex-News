@@ -26,7 +26,7 @@ class FragmentChangeMyNews : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        activity!!.setTitle(R.string.change)
+        requireActivity().setTitle(R.string.change)
         binding = FragmentChangeMyNewsBinding.inflate(inflater, container, false)
         binding.apply {
             checkBoxBusiness = ChangeMyNewsCheckBoxBusiness

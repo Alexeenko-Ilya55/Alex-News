@@ -14,6 +14,9 @@ import com.myproject.alexnews.`object`.NODE_USERS
 import com.myproject.alexnews.`object`.REF_DATABASE_ROOT
 import com.myproject.alexnews.model.Article
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class FragmentNotesViewModel : ViewModel() {
@@ -21,25 +24,27 @@ class FragmentNotesViewModel : ViewModel() {
     @SuppressLint("StaticFieldLeak")
     private lateinit var context: Context
 
-    val news: MutableLiveData<List<Article>> by lazy {
-        MutableLiveData<List<Article>>()
-    }
+    private val  _news= MutableSharedFlow<List<Article>>(replay = 1,
+        extraBufferCapacity = 0,onBufferOverflow = BufferOverflow.SUSPEND)
+    val news = _news.asSharedFlow()
 
     fun loadNews() {
         viewModelScope.launch(Dispatchers.IO) {
-            val aList: MutableList<Article> = mutableListOf()
+            val news: MutableList<Article> = mutableListOf()
             val auth = Firebase.auth
             auth.currentUser
             REF_DATABASE_ROOT.child(NODE_USERS).child(auth.currentUser?.uid.toString())
                 .addValueEventListener(object : ValueEventListener {
 
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        if (aList.size != 0) aList.clear()
+                        if (news.size != 0) news.clear()
                         snapshot.children.forEach {
                             if (it.getValue(Article::class.java)!!.notes != "")
-                                aList.add(it.getValue(Article::class.java)!!)
+                                news.add(it.getValue(Article::class.java)!!)
                         }
-                        news.value = aList
+                        viewModelScope.launch {
+                            _news.emit(news)
+                        }
                     }
 
                     override fun onCancelled(error: DatabaseError) {

@@ -19,6 +19,10 @@ import com.myproject.alexnews.dao.ArticleRepositoryImpl
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.model.DataFromApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.properties.Delegates
@@ -39,9 +43,9 @@ class FragmentMyNewsViewModel: ViewModel() {
     private lateinit var context: Context
 
 
-    val news: MutableLiveData<List<Article>> by lazy {
-        MutableLiveData<List<Article>>()
-    }
+    private val  _news= MutableSharedFlow<List<Article>>(replay = 1,
+        extraBufferCapacity = 0,onBufferOverflow = BufferOverflow.SUSPEND)
+    val news = _news.asSharedFlow()
 
     fun loadNews(position: Bundle,context: Context) {
         ps = PreferenceManager.getDefaultSharedPreferences(context)
@@ -60,7 +64,9 @@ class FragmentMyNewsViewModel: ViewModel() {
                 .getAsObject(DataFromApi::class.java, object : ParsedRequestListener<DataFromApi> {
                     @SuppressLint("NotifyDataSetChanged")
                     override fun onResponse(response: DataFromApi) {
-                        news.value = response.articles
+                        viewModelScope.launch {
+                            _news.emit(response.articles)
+                        }
                        // downloadInDatabase()
                     }
                     override fun onError(anError: ANError?) {
@@ -109,7 +115,7 @@ class FragmentMyNewsViewModel: ViewModel() {
 
     private fun extractArticles() {
         viewModelScope.launch(Dispatchers.IO) {
-            news.value = repository.getAllPersons()
+            _news.emit(repository.getAllPersons())
         }
     }
 
@@ -147,7 +153,12 @@ class FragmentMyNewsViewModel: ViewModel() {
             !ps.getBoolean(OFFLINE_MODE, false)
         ) {
             if (position == Page.categoryMyNews.index)
-                insertArticles(news.value!!)
+                deleteAllFromDatabase()
+                viewModelScope.launch {
+                    news.collectLatest {
+                        insertArticles(it)
+                    }
+                }
         } else if(!ps.getBoolean(AUTOMATIC_DOWNLOAD, false))
             deleteAllFromDatabase()
     }

@@ -9,12 +9,14 @@ import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myproject.alexnews.R
 import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentNewFromSourcesBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentNewsFromSourcesViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 
 class FragmentNewsFromSources : Fragment() {
@@ -42,10 +44,11 @@ class FragmentNewsFromSources : Fragment() {
                 return false
             }
         })
-
-        viewModel.news.observe(viewLifecycleOwner, androidx.lifecycle.Observer{
-            init(it)
-        })
+        lifecycleScope.launchWhenStarted {
+            viewModel.news.collectLatest {
+                init(it)
+            }
+        }
         return binding.root
     }
 

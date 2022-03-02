@@ -15,6 +15,8 @@ import com.myproject.alexnews.`object`.NODE_USERS
 import com.myproject.alexnews.`object`.REF_DATABASE_ROOT
 import com.myproject.alexnews.model.Article
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class FragmentBookmarksViewModel : ViewModel() {
@@ -24,6 +26,9 @@ class FragmentBookmarksViewModel : ViewModel() {
     val news: MutableLiveData<List<Article>> by lazy {
         MutableLiveData<List<Article>>()
     }
+
+    private val  _sharedFlow= MutableSharedFlow<List<Article>>()
+    val sharedFlow = _sharedFlow.asSharedFlow()
 
     fun loadNews() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -38,7 +43,9 @@ class FragmentBookmarksViewModel : ViewModel() {
                         snapshot.children.forEach {
                             aList.add(it.getValue(Article::class.java)!!)
                         }
-                        news.value = aList
+                        viewModelScope.launch {
+                            _sharedFlow.emit(aList)
+                        }
                     }
 
                     override fun onCancelled(error: DatabaseError) {

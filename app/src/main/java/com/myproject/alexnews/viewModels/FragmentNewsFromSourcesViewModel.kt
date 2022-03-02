@@ -18,14 +18,18 @@ import com.myproject.alexnews.`object`.URL_START
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.model.DataFromApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class FragmentNewsFromSourcesViewModel : ViewModel() {
     @SuppressLint("StaticFieldLeak")
     private lateinit var context: Context
-    val news: MutableLiveData<List<Article>> by lazy {
-        MutableLiveData<List<Article>>()
-    }
+
+    private val  _news= MutableSharedFlow<List<Article>>(replay = 1,
+        extraBufferCapacity = 0,onBufferOverflow = BufferOverflow.SUSPEND)
+    val news = _news.asSharedFlow()
 
     private fun loadNews(url: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -34,7 +38,9 @@ class FragmentNewsFromSourcesViewModel : ViewModel() {
                 .build()
                 .getAsObject(DataFromApi::class.java, object : ParsedRequestListener<DataFromApi> {
                     override fun onResponse(response: DataFromApi) {
-                        news.value = response.articles
+                        viewModelScope.launch {
+                            _news.emit(response.articles)
+                        }
                         if (response.articles.isEmpty()) {
                             Toast.makeText(
                                 context, R.string.Sources_nameMistake,
