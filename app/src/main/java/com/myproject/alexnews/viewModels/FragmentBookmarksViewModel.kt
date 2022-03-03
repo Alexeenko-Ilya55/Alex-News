@@ -39,7 +39,7 @@ class FragmentBookmarksViewModel : ViewModel() {
                 .addValueEventListener(object : ValueEventListener {
 
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        if (aList.size != 0) aList.clear()
+                        if (aList.isNotEmpty()) aList.clear()
                         snapshot.children.forEach {
                             aList.add(it.getValue(Article::class.java)!!)
                         }

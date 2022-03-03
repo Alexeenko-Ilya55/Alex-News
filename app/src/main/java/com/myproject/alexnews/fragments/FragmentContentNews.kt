@@ -76,10 +76,9 @@ class FragmentContentNews(val data: Article) : Fragment() {
                 startActivity(shareIntent)
             }
             binding.NotesButton.setOnClickListener {
-                if (ps.getBoolean(NOPASSWORD, false) && data.notes !="") {
+                if (ps.getBoolean(NOPASSWORD, false) && data.notes != "") {
                     authTouchId()
-                }
-                else
+                } else
                     showEditTextNotes()
             }
         }
@@ -87,47 +86,49 @@ class FragmentContentNews(val data: Article) : Fragment() {
     }
 
     private fun showEditTextNotes() {
-            val builder = AlertDialog.Builder(context)
-            val inflater = layoutInflater
-            val dialogLayout = inflater.inflate(R.layout.edit_notes_dialog, null)
-            val editText = dialogLayout.findViewById<EditText>(R.id.editTextNotes)
-            editText.setText(data.notes)
-            with(builder) {
-                setTitle(R.string.menu_Notes)
-                setPositiveButton(getString(R.string.ok)) { dialog, which ->
-                    if (!(editText.text.toString() == "" && editText.text == null)) {
-                        data.notes = editText.text.toString()
-                        if (!data.bookmarkEnable) data.bookmarkEnable = true
-                        viewModel.deleteFromFirebase(data.url)
-                        viewModel.addToFirebase(data)
-                    }
+        val builder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.edit_notes_dialog, null)
+        val editText = dialogLayout.findViewById<EditText>(R.id.editTextNotes)
+        editText.setText(data.notes)
+        with(builder) {
+            setTitle(R.string.menu_Notes)
+            setPositiveButton(getString(R.string.ok)) { dialog, which ->
+                if (!(editText.text.toString() == "" && editText.text == null)) {
+                    data.notes = editText.text.toString()
+                    if (!data.bookmarkEnable) data.bookmarkEnable = true
+                    viewModel.deleteFromFirebase(data.url)
+                    viewModel.addToFirebase(data)
                 }
-                setNegativeButton(getString(R.string.goBack)) { dialog, which -> // TODO:  
-                }
-                setView(dialogLayout)
-                show()
             }
+            setNegativeButton(getString(R.string.goBack)) { dialog, which -> // TODO:
+            }
+            setView(dialogLayout)
+            show()
+        }
     }
+
     private fun showEditTextPassword() {
-            val builder = AlertDialog.Builder(context)
-            val inflater = layoutInflater
-            val dialogLayout = inflater.inflate(R.layout.edit_password_dialog, null)
-            val editText = dialogLayout.findViewById<EditText>(R.id.myPassword)
-            with(builder) {
-                setTitle(getString(R.string.InputPassword))
-                setPositiveButton(getString(R.string.ok)) { dialog, which ->
-                        if (editText.text.toString() == ps.getString(PASSWORD_NOTES, ""))
-                            showEditTextNotes()
-                        else
-                            showEditTextPassword()
-                }
-                setNegativeButton(getString(R.string.goBack)) { dialog, which ->
-                        Log.e("MyLog", "CloseEditText")
-                }
-                setView(dialogLayout)
-                show()
+        val builder = AlertDialog.Builder(context)
+        val inflater = layoutInflater
+        val dialogLayout = inflater.inflate(R.layout.edit_password_dialog, null)
+        val editText = dialogLayout.findViewById<EditText>(R.id.myPassword)
+        with(builder) {
+            setTitle(getString(R.string.InputPassword))
+            setPositiveButton(getString(R.string.ok)) { dialog, which ->
+                if (editText.text.toString() == ps.getString(PASSWORD_NOTES, ""))
+                    showEditTextNotes()
+                else
+                    showEditTextPassword()
             }
+            setNegativeButton(getString(R.string.goBack)) { dialog, which ->
+                Log.e("MyLog", "CloseEditText")
+            }
+            setView(dialogLayout)
+            show()
+        }
     }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.fragment_content_news_menu, menu)
         menu.setGroupVisible(R.id.group_bookmsark, false)
@@ -160,34 +161,32 @@ class FragmentContentNews(val data: Article) : Fragment() {
         }
     }
 
-    private fun authTouchId(){
+    private fun authTouchId() {
         executor = ContextCompat.getMainExecutor(requireContext())
-        biometricPrompt = androidx.biometric.BiometricPrompt(this,executor,object :androidx.biometric.BiometricPrompt.AuthenticationCallback(){
-            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                super.onAuthenticationError(errorCode, errString)
-                showEditTextPassword()
-            }
-            override fun onAuthenticationFailed() {
-                super.onAuthenticationFailed()
-            }
-            override fun onAuthenticationSucceeded(result: androidx.biometric.BiometricPrompt.AuthenticationResult) {
-                super.onAuthenticationSucceeded(result)
-                showEditTextNotes()
-            }
-        })
+        biometricPrompt = androidx.biometric.BiometricPrompt(
+            this,
+            executor,
+            object : androidx.biometric.BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                    super.onAuthenticationError(errorCode, errString)
+                    showEditTextPassword()
+                }
+
+                override fun onAuthenticationFailed() {
+                    super.onAuthenticationFailed()
+                }
+
+                override fun onAuthenticationSucceeded(result: androidx.biometric.BiometricPrompt.AuthenticationResult) {
+                    super.onAuthenticationSucceeded(result)
+                    showEditTextNotes()
+                }
+            })
         promptInfo = androidx.biometric.BiometricPrompt.PromptInfo.Builder()
             .setTitle(getString(R.string.Biometric_auth))
             .setNegativeButtonText(getString(R.string.InputYourPassword))
             .build()
         biometricPrompt.authenticate(promptInfo)
     }
-
-
-
-
-
-
-
 
 
 }

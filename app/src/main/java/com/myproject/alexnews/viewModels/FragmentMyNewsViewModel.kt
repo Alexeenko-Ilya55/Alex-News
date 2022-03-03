@@ -78,7 +78,6 @@ class FragmentMyNewsViewModel: ViewModel() {
         }
     }
 
-
     fun refresh() {
         if (!ps.getBoolean(OFFLINE_MODE, false)) {
             updateInfo(category)
@@ -137,7 +136,7 @@ class FragmentMyNewsViewModel: ViewModel() {
 
     private fun categoryByPosition(position: Int) {
         when (position) {
-            Page.categoryMyNews.index -> updateInfo(CATEGORY_MYNEWS)
+            Page.сategoryMyNews.index -> updateInfo(CATEGORY_MYNEWS)
             Page.categoryTechnology.index -> updateInfo(CATEGORY_TECHNOLOGY)
             Page.categorySports.index -> updateInfo(CATEGORY_SPORTS)
             Page.categoryBusiness.index -> updateInfo(CATEGORY_BUSINESS)
@@ -152,7 +151,7 @@ class FragmentMyNewsViewModel: ViewModel() {
         if (ps.getBoolean(AUTOMATIC_DOWNLOAD, false) &&
             !ps.getBoolean(OFFLINE_MODE, false)
         ) {
-            if (position == Page.categoryMyNews.index)
+            if (position == Page.сategoryMyNews.index)
                 deleteAllFromDatabase()
                 viewModelScope.launch {
                     news.collectLatest {

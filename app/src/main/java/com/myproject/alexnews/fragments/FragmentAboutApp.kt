@@ -15,7 +15,7 @@ class FragmentAboutApp : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? = FragmentAboutAppBinding.inflate(inflater, container, false).apply {
+    ): View = FragmentAboutAppBinding.inflate(inflater, container, false).apply {
         requireActivity().setTitle(R.string.menu_about_app)
     }.root
 }

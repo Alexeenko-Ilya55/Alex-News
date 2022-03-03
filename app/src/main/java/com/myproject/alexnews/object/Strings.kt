@@ -64,7 +64,7 @@ fun initFirebase() {
 
 
 enum class Page(val index:Int){
-    categoryMyNews(0),
+    сategoryMyNews(0),
     categoryTechnology(1),
     categorySports(2),
     categoryBusiness(3),

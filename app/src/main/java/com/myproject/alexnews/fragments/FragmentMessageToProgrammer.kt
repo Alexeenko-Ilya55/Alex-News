@@ -27,9 +27,9 @@ class FragmentMessageToProgrammer : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         binding.apply {
             btnSent.setOnClickListener {
-                val email = Intent(Intent.ACTION_VIEW, Uri.parse(URIEMAIL));
-                email.putExtra(Intent.EXTRA_SUBJECT, subject.text.toString());
-                email.putExtra(Intent.EXTRA_TEXT, message.text.toString());
+                val email = Intent(Intent.ACTION_VIEW, Uri.parse(URIEMAIL))
+                email.putExtra(Intent.EXTRA_SUBJECT, subject.text.toString())
+                email.putExtra(Intent.EXTRA_TEXT, message.text.toString())
                 startActivity(email)
             }
         }
