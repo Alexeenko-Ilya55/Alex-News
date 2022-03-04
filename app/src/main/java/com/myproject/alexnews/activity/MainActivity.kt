@@ -1,8 +1,5 @@
 package com.myproject.alexnews.activity
 
-import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -18,8 +15,8 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.material.navigation.NavigationView
@@ -27,10 +24,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.*
-
 import com.myproject.alexnews.databinding.ActivityMainBinding
 import com.myproject.alexnews.fragments.*
 import java.util.*
@@ -38,18 +33,18 @@ import java.util.*
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     SharedPreferences.OnSharedPreferenceChangeListener {
 
-    lateinit var mToggle: ActionBarDrawerToggle
-    lateinit var binding: ActivityMainBinding
-    lateinit var fragmentMain: FragmentMain
+    private lateinit var drawerMenuToggle: ActionBarDrawerToggle
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var fragmentMain: FragmentMain
     private lateinit var launcher: ActivityResultLauncher<Intent>
     private lateinit var auth: FirebaseAuth
-    private lateinit var sp: SharedPreferences
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        sp = PreferenceManager.getDefaultSharedPreferences(this)
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         nawViewInit()
         sharedPreferences()
         actionBarInit()
@@ -58,14 +53,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         fragmentMain = FragmentMain()
         fragmentMain.arguments = Bundle().apply {
-            putInt(POSITION_VIEW_PAGER, Page.categoryMyNews.index)
+            putInt(POSITION_VIEW_PAGER, Page.MY_NEWS.index)
         }
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             fragmentCheckOnlineMode()
         }
     }
 
-    private fun signInAccountInit(){
+    private fun signInAccountInit() {
         auth = Firebase.auth
         auth.currentUser
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -76,7 +71,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     firebaseAuthWithGoogle(account.idToken!!)
                 }
             } catch (e: ApiException) {
-                Toast.makeText(this,getString(R.string.error_authentication),Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.error_authentication), Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
@@ -88,10 +84,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun actionBarInit() {
-        mToggle =
+        drawerMenuToggle =
             ActionBarDrawerToggle(this, binding.drawerLayout, R.string.open, R.string.close)
-        binding.drawerLayout.addDrawerListener(mToggle)
-        mToggle.syncState()
+        binding.drawerLayout.addDrawerListener(drawerMenuToggle)
+        drawerMenuToggle.syncState()
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
@@ -105,7 +101,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (mToggle.onOptionsItemSelected(item))
+        if (drawerMenuToggle.onOptionsItemSelected(item))
             return true
         when (item.itemId) {
             R.id.accountStatus -> checkSignIn(item)
@@ -120,12 +116,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun checkSignIn(item: MenuItem) {
-        if(auth.currentUser != null){
+        if (auth.currentUser != null) {
             auth.signOut()
             item.title = getString(R.string.Auth)
-            Toast.makeText(this,R.string.youLogOut,Toast.LENGTH_SHORT).show()
-        }
-        else{
+            Toast.makeText(this, R.string.youLogOut, Toast.LENGTH_SHORT).show()
+        } else {
             signInWithGoogle()
             item.title = getString(R.string.logOut)
         }
@@ -153,14 +148,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             R.id.menuNotes -> openFragment(FragmentNotes())
             R.id.menuBookmarks -> openFragment(FragmentBookmarks())
             R.id.menuSettings -> openFragment(FragmentSettings())
-            R.id.categoryGlobal -> checkOfflineMode(Page.categoryGlobal.index)
-            R.id.categoryBusiness -> checkOfflineMode(Page.categoryBusiness.index)
-            R.id.categoryHealth -> checkOfflineMode(Page.categoryHealth.index)
-            R.id.categoryMyNews -> checkOfflineMode(Page.categoryMyNews.index)
-            R.id.categoryEntertainment -> checkOfflineMode(Page.categoryEntertainment.index)
-            R.id.categoryScience -> checkOfflineMode(Page.categoryScience.index)
-            R.id.categorySport -> checkOfflineMode(Page.categorySports.index)
-            R.id.categoryTechnologies -> checkOfflineMode(Page.categoryTechnology.index)
+            R.id.categoryGlobal -> checkOfflineMode(Page.GLOBAL.index)
+            R.id.categoryBusiness -> checkOfflineMode(Page.BUSINESS.index)
+            R.id.categoryHealth -> checkOfflineMode(Page.HEALTH.index)
+            R.id.categoryMyNews -> checkOfflineMode(Page.MY_NEWS.index)
+            R.id.categoryEntertainment -> checkOfflineMode(Page.ENTERTAINMENT.index)
+            R.id.categoryScience -> checkOfflineMode(Page.SCIENCE.index)
+            R.id.categorySport -> checkOfflineMode(Page.SPORTS.index)
+            R.id.categoryTechnologies -> checkOfflineMode(Page.TECHNOLOGY.index)
             R.id.aboutApp -> openFragment(FragmentAboutApp())
             R.id.messageProgrammer -> openFragment(FragmentMessageToProgrammer())
         }
@@ -169,8 +164,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun checkOfflineMode(position: Int){
-        if(!sp.getBoolean(OFFLINE_MODE, false)) fragmentMain.navigationViewPager(position)
+    private fun checkOfflineMode(position: Int) {
+        if (!sharedPreferences.getBoolean(OFFLINE_MODE, false)) fragmentMain.navigationViewPager(
+            position
+        )
         else openFragment(FragmentOffline())
     }
 
@@ -181,9 +178,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .replace(R.id.fragment_container, fragment)
             .commit()
     }
-    override fun onSharedPreferenceChanged(sp: SharedPreferences?, key: String?) {
+
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (key == DARK_MODE) {
-            if (sp?.getBoolean(DARK_MODE, false)!!)
+            if (sharedPreferences?.getBoolean(DARK_MODE, false)!!)
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             else
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
@@ -196,7 +194,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onDestroy()
     }
 
-    // вынести из активити
     private fun getClient(): GoogleSignInClient {
         val gso = GoogleSignInOptions
             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -215,14 +212,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential).addOnCompleteListener {
             if (it.isSuccessful) {
-                Toast.makeText(this,R.string.onGoodGoogleAuth,Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.onGoodGoogleAuth, Toast.LENGTH_SHORT).show()
             } else
-                Toast.makeText(this,R.string.onErorGoogleAuth,
-                    Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this, R.string.onErorGoogleAuth,
+                    Toast.LENGTH_LONG
+                ).show()
         }
     }
-    private fun fragmentCheckOnlineMode(){
-        if (sp.getBoolean(OFFLINE_MODE, false))
+
+    private fun fragmentCheckOnlineMode() {
+        if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
             openFragment(FragmentOffline())
         else {
             openFragment(fragmentMain)

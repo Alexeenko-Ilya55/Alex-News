@@ -5,13 +5,13 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
+import com.myproject.alexnews.BuildConfig
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.*
 import com.myproject.alexnews.dao.AppDataBase
@@ -24,37 +24,37 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.properties.Delegates
 
-class FragmentMyNewsViewModel: ViewModel() {
-
+class FragmentMyNewsViewModel : ViewModel() {
 
     private lateinit var countryIndex: String
     private lateinit var headlinesType: String
     private lateinit var url: String
-    private var position by Delegates.notNull<Int>()
-    private  lateinit var repository: ArticleRepositoryImpl
-    private lateinit var ps: SharedPreferences
+    private var positionViewPager by Delegates.notNull<Int>()
+    private lateinit var repository: ArticleRepositoryImpl
+    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var category: String
     private lateinit var database: AppDataBase
 
     @SuppressLint("StaticFieldLeak")
     private lateinit var context: Context
 
-
-    private val  _news= MutableSharedFlow<List<Article>>(replay = 1,
-        extraBufferCapacity = 0,onBufferOverflow = BufferOverflow.SUSPEND)
+    private val _news = MutableSharedFlow<List<Article>>(
+        replay = 1,
+        extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
+    )
     val news = _news.asSharedFlow()
 
-    fun loadNews(position: Bundle,context: Context) {
-        ps = PreferenceManager.getDefaultSharedPreferences(context)
+    fun loadNews(bundle: Bundle, context: Context) {
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         database = AppDataBase.buildsDatabase(context, DATABASE_NAME)
         repository = ArticleRepositoryImpl(database.ArticleDao())
-        headlinesType = ps.getString(TYPENEWS, "").toString()
-        countryIndex = ps.getString(COUNTRY, "").toString()
+        headlinesType = sharedPreferences.getString(TYPE_NEWS, "").toString()
+        countryIndex = sharedPreferences.getString(COUNTRY, "").toString()
         this.context = context
-        categoryByPosition(position.getInt(ARG_OBJECT))
+        positionViewPager = bundle.getInt(ARG_OBJECT)
+        categoryByPosition(positionViewPager)
     }
 
     private fun apiRequest() {
@@ -67,10 +67,11 @@ class FragmentMyNewsViewModel: ViewModel() {
                         viewModelScope.launch {
                             _news.emit(response.articles)
                         }
-                       // downloadInDatabase()
+                        downloadInDatabase()
                     }
+
                     override fun onError(anError: ANError?) {
-                        if (position == 0) {
+                        if (positionViewPager == 0) {
                             Toast.makeText(context, R.string.No_internet, Toast.LENGTH_LONG).show()
                         }
                     }
@@ -79,31 +80,16 @@ class FragmentMyNewsViewModel: ViewModel() {
     }
 
     fun refresh() {
-        if (!ps.getBoolean(OFFLINE_MODE, false)) {
+        if (!sharedPreferences.getBoolean(OFFLINE_MODE, false)) {
             updateInfo(category)
         }
     }
 
-    private fun generateUrl(s: String) {
-        lateinit var url: String
-        when (s) {
-            CATEGORY_MYNEWS -> url = URL_START + headlinesType + "country=$countryIndex" + API_KEY
-            CATEGORY_TECHNOLOGY -> url =
-                URL_START + headlinesType + "country=$countryIndex" + "&" + CATEGORY_TECHNOLOGY + API_KEY
-            CATEGORY_SPORTS -> url =
-                URL_START + headlinesType + "country=$countryIndex" + "&" + CATEGORY_SPORTS + API_KEY
-            CATEGORY_BUSINESS -> url =
-                URL_START + headlinesType + "country=$countryIndex" + "&" + CATEGORY_BUSINESS + API_KEY
-            CATEGORY_GLOBAL -> url =
-                URL_START + headlinesType + "country=$countryIndex" + "&" + CATEGORY_GLOBAL + API_KEY
-            CATEGORY_HEALTH -> url =
-                URL_START + headlinesType + "country=$countryIndex" + "&" + CATEGORY_HEALTH + API_KEY
-            CATEGORY_SCIENCE -> url =
-                URL_START + headlinesType + "country=$countryIndex" + "&" + CATEGORY_SCIENCE + API_KEY
-            CATEGORY_ENTERTAINMENT -> url =
-                URL_START + headlinesType + "country=$countryIndex" + "&" + CATEGORY_ENTERTAINMENT + API_KEY
-        }
-        this.url = url
+    private fun generateUrl(category: String) {
+        url = if (category == CATEGORY_MY_NEWS)
+            URL_START + headlinesType + "country=$countryIndex" + BuildConfig.API_KEY
+        else
+            URL_START + headlinesType + "country=$countryIndex" + "&" + category + BuildConfig.API_KEY
     }
 
     private fun deleteAllFromDatabase() {
@@ -125,7 +111,7 @@ class FragmentMyNewsViewModel: ViewModel() {
     }
 
     private fun updateInfo(strCategory: String) {
-        if (ps.getBoolean(OFFLINE_MODE, false))
+        if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
             extractArticles()
         else {
             category = strCategory
@@ -134,31 +120,31 @@ class FragmentMyNewsViewModel: ViewModel() {
         }
     }
 
-    private fun categoryByPosition(position: Int) {
-        when (position) {
-            Page.сategoryMyNews.index -> updateInfo(CATEGORY_MYNEWS)
-            Page.categoryTechnology.index -> updateInfo(CATEGORY_TECHNOLOGY)
-            Page.categorySports.index -> updateInfo(CATEGORY_SPORTS)
-            Page.categoryBusiness.index -> updateInfo(CATEGORY_BUSINESS)
-            Page.categoryGlobal.index -> updateInfo(CATEGORY_GLOBAL)
-            Page.categoryHealth.index -> updateInfo(CATEGORY_HEALTH)
-            Page.categoryScience.index -> updateInfo(CATEGORY_SCIENCE)
-            Page.categoryEntertainment.index -> updateInfo(CATEGORY_ENTERTAINMENT)
+    private fun categoryByPosition(positionViewPager: Int) {
+        when (positionViewPager) {
+            Page.MY_NEWS.index -> updateInfo(CATEGORY_MY_NEWS)
+            Page.TECHNOLOGY.index -> updateInfo(CATEGORY_TECHNOLOGY)
+            Page.SPORTS.index -> updateInfo(CATEGORY_SPORTS)
+            Page.BUSINESS.index -> updateInfo(CATEGORY_BUSINESS)
+            Page.GLOBAL.index -> updateInfo(CATEGORY_GLOBAL)
+            Page.HEALTH.index -> updateInfo(CATEGORY_HEALTH)
+            Page.SCIENCE.index -> updateInfo(CATEGORY_SCIENCE)
+            Page.ENTERTAINMENT.index -> updateInfo(CATEGORY_ENTERTAINMENT)
         }
     }
 
     private fun downloadInDatabase() {
-        if (ps.getBoolean(AUTOMATIC_DOWNLOAD, false) &&
-            !ps.getBoolean(OFFLINE_MODE, false)
+        if (sharedPreferences.getBoolean(AUTOMATIC_DOWNLOAD, false) &&
+            !sharedPreferences.getBoolean(OFFLINE_MODE, false)
         ) {
-            if (position == Page.сategoryMyNews.index)
+            if (positionViewPager == Page.MY_NEWS.index)
                 deleteAllFromDatabase()
-                viewModelScope.launch {
-                    news.collectLatest {
-                        insertArticles(it)
-                    }
+            viewModelScope.launch {
+                news.collectLatest {
+                    insertArticles(it)
                 }
-        } else if(!ps.getBoolean(AUTOMATIC_DOWNLOAD, false))
+            }
+        } else if (!sharedPreferences.getBoolean(AUTOMATIC_DOWNLOAD, false))
             deleteAllFromDatabase()
     }
 }

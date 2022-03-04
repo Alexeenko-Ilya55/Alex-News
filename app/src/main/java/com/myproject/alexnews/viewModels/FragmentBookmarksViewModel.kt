@@ -1,18 +1,21 @@
 package com.myproject.alexnews.viewModels
 
-import android.annotation.SuppressLint
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.preference.PreferenceManager
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
+import com.myproject.alexnews.`object`.DATABASE_NAME
 import com.myproject.alexnews.`object`.NODE_USERS
+import com.myproject.alexnews.`object`.OFFLINE_MODE
 import com.myproject.alexnews.`object`.REF_DATABASE_ROOT
+import com.myproject.alexnews.dao.AppDataBase
+import com.myproject.alexnews.dao.ArticleRepositoryImpl
 import com.myproject.alexnews.model.Article
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,39 +23,40 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class FragmentBookmarksViewModel : ViewModel() {
-    @SuppressLint("StaticFieldLeak")
-    private lateinit var context: Context
 
-    val news: MutableLiveData<List<Article>> by lazy {
-        MutableLiveData<List<Article>>()
-    }
+    private val _news = MutableSharedFlow<List<Article>>()
+    val news = _news.asSharedFlow()
 
-    private val  _sharedFlow= MutableSharedFlow<List<Article>>()
-    val sharedFlow = _sharedFlow.asSharedFlow()
-
-    fun loadNews() {
+    fun loadNews(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            val aList: MutableList<Article> = mutableListOf()
-            val auth = Firebase.auth
-            auth.currentUser
-            REF_DATABASE_ROOT.child(NODE_USERS).child(auth.currentUser?.uid.toString())
-                .addValueEventListener(object : ValueEventListener {
+            val newsList: MutableList<Article> = mutableListOf()
+            val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            if (sharedPreferences.getBoolean(OFFLINE_MODE, false)) {
+                val database = AppDataBase.buildsDatabase(context, DATABASE_NAME)
+                val repository = ArticleRepositoryImpl(database.ArticleDao())
+                _news.emit(repository.getAllPersons().filter { it.bookmarkEnable })
+            } else {
+                val auth = Firebase.auth
+                auth.currentUser
+                REF_DATABASE_ROOT.child(NODE_USERS).child(auth.currentUser?.uid.toString())
+                    .addValueEventListener(object : ValueEventListener {
 
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        if (aList.isNotEmpty()) aList.clear()
-                        snapshot.children.forEach {
-                            aList.add(it.getValue(Article::class.java)!!)
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (newsList.isNotEmpty()) newsList.clear()
+                            snapshot.children.forEach {
+                                newsList.add(it.getValue(Article::class.java)!!)
+                            }
+                            viewModelScope.launch {
+                                _news.emit(newsList)
+                            }
                         }
-                        viewModelScope.launch {
-                            _sharedFlow.emit(aList)
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Log.i("MyLog", "Error: $error")
                         }
                     }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        // TODO:
-                    }
-                }
-            )
+                    )
+            }
         }
     }
 }

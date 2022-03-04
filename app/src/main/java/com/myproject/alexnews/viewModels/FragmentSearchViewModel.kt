@@ -3,14 +3,13 @@ package com.myproject.alexnews.viewModels
 import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
+import com.myproject.alexnews.BuildConfig
 import com.myproject.alexnews.R
-import com.myproject.alexnews.`object`.API_KEY
 import com.myproject.alexnews.`object`.URL_START
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.model.DataFromApi
@@ -24,8 +23,10 @@ class FragmentSearchViewModel : ViewModel() {
     @SuppressLint("StaticFieldLeak")
     private lateinit var context: Context
 
-    private val  _news= MutableSharedFlow<List<Article>>(replay = 1,
-        extraBufferCapacity = 0,onBufferOverflow = BufferOverflow.SUSPEND)
+    private val _news = MutableSharedFlow<List<Article>>(
+        replay = 1,
+        extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
+    )
     val news = _news.asSharedFlow()
 
     private fun loadNews(url: String) {
@@ -57,11 +58,10 @@ class FragmentSearchViewModel : ViewModel() {
         }
     }
 
-    fun setInquiry(p0: String?, context: Context?) {
-        this.context = context!!
-        val url = URL_START + "everything?" + "q=$p0" + API_KEY
+    fun setInquiry(searchQuery: String?, context: Context) {
+        this.context = context
+        val url = URL_START + "everything?" + "q=$searchQuery" + BuildConfig.API_KEY
         loadNews(url)
     }
-
 }
 
