@@ -39,7 +39,6 @@ class FragmentOffline : Fragment() {
             val adapter = RecyclerAdapter(
                 dataLister,
                 parentFragmentManager,
-                requireContext(),
                 lifecycleScope
             )
             rcView.adapter = adapter

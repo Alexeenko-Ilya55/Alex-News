@@ -2,7 +2,6 @@ package com.myproject.alexnews.dao
 
 import androidx.room.*
 import com.myproject.alexnews.`object`.TABLE_NAME
-
 import com.myproject.alexnews.model.Article
 
 @Dao

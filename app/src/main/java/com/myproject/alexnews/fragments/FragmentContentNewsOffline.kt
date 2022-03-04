@@ -6,11 +6,12 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.myproject.alexnews.R
-import com.myproject.alexnews.`object`.Month
 import com.myproject.alexnews.databinding.FragmentContentNewsOfflineBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentContentNewsOfflineViewModel
 import com.squareup.picasso.Picasso
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class FragmentContentNewsOffline(private val news: Article) : Fragment() {
@@ -28,12 +29,7 @@ class FragmentContentNewsOffline(private val news: Article) : Fragment() {
 
         binding.apply {
             titleTextView.text = news.title
-            publishedAtTextView.text = news.publishedAt.substringAfterLast('-')
-                .substringBefore('T') + " " +
-                    month(
-                        news.publishedAt.substringAfter('-').substringBeforeLast('-')
-                    ) + " в " + news.publishedAt.substring(11).substringBeforeLast(':')
-
+            publishedAtTextView.text = formatDate(news.publishedAt)
             descriptionTextView.text = news.description
             if (news.urlToImage != "")
                 Picasso.get().load(news.urlToImage).into(imageNews)
@@ -43,22 +39,13 @@ class FragmentContentNewsOffline(private val news: Article) : Fragment() {
         return binding.root
     }
 
-    private fun month(monthNumber: String): String {
-        when (monthNumber.toInt()) {
-            Month.JANUARY.index -> return getString(R.string.january)
-            Month.FEBRUARY.index -> return getString(R.string.february)
-            Month.MARCH.index -> return getString(R.string.march)
-            Month.APRIL.index -> return getString(R.string.april)
-            Month.MAY.index -> return getString(R.string.may)
-            Month.JUNE.index -> return getString(R.string.june)
-            Month.JULY.index -> return getString(R.string.july)
-            Month.AUGUST.index -> return getString(R.string.august)
-            Month.SEPTEMBER.index -> return getString(R.string.september)
-            Month.OCTOBER.index -> return getString(R.string.october)
-            Month.NOVEMBER.index -> return getString(R.string.november)
-            Month.DECEMBER.index -> return getString(R.string.december)
-        }
-        return getString(R.string.error)
+    @SuppressLint("SimpleDateFormat")
+    private fun formatDate(publishedAt: String): String {
+        val formatInputDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        val formatOutputDate = SimpleDateFormat("dd MMMM HH:mm")
+        formatInputDate.timeZone = TimeZone.getTimeZone("UTC")
+        val docDate = formatInputDate.parse(publishedAt)
+        return formatOutputDate.format(docDate!!)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

@@ -37,7 +37,7 @@ class FragmentBookmarks : Fragment() {
     private fun initAdapter(newsList: List<Article>) {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         val recyclerAdapter =
-            RecyclerAdapter(newsList, parentFragmentManager, requireContext(), lifecycleScope)
+            RecyclerAdapter(newsList, parentFragmentManager, lifecycleScope)
         binding.recyclerView.adapter = recyclerAdapter
     }
 

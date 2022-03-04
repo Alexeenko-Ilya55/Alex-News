@@ -36,8 +36,8 @@ class FragmentNotesViewModel : ViewModel() {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (news.size != 0) news.clear()
                         snapshot.children.forEach {
-                            if (it.getValue(Article::class.java)!!.notes != "")
-                                news.add(it.getValue(Article::class.java)!!)
+                            if (it.getValue(Article::class.java)?.notes != "")
+                                it.getValue(Article::class.java)?.let { it1 -> news.add(it1) }
                         }
                         viewModelScope.launch {
                             _news.emit(news)

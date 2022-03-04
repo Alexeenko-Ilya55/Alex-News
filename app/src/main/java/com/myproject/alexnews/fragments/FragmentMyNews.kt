@@ -50,11 +50,8 @@ class FragmentMyNews : Fragment() {
         val adapter = RecyclerAdapter(
             newsList,
             parentFragmentManager,
-            requireContext(),
             lifecycleScope
         )
         binding.rcView.adapter = adapter
     }
-
-
 }

@@ -39,7 +39,6 @@ class FragmentNotes : Fragment() {
         val adapter = RecyclerAdapter(
             newsList,
             parentFragmentManager,
-            requireContext(),
             lifecycleScope
         )
         binding.rcView.adapter = adapter
@@ -49,5 +48,4 @@ class FragmentNotes : Fragment() {
         menu.setGroupVisible(R.id.group_bookmsark, false)
         super.onCreateOptionsMenu(menu, inflater)
     }
-
 }

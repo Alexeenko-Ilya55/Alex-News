@@ -60,8 +60,8 @@ class FragmentNewsFromSourcesViewModel : ViewModel() {
         }
     }
 
-    fun setInquiry(sourceName: String?, context: Context?) {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context!!)
+    fun setInquiry(sourceName: String?, context: Context) {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         this.context = context
         val headlinesType = sharedPreferences.getString(TYPE_NEWS, "").toString()
         val url = URL_START + headlinesType + "sources=$sourceName" + BuildConfig.API_KEY

@@ -51,7 +51,6 @@ class FragmentSearch : Fragment() {
             val adapter = RecyclerAdapter(
                 dataLister,
                 parentFragmentManager,
-                requireContext(),
                 lifecycleScope
             )
             recyclerView.adapter = adapter

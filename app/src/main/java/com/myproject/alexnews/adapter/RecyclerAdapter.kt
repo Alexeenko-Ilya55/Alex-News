@@ -1,7 +1,6 @@
 package com.myproject.alexnews.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +19,6 @@ import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.DARK_MODE
 import com.myproject.alexnews.`object`.DATABASE_NAME
-import com.myproject.alexnews.`object`.Month
 import com.myproject.alexnews.`object`.OFFLINE_MODE
 import com.myproject.alexnews.dao.AppDataBase
 import com.myproject.alexnews.dao.ArticleRepositoryImpl
@@ -31,12 +29,13 @@ import com.myproject.alexnews.model.Article
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class RecyclerAdapter(
     private val newsList: List<Article>,
     private val fragmentManager: FragmentManager,
-    private val context: Context,
     private val lifecycleScope: LifecycleCoroutineScope
 ) : RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder>() {
 
@@ -97,21 +96,7 @@ class RecyclerAdapter(
     fun fillDataInItem(holder: RecyclerHolder, news: Article) {
         holder.apply {
             title.text = news.title.substringBeforeLast('-')
-            time.text = news.publishedAt.substringAfterLast('-')
-                .substringBefore('T') + " " +
-                    month(
-                        news.publishedAt.substringAfter('-').substringBeforeLast('-')
-                    ) + " в " + news.publishedAt.substring(11).substringBeforeLast(':')
-
-            /*
-            news.publishedAt.replace('T',' ')
-            news.publishedAt.replace('Z',' ')
-            val format = SimpleDateFormat("DD MMMM HH:mm")
-            format.applyPattern("yyyy-MM-dd HH:mm:ss ")
-            val docDate = format.parse(news.publishedAt)
-            time.text = format.format(docDate)
-
-*/
+            time.text = formatDate(news.publishedAt)
             if (news.urlToImage != null && news.urlToImage != "")
                 Picasso.get().load(news.urlToImage).into(imageNews)
             else
@@ -128,6 +113,15 @@ class RecyclerAdapter(
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
+    private fun formatDate(publishedAt: String): String {
+        val formatInputDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        val formatOutputDate = SimpleDateFormat("dd MMMM HH:mm")
+        formatInputDate.timeZone = TimeZone.getTimeZone("UTC")
+        val docDate = formatInputDate.parse(publishedAt)
+        return formatOutputDate.format(docDate!!)
+    }
+
     override fun getItemCount(): Int {
         return newsList.size
     }
@@ -135,23 +129,5 @@ class RecyclerAdapter(
     private fun openFragment(fragment: Fragment) {
         fragmentManager.beginTransaction().addToBackStack(null)
             .replace(R.id.fragment_container, fragment).commit()
-    }
-
-    private fun month(monthNumber: String): String {
-        when (monthNumber.toInt()) {
-            Month.JANUARY.index -> return context.getString(R.string.january)
-            Month.FEBRUARY.index -> return context.getString(R.string.february)
-            Month.MARCH.index -> return context.getString(R.string.march)
-            Month.APRIL.index -> return context.getString(R.string.april)
-            Month.MAY.index -> return context.getString(R.string.may)
-            Month.JUNE.index -> return context.getString(R.string.june)
-            Month.JULY.index -> return context.getString(R.string.july)
-            Month.AUGUST.index -> return context.getString(R.string.august)
-            Month.SEPTEMBER.index -> return context.getString(R.string.september)
-            Month.OCTOBER.index -> return context.getString(R.string.october)
-            Month.NOVEMBER.index -> return context.getString(R.string.november)
-            Month.DECEMBER.index -> return context.getString(R.string.december)
-        }
-        return context.getString(R.string.error)
     }
 }

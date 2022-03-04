@@ -62,7 +62,6 @@ class FragmentMyNewsViewModel : ViewModel() {
             AndroidNetworking.initialize(context)
             AndroidNetworking.get(url).build()
                 .getAsObject(DataFromApi::class.java, object : ParsedRequestListener<DataFromApi> {
-                    @SuppressLint("NotifyDataSetChanged")
                     override fun onResponse(response: DataFromApi) {
                         viewModelScope.launch {
                             _news.emit(response.articles)

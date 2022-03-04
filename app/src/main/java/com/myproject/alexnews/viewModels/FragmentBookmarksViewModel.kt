@@ -59,7 +59,7 @@ class FragmentBookmarksViewModel : ViewModel() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (newsList.isNotEmpty()) newsList.clear()
                     snapshot.children.forEach {
-                        newsList.add(it.getValue(Article::class.java)!!)
+                        it.getValue(Article::class.java)?.let { it1 -> newsList.add(it1) }
                     }
                     viewModelScope.launch {
                         _news.emit(newsList)

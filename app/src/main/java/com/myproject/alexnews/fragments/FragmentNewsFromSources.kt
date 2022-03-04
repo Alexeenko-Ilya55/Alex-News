@@ -32,7 +32,7 @@ class FragmentNewsFromSources : Fragment() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(sourceName: String?): Boolean {
                 binding.searchView.clearFocus()
-                viewModel.setInquiry(sourceName, context)
+                viewModel.setInquiry(sourceName, requireContext())
                 return false
             }
 
@@ -54,7 +54,6 @@ class FragmentNewsFromSources : Fragment() {
             val adapter = RecyclerAdapter(
                 dataLister,
                 parentFragmentManager,
-                requireContext(),
                 lifecycleScope
             )
             recyclerView.adapter = adapter
