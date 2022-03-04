@@ -1,6 +1,5 @@
 package com.myproject.alexnews.fragments
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +30,6 @@ class FragmentNewsFromSources : Fragment() {
         val viewModel = ViewModelProvider(this)[FragmentNewsFromSourcesViewModel::class.java]
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            @SuppressLint("FragmentLiveDataObserve")
             override fun onQueryTextSubmit(sourceName: String?): Boolean {
                 binding.searchView.clearFocus()
                 viewModel.setInquiry(sourceName, context)

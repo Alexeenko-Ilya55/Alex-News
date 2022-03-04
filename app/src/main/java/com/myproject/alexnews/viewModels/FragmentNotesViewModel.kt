@@ -1,8 +1,6 @@
 package com.myproject.alexnews.viewModels
 
-import android.annotation.SuppressLint
-import android.content.Context
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.ktx.auth
@@ -21,11 +19,10 @@ import kotlinx.coroutines.launch
 
 class FragmentNotesViewModel : ViewModel() {
 
-    @SuppressLint("StaticFieldLeak")
-    private lateinit var context: Context
-
-    private val  _news= MutableSharedFlow<List<Article>>(replay = 1,
-        extraBufferCapacity = 0,onBufferOverflow = BufferOverflow.SUSPEND)
+    private val _news = MutableSharedFlow<List<Article>>(
+        replay = 1,
+        extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
+    )
     val news = _news.asSharedFlow()
 
     fun loadNews() {
@@ -48,7 +45,7 @@ class FragmentNotesViewModel : ViewModel() {
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        // TODO:
+                        Log.d("MyLog", "Error: $error")
                     }
                 }
                 )

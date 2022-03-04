@@ -18,7 +18,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
-import com.myproject.alexnews.`object`.NOPASSWORD
+import com.myproject.alexnews.`object`.NO_PASSWORD
 import com.myproject.alexnews.`object`.PASSWORD_NOTES
 import com.myproject.alexnews.dao.FirebaseDB
 import com.myproject.alexnews.databinding.FragmentContentNewsBinding
@@ -26,42 +26,40 @@ import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentContentNewsViewModel
 import java.util.concurrent.Executor
 
-
-class FragmentContentNews(val data: Article) : Fragment() {
+class FragmentContentNews(private val news: Article) : Fragment() {
 
     lateinit var binding: FragmentContentNewsBinding
 
     private lateinit var auth: FirebaseAuth
-    private val db = FirebaseDB()
-    private lateinit var ps: SharedPreferences
-    private val myUrl = data.url
+    private val firebaseDatabase = FirebaseDB()
+    private lateinit var sharedPreferences: SharedPreferences
+    private val newsUrl = news.url
 
-    lateinit var executor: Executor
-    lateinit var biometricPrompt: androidx.biometric.BiometricPrompt
-    lateinit var promptInfo: androidx.biometric.BiometricPrompt.PromptInfo
-    lateinit var viewModel: FragmentContentNewsViewModel
+    private lateinit var executor: Executor
+    private lateinit var biometricPrompt: androidx.biometric.BiometricPrompt
+    private lateinit var promptInfo: androidx.biometric.BiometricPrompt.PromptInfo
+    private lateinit var viewModel: FragmentContentNewsViewModel
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentContentNewsBinding.inflate(inflater, container, false)
 
         viewModel = ViewModelProvider(this)[FragmentContentNewsViewModel::class.java]
-        ps = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
 
         requireActivity().setTitle(R.string.News)
         setHasOptionsMenu(true)
         auth = Firebase.auth
         auth.currentUser
-        viewModel.init(db)
-
+        viewModel.init(firebaseDatabase)
 
         binding.apply {
             WebView.webViewClient = WebViewClient()
             WebView.apply {
-                WebView.loadUrl(myUrl)
+                WebView.loadUrl(newsUrl)
                 settings.safeBrowsingEnabled = true
                 settings.javaScriptEnabled = true
                 WebView.doOnAttach { }
@@ -70,13 +68,13 @@ class FragmentContentNews(val data: Article) : Fragment() {
             floatingActionButton.setOnClickListener {
                 val shareIntent = Intent().apply {
                     this.action = Intent.ACTION_SEND
-                    this.putExtra(Intent.EXTRA_TEXT, myUrl)
+                    this.putExtra(Intent.EXTRA_TEXT, newsUrl)
                     this.type = "text/plain"
                 }
                 startActivity(shareIntent)
             }
             binding.NotesButton.setOnClickListener {
-                if (ps.getBoolean(NOPASSWORD, false) && data.notes != "") {
+                if (sharedPreferences.getBoolean(NO_PASSWORD, false) && news.notes != "") {
                     authTouchId()
                 } else
                     showEditTextNotes()
@@ -85,29 +83,32 @@ class FragmentContentNews(val data: Article) : Fragment() {
         return binding.root
     }
 
+    @SuppressLint("InflateParams")
     private fun showEditTextNotes() {
         val builder = AlertDialog.Builder(context)
         val inflater = layoutInflater
         val dialogLayout = inflater.inflate(R.layout.edit_notes_dialog, null)
         val editText = dialogLayout.findViewById<EditText>(R.id.editTextNotes)
-        editText.setText(data.notes)
+        editText.setText(news.notes)
         with(builder) {
             setTitle(R.string.menu_Notes)
-            setPositiveButton(getString(R.string.ok)) { dialog, which ->
+            setPositiveButton(getString(R.string.ok)) { _, _ ->
                 if (!(editText.text.toString() == "" && editText.text == null)) {
-                    data.notes = editText.text.toString()
-                    if (!data.bookmarkEnable) data.bookmarkEnable = true
-                    viewModel.deleteFromFirebase(data.url)
-                    viewModel.addToFirebase(data)
+                    news.notes = editText.text.toString()
+                    if (!news.bookmarkEnable) news.bookmarkEnable = true
+                    viewModel.deleteFromFirebase(news.url)
+                    viewModel.addToFirebase(news)
                 }
             }
-            setNegativeButton(getString(R.string.goBack)) { dialog, which -> // TODO:
+            setNegativeButton(getString(R.string.goBack)) { _, _ ->
+                Log.i("MyLog", "GoBack pressed")
             }
             setView(dialogLayout)
             show()
         }
     }
 
+    @SuppressLint("InflateParams")
     private fun showEditTextPassword() {
         val builder = AlertDialog.Builder(context)
         val inflater = layoutInflater
@@ -115,13 +116,13 @@ class FragmentContentNews(val data: Article) : Fragment() {
         val editText = dialogLayout.findViewById<EditText>(R.id.myPassword)
         with(builder) {
             setTitle(getString(R.string.InputPassword))
-            setPositiveButton(getString(R.string.ok)) { dialog, which ->
-                if (editText.text.toString() == ps.getString(PASSWORD_NOTES, ""))
+            setPositiveButton(getString(R.string.ok)) { _, _ ->
+                if (editText.text.toString() == sharedPreferences.getString(PASSWORD_NOTES, ""))
                     showEditTextNotes()
                 else
                     showEditTextPassword()
             }
-            setNegativeButton(getString(R.string.goBack)) { dialog, which ->
+            setNegativeButton(getString(R.string.goBack)) { _, _ ->
                 Log.e("MyLog", "CloseEditText")
             }
             setView(dialogLayout)
@@ -132,7 +133,7 @@ class FragmentContentNews(val data: Article) : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.fragment_content_news_menu, menu)
         menu.setGroupVisible(R.id.group_bookmsark, false)
-        if (data.bookmarkEnable) {
+        if (news.bookmarkEnable) {
             menu.setGroupVisible(R.id.Enable, true)
             menu.setGroupVisible(R.id.notEnable, false)
         } else {
@@ -151,13 +152,13 @@ class FragmentContentNews(val data: Article) : Fragment() {
     }
 
     private fun clickOnBookmark(item: MenuItem) {
-        data.bookmarkEnable = !data.bookmarkEnable
-        if (data.bookmarkEnable) {
+        news.bookmarkEnable = !news.bookmarkEnable
+        if (news.bookmarkEnable) {
             item.setIcon(R.drawable.bookmark_enable_icon_item)
-            viewModel.addToFirebase(data)
+            viewModel.addToFirebase(news)
         } else {
             item.setIcon(R.drawable.bookmark_action_bar_content)
-            viewModel.deleteFromFirebase(data.url)
+            viewModel.deleteFromFirebase(news.url)
         }
     }
 
@@ -170,10 +171,6 @@ class FragmentContentNews(val data: Article) : Fragment() {
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     super.onAuthenticationError(errorCode, errString)
                     showEditTextPassword()
-                }
-
-                override fun onAuthenticationFailed() {
-                    super.onAuthenticationFailed()
                 }
 
                 override fun onAuthenticationSucceeded(result: androidx.biometric.BiometricPrompt.AuthenticationResult) {

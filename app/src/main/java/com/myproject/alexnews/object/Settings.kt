@@ -1,6 +1,6 @@
 package com.myproject.alexnews.`object`
 
-object Settings{
+object Settings {
     var categoryTechnologies = true
     var categorySports = true
     var categoryBusiness = true
@@ -8,6 +8,4 @@ object Settings{
     var categoryHealth = true
     var categoryScience = true
     var categoryEntertainment = true
-    var offlineMode = false
-
 }

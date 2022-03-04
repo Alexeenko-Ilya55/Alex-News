@@ -10,17 +10,17 @@ import com.myproject.alexnews.`object`.*
 )
 data class Article(
     @SerializedName(DESCRIPTION)
-    var description: String?="",
-    @SerializedName(PUBLISHEDAT)
-    var publishedAt: String="",
+    var description: String? = "",
+    @SerializedName(PUBLISHED_AT)
+    var publishedAt: String = "",
     @SerializedName(TITLE)
-    var title: String="",
+    var title: String = "",
     @PrimaryKey
     @SerializedName(URL)
-    var url: String="",
-    @SerializedName(URLTOIMAGE)
-    var urlToImage: String?="",
+    var url: String = "",
+    @SerializedName(URL_TO_IMAGE)
+    var urlToImage: String? = "",
 
-    var notes:String?= "",
-    var bookmarkEnable:Boolean = false
+    var notes: String? = "",
+    var bookmarkEnable: Boolean = false
 )

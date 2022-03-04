@@ -1,7 +1,6 @@
 package com.myproject.alexnews.dao
 
 import android.util.Log
-import androidx.fragment.app.FragmentManager
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.`object`.*
@@ -10,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class FirebaseDB (){
+class FirebaseDB {
 
     private val auth = Firebase.auth
 
@@ -21,9 +20,9 @@ class FirebaseDB (){
             dataMap[TITLE] = data.title
             dataMap[DESCRIPTION] = data.description.toString()
             dataMap[URL] = data.url
-            dataMap[URLTOIMAGE] = data.urlToImage.toString()
-            dataMap[PUBLISHEDAT] = data.publishedAt
-            dataMap[BOOKMARKENABLE] = data.bookmarkEnable
+            dataMap[URL_TO_IMAGE] = data.urlToImage.toString()
+            dataMap[PUBLISHED_AT] = data.publishedAt
+            dataMap[BOOKMARK_ENABLE] = data.bookmarkEnable
             dataMap[NOTE] = data.notes.toString()
 
             val str = data.url.filter { it.isLetterOrDigit() }
