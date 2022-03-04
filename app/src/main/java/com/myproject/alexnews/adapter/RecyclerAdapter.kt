@@ -1,116 +1,111 @@
 package com.myproject.alexnews.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.SharedPreferences
-import android.provider.Settings.Global.getString
-import android.provider.Settings.Secure.getString
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
-import com.myproject.alexnews.`object`.ARTICLE_LIST
 import com.myproject.alexnews.`object`.DARK_MODE
-import com.myproject.alexnews.`object`.Month
+import com.myproject.alexnews.`object`.DATABASE_NAME
 import com.myproject.alexnews.`object`.OFFLINE_MODE
-import com.myproject.alexnews.activity.MainActivity
+import com.myproject.alexnews.dao.AppDataBase
+import com.myproject.alexnews.dao.ArticleRepositoryImpl
 import com.myproject.alexnews.dao.FirebaseDB
 import com.myproject.alexnews.fragments.FragmentContentNews
 import com.myproject.alexnews.fragments.FragmentContentNewsOffline
 import com.myproject.alexnews.model.Article
 import com.squareup.picasso.Picasso
-import kotlin.coroutines.coroutineContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 class RecyclerAdapter(
-    private val articleList: List<Article>,
-    private val parentFM: FragmentManager,
-    private val context: Context
+    private val newsList: List<Article>,
+    private val fragmentManager: FragmentManager,
+    private val lifecycleScope: LifecycleCoroutineScope
 ) : RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder>() {
 
-    lateinit var v: View
+    lateinit var view: View
     private lateinit var auth: FirebaseAuth
-    lateinit var sp: SharedPreferences
+    private lateinit var sharedPreferences: SharedPreferences
 
     inner class RecyclerHolder(item: View) : RecyclerView.ViewHolder(item) {
-        val context = item.context
-        val title = item.findViewById<TextView>(R.id.heading)
-        val time = item.findViewById<TextView>(R.id.time)
-        val imageNews = item.findViewById<ImageView>(R.id.imageNews)
-        val bookmarks = item.findViewById<ImageButton>(R.id.Bookmark_Item_Button)
-
+        val context = item.context!!
+        val title = item.findViewById<TextView>(R.id.heading)!!
+        val time = item.findViewById<TextView>(R.id.time)!!
+        val imageNews = item.findViewById<ImageView>(R.id.imageNews)!!
+        val bookmarks = item.findViewById<ImageButton>(R.id.Bookmark_Item_Button)!!
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerHolder {
-        v = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
+        view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
         auth = Firebase.auth
         auth.currentUser
-        return RecyclerHolder(v)
+        return RecyclerHolder(view)
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
     override fun onBindViewHolder(holder: RecyclerHolder, position: Int) {
         holder.apply {
-            val data = articleList[position]
-            val db = FirebaseDB()
-            sp = PreferenceManager.getDefaultSharedPreferences(context)
-            fillDataInItem(holder, data)
+            val news = newsList[position]
+            val firebaseDatabase = FirebaseDB()
+
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+            fillDataInItem(holder, news)
 
             bookmarks.setOnClickListener {
-                data.bookmarkEnable = !data.bookmarkEnable
-                if(sp.getBoolean(OFFLINE_MODE,false)){
-                    if (data.bookmarkEnable)
-                        ARTICLE_LIST.add(data)
-                    else
-                        ARTICLE_LIST.remove(data)
-                }
-                else{
-                    if (data.bookmarkEnable) db.addToFirebase(data)
-                    else db.deleteFromFB(data.url)
+                news.bookmarkEnable = !news.bookmarkEnable
+                if (sharedPreferences.getBoolean(OFFLINE_MODE, false)) {
+                    val database = AppDataBase.buildsDatabase(context, DATABASE_NAME)
+                    val repository = ArticleRepositoryImpl(database.ArticleDao())
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        repository.updateElement(news)
+                    }
+                } else {
+                    if (news.bookmarkEnable) firebaseDatabase.addToFirebase(news, lifecycleScope)
+                    else firebaseDatabase.deleteFromFB(news.url, lifecycleScope)
                 }
                 notifyDataSetChanged()
             }
 
             itemView.setOnClickListener {
-                if (sp.getBoolean(OFFLINE_MODE, false)) {
-                    openFragment(FragmentContentNewsOffline(data))
+                if (sharedPreferences.getBoolean(OFFLINE_MODE, false)) {
+                    openFragment(FragmentContentNewsOffline(news))
                 } else
-                    openFragment(FragmentContentNews(data))
+                    openFragment(FragmentContentNews(news))
             }
 
         }
     }
 
-    @SuppressLint("SetTextI18n")
-    fun fillDataInItem(holder: RecyclerHolder, data: Article) {
+    @SuppressLint("SetTextI18n", "SimpleDateFormat")
+    fun fillDataInItem(holder: RecyclerHolder, news: Article) {
         holder.apply {
-            val ps = PreferenceManager.getDefaultSharedPreferences(context!!)
-            title.text = data.title.substringBeforeLast('-')
-            time.text = data.publishedAt.substringAfterLast('-')
-                .substringBefore('T') + " " +
-                    month(
-                        data.publishedAt.substringAfter('-').substringBeforeLast('-')
-                    ) + " в " + data.publishedAt.substring(11).substringBeforeLast(':')
-
-            if (data.urlToImage != null && data.urlToImage != "")
-                Picasso.get().load(data.urlToImage).into(imageNews)
+            title.text = news.title.substringBeforeLast('-')
+            time.text = formatDate(news.publishedAt)
+            if (news.urlToImage != null && news.urlToImage != "")
+                Picasso.get().load(news.urlToImage).into(imageNews)
             else
                 imageNews.setImageResource(R.drawable.no_image)
 
-            if (data.bookmarkEnable)
+            if (news.bookmarkEnable)
                 bookmarks.setImageResource(R.drawable.bookmark_enable_icon_item)
             else {
-                if (ps.getBoolean(DARK_MODE,true))
+                if (sharedPreferences.getBoolean(DARK_MODE, true))
                     bookmarks.setImageResource(R.drawable.bookmark_action_bar_content)
                 else
                     bookmarks.setImageResource(R.drawable.item_bookmark)
@@ -118,36 +113,21 @@ class RecyclerAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return articleList.size
+    @SuppressLint("SimpleDateFormat")
+    private fun formatDate(publishedAt: String): String {
+        val formatInputDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        val formatOutputDate = SimpleDateFormat("dd MMMM HH:mm")
+        formatInputDate.timeZone = TimeZone.getTimeZone("UTC")
+        val docDate = formatInputDate.parse(publishedAt)
+        return formatOutputDate.format(docDate!!)
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun update(){
-        notifyDataSetChanged()
+    override fun getItemCount(): Int {
+        return newsList.size
     }
 
     private fun openFragment(fragment: Fragment) {
-        parentFM.beginTransaction().addToBackStack(null)
+        fragmentManager.beginTransaction().addToBackStack(null)
             .replace(R.id.fragment_container, fragment).commit()
     }
-
-    private fun month(monthNumber: String): String {
-        when (monthNumber.toInt()) {
-            Month.january.index -> return context.getString(R.string.january)
-            Month.february.index -> return context.getString(R.string.february)
-            Month.march.index -> return context.getString(R.string.march)
-            Month.april.index -> return context.getString(R.string.april)
-            Month.may.index -> return context.getString(R.string.may)
-            Month.june.index -> return context.getString(R.string.june)
-            Month.july.index -> return context.getString(R.string.july)
-            Month.august.index -> return context.getString(R.string.august)
-            Month.september.index -> return context.getString(R.string.september)
-            Month.october.index -> return context.getString(R.string.october)
-            Month.november.index -> return context.getString(R.string.november)
-            Month.december.index -> return context.getString(R.string.december)
-        }
-        return context.getString(R.string.error)
-    }
-
 }

@@ -4,65 +4,54 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.myproject.alexnews.R
-import com.myproject.alexnews.`object`.ARTICLE_LIST
-import com.myproject.alexnews.`object`.Month
 import com.myproject.alexnews.databinding.FragmentContentNewsOfflineBinding
 import com.myproject.alexnews.model.Article
+import com.myproject.alexnews.viewModels.FragmentContentNewsOfflineViewModel
 import com.squareup.picasso.Picasso
+import java.text.SimpleDateFormat
+import java.util.*
 
 
-class FragmentContentNewsOffline(private val data: Article) : Fragment() {
+class FragmentContentNewsOffline(private val news: Article) : Fragment() {
 
-    lateinit var binding : FragmentContentNewsOfflineBinding
+    lateinit var binding: FragmentContentNewsOfflineBinding
 
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentContentNewsOfflineBinding.inflate(inflater,container,false)
+    ): View {
+        binding = FragmentContentNewsOfflineBinding.inflate(inflater, container, false)
         requireActivity().setTitle(R.string.News)
         setHasOptionsMenu(true)
 
-        binding.apply{
-            titleNews.text = data.title
-            publishedAtNews.text =data.publishedAt.substringAfterLast('-')
-                .substringBefore('T') + " " +
-                    month(
-                        data.publishedAt.substringAfter('-').substringBeforeLast('-')
-                    ) + " в " + data.publishedAt.substring(11).substringBeforeLast(':')
-
-            descriptionNews.text = data.description
-
-            if (data.urlToImage != "")
-                Picasso.get().load(data.urlToImage).into(imageNews)
+        binding.apply {
+            titleTextView.text = news.title
+            publishedAtTextView.text = formatDate(news.publishedAt)
+            descriptionTextView.text = news.description
+            if (news.urlToImage != "")
+                Picasso.get().load(news.urlToImage).into(imageNews)
             else
                 imageNews.setImageResource(R.drawable.no_image)
         }
         return binding.root
     }
-     private fun month(monthNumber: String): String {
-        when (monthNumber.toInt()) {
-            Month.january.index -> return getString(R.string.january)
-            Month.february.index -> return getString(R.string.february)
-            Month.march.index -> return getString(R.string.march)
-            Month.april.index -> return getString(R.string.april)
-            Month.may.index -> return getString(R.string.may)
-            Month.june.index -> return getString(R.string.june)
-            Month.july.index -> return getString(R.string.july)
-            Month.august.index -> return getString(R.string.august)
-            Month.september.index -> return getString(R.string.september)
-            Month.october.index -> return getString(R.string.october)
-            Month.november.index -> return getString(R.string.november)
-            Month.december.index -> return getString(R.string.december)
-        }
-        return getString(R.string.error)
+
+    @SuppressLint("SimpleDateFormat")
+    private fun formatDate(publishedAt: String): String {
+        val formatInputDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        val formatOutputDate = SimpleDateFormat("dd MMMM HH:mm")
+        formatInputDate.timeZone = TimeZone.getTimeZone("UTC")
+        val docDate = formatInputDate.parse(publishedAt)
+        return formatOutputDate.format(docDate!!)
     }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.fragment_content_news_menu, menu)
         menu.setGroupVisible(R.id.group_bookmsark, false)
-        if (data.bookmarkEnable) {
+        if (news.bookmarkEnable) {
             menu.setGroupVisible(R.id.Enable, true)
             menu.setGroupVisible(R.id.notEnable, false)
         } else {
@@ -71,6 +60,7 @@ class FragmentContentNewsOffline(private val data: Article) : Fragment() {
         }
         super.onCreateOptionsMenu(menu, inflater)
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menuBookmarks_content)
             clickOnBookmark(item)
@@ -78,15 +68,16 @@ class FragmentContentNewsOffline(private val data: Article) : Fragment() {
             clickOnBookmark(item)
         return true
     }
+
     private fun clickOnBookmark(item: MenuItem) {
-        data.bookmarkEnable = !data.bookmarkEnable
-        if (data.bookmarkEnable) {
+        val viewModel = ViewModelProvider(this)[FragmentContentNewsOfflineViewModel::class.java]
+        news.bookmarkEnable = !news.bookmarkEnable
+        if (news.bookmarkEnable) {
             item.setIcon(R.drawable.bookmark_enable_icon_item)
-            ARTICLE_LIST.add(data)
+            viewModel.updateElementInDatabase(news, requireContext())
         } else {
             item.setIcon(R.drawable.bookmark_action_bar_content)
-            ARTICLE_LIST.remove(data)
+            viewModel.updateElementInDatabase(news, requireContext())
         }
     }
-
 }

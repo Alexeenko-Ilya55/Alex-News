@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.google.android.material.tabs.TabLayoutMediator
@@ -15,17 +14,17 @@ import com.myproject.alexnews.databinding.FragmentMainBinding
 import kotlin.properties.Delegates
 
 
-class FragmentMain() : Fragment() {
+class FragmentMain : Fragment() {
 
     private lateinit var viewPagerAdapter: ViewPagerAdapter
-    lateinit var binding: FragmentMainBinding
-    var myPosition by Delegates.notNull<Int>()
+    private lateinit var binding: FragmentMainBinding
+    private var positionViewPager by Delegates.notNull<Int>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        myPosition = requireArguments().getInt(POSITION_VIEW_PAGER)
+    ): View {
+        positionViewPager = requireArguments().getInt(POSITION_VIEW_PAGER)
         requireActivity().setTitle(R.string.app_name)
         binding = FragmentMainBinding.inflate(inflater, container, false)
 
@@ -51,7 +50,7 @@ class FragmentMain() : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (myPosition != 0) binding.viewPager.setCurrentItem(myPosition, true)
+        if (positionViewPager != 0) binding.viewPager.setCurrentItem(positionViewPager, true)
     }
 
     fun navigationViewPager(positionViewPager: Int) {
@@ -60,7 +59,7 @@ class FragmentMain() : Fragment() {
         else {
             val fragment = FragmentMain()
             fragment.arguments = Bundle().apply {
-                putInt(POSITION_VIEW_PAGER,positionViewPager)
+                putInt(POSITION_VIEW_PAGER, positionViewPager)
             }
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, fragment).commit()

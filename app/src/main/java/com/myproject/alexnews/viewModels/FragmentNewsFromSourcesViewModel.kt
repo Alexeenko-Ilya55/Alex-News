@@ -3,17 +3,15 @@ package com.myproject.alexnews.viewModels
 import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.preference.PreferenceManager
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
+import com.myproject.alexnews.BuildConfig
 import com.myproject.alexnews.R
-import com.myproject.alexnews.`object`.API_KEY
-import com.myproject.alexnews.`object`.TYPENEWS
+import com.myproject.alexnews.`object`.TYPE_NEWS
 import com.myproject.alexnews.`object`.URL_START
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.model.DataFromApi
@@ -27,8 +25,10 @@ class FragmentNewsFromSourcesViewModel : ViewModel() {
     @SuppressLint("StaticFieldLeak")
     private lateinit var context: Context
 
-    private val  _news= MutableSharedFlow<List<Article>>(replay = 1,
-        extraBufferCapacity = 0,onBufferOverflow = BufferOverflow.SUSPEND)
+    private val _news = MutableSharedFlow<List<Article>>(
+        replay = 1,
+        extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
+    )
     val news = _news.asSharedFlow()
 
     private fun loadNews(url: String) {
@@ -60,11 +60,11 @@ class FragmentNewsFromSourcesViewModel : ViewModel() {
         }
     }
 
-    fun setInquiry(sourceName: String?, context: Context?) {
-        val ps = PreferenceManager.getDefaultSharedPreferences(context!!)
-        this.context = context!!
-        val headlinesType = ps.getString(TYPENEWS, "").toString()
-        val url = URL_START + headlinesType + "sources=$sourceName" + API_KEY
+    fun setInquiry(sourceName: String?, context: Context) {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        this.context = context
+        val headlinesType = sharedPreferences.getString(TYPE_NEWS, "").toString()
+        val url = URL_START + headlinesType + "sources=$sourceName" + BuildConfig.API_KEY
         loadNews(url)
     }
 }

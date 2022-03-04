@@ -1,12 +1,10 @@
 package com.myproject.alexnews.fragments
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,21 +18,20 @@ import kotlinx.coroutines.flow.collectLatest
 class FragmentMyNews : Fragment() {
 
     private lateinit var binding: FragmentMyNewsBinding
-    private lateinit var adapter: RecyclerAdapter
-    lateinit var viewModel: FragmentMyNewsViewModel
+    private lateinit var viewModel: FragmentMyNewsViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         requireActivity().setTitle(R.string.app_name)
         binding = FragmentMyNewsBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this)[FragmentMyNewsViewModel::class.java]
         refreshInit()
-        viewModel.loadNews(requireArguments(),requireContext())
+        viewModel.loadNews(requireArguments(), requireContext())
         lifecycleScope.launchWhenStarted {
             viewModel.news.collectLatest {
-                init(it)
+                initRecyclerAdapter(it)
             }
         }
         return binding.root
@@ -48,15 +45,13 @@ class FragmentMyNews : Fragment() {
         }
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun init(dataLister: List<Article>) {
-            binding.rcView.layoutManager = LinearLayoutManager(context)
-            adapter = RecyclerAdapter(dataLister, parentFragmentManager, requireContext())
-            binding.rcView.adapter = adapter
+    private fun initRecyclerAdapter(newsList: List<Article>) {
+        binding.rcView.layoutManager = LinearLayoutManager(context)
+        val adapter = RecyclerAdapter(
+            newsList,
+            parentFragmentManager,
+            lifecycleScope
+        )
+        binding.rcView.adapter = adapter
     }
-
-
-
-
-
 }

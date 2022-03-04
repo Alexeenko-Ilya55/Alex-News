@@ -1,6 +1,5 @@
 package com.myproject.alexnews.fragments
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
@@ -14,38 +13,31 @@ import com.myproject.alexnews.databinding.FragmentSearchBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentSearchViewModel
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-import java.util.*
-
 
 class FragmentSearch : Fragment() {
 
     lateinit var binding: FragmentSearchBinding
-    lateinit var adapter: RecyclerAdapter
-    lateinit var viewModel: FragmentSearchViewModel
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         requireActivity().setTitle(R.string.Search)
-        viewModel = ViewModelProvider(this)[FragmentSearchViewModel::class.java]
+        val viewModel = ViewModelProvider(this)[FragmentSearchViewModel::class.java]
         setHasOptionsMenu(true)
         binding = FragmentSearchBinding.inflate(inflater, container, false)
-
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(p0: String?): Boolean {
                 binding.searchView.clearFocus()
-                viewModel.setInquiry(p0,context)
+                viewModel.setInquiry(p0, requireContext())
                 return false
             }
+
             override fun onQueryTextChange(p0: String?): Boolean {
-                // TODO:
                 return false
             }
         })
-        lifecycleScope.launchWhenStarted{
+        lifecycleScope.launchWhenStarted {
             viewModel.news.collectLatest {
                 init(it)
             }
@@ -53,11 +45,14 @@ class FragmentSearch : Fragment() {
         return binding.root
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     private fun init(dataLister: List<Article>) {
         binding.apply {
             recyclerView.layoutManager = LinearLayoutManager(context)
-            adapter = RecyclerAdapter(dataLister, parentFragmentManager,requireContext())
+            val adapter = RecyclerAdapter(
+                dataLister,
+                parentFragmentManager,
+                lifecycleScope
+            )
             recyclerView.adapter = adapter
         }
     }

@@ -10,10 +10,9 @@ import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.Settings
 import com.myproject.alexnews.databinding.FragmentChangeMyNewsBinding
 
-
 class FragmentChangeMyNews : Fragment() {
 
-    lateinit var binding: FragmentChangeMyNewsBinding
+    private lateinit var binding: FragmentChangeMyNewsBinding
     private lateinit var checkBoxBusiness: CheckBox
     private lateinit var checkBoxTechnologies: CheckBox
     private lateinit var checkBoxSports: CheckBox
@@ -25,7 +24,7 @@ class FragmentChangeMyNews : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         requireActivity().setTitle(R.string.change)
         binding = FragmentChangeMyNewsBinding.inflate(inflater, container, false)
         binding.apply {
@@ -41,7 +40,6 @@ class FragmentChangeMyNews : Fragment() {
             AddAllCategories.setOnClickListener {
                 onClick()
             }
-            // Inflate the layout for this fragment
             return binding.root
         }
     }
