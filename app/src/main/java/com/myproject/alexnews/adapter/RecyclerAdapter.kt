@@ -96,7 +96,7 @@ class RecyclerAdapter(
         val formatInputDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         val formatOutputDate = SimpleDateFormat("dd MMMM HH:mm")
         formatInputDate.timeZone = TimeZone.getTimeZone("UTC")
-        val docDate: Date? = formatInputDate.parse(publishedAt)
+        val docDate = formatInputDate.parse(publishedAt)
         return formatOutputDate.format(docDate!!)
     }
 
