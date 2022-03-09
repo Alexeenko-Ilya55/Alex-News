@@ -1,15 +1,16 @@
 package com.myproject.alexnews.repository.firebase
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import android.widget.Toast
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.preference.PreferenceManager
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.error.ANError
 import com.androidnetworking.interfaces.ParsedRequestListener
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.BuildConfig
 import com.myproject.alexnews.R
@@ -23,10 +24,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-class ApiRepository (
+class ApiRepository(
     private val context: Context,
-    private val viewModelScope: LifecycleCoroutineScope
-    ){
+    private val viewModelScope: CoroutineScope
+) : ApiNewsRepository {
 
     private val _news = MutableSharedFlow<List<Article>>(
         replay = 1,
@@ -39,15 +40,21 @@ class ApiRepository (
     private val countryIndex = sharedPreferences.getString(COUNTRY, "").toString()
     private val auth = Firebase.auth
 
-    suspend fun loadNewsFromSources(sourceName: String){
-        val url = URL_START + headlinesType + "sources=$sourceName" + BuildConfig.API_KEY
-        apiRequest(url)
+    override suspend fun loadNewsFromSources(sourceName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = URL_START + headlinesType + "sources=$sourceName" + BuildConfig.API_KEY
+            apiRequest(url)
+        }
     }
-    suspend fun loadNews(searchQuery: String){
-        val url = URL_START + "everything?" + "q=$searchQuery" + BuildConfig.API_KEY
-        apiRequest(url)
+
+    override suspend fun loadNews(searchQuery: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val url = URL_START + "everything?" + "q=$searchQuery" + BuildConfig.API_KEY
+            apiRequest(url)
+        }
     }
-    private suspend fun apiRequest(url: String){
+
+    private suspend fun apiRequest(url: String) {
         viewModelScope.launch(Dispatchers.IO) {
             AndroidNetworking.initialize(context)
             AndroidNetworking.get(url)
@@ -77,7 +84,7 @@ class ApiRepository (
         }
     }
 
-    suspend fun loadNews(positionViewPager: Int){
+    override suspend fun loadNews(positionViewPager: Int) {
         when (positionViewPager) {
             Page.MY_NEWS.index -> apiRequest(generateUrl(CATEGORY_MY_NEWS))
             Page.TECHNOLOGY.index -> apiRequest(generateUrl(CATEGORY_TECHNOLOGY))
@@ -119,7 +126,7 @@ class ApiRepository (
         }
     }
 
-    private fun deleteFromFB(url: String, viewModelScope: CoroutineScope) {
+    private fun deleteFromFB(url: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val str = url.filter { it.isLetterOrDigit() }
             REF_DATABASE_ROOT.child(NODE_USERS).child(auth.currentUser?.uid.toString()).child(str)
@@ -127,8 +134,33 @@ class ApiRepository (
         }
     }
 
-    fun updateElement(news: Article) {
+    override suspend fun updateElement(news: Article) {
         if (news.bookmarkEnable) addToFirebase(news, viewModelScope)
-        else deleteFromFB(news.url, viewModelScope)
+        else deleteFromFB(news.url)
+    }
+
+    override suspend fun getBookmarks() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val newsList: MutableList<Article> = mutableListOf()
+            val auth = Firebase.auth
+            auth.currentUser
+            REF_DATABASE_ROOT.child(NODE_USERS).child(auth.currentUser?.uid.toString())
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        if (newsList.isNotEmpty()) newsList.clear()
+                        snapshot.children.forEach {
+                            it.getValue(Article::class.java)?.let { it1 -> newsList.add(it1) }
+                        }
+                        viewModelScope.launch {
+                            _news.emit(newsList)
+                        }
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.i("MyLog", "Error: $error")
+                    }
+                }
+                )
+        }
     }
 }

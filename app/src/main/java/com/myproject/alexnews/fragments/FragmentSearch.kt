@@ -27,7 +27,7 @@ class FragmentSearch : Fragment() {
         setHasOptionsMenu(true)
         binding = FragmentSearchBinding.inflate(inflater, container, false)
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(p0: String?): Boolean {
+            override fun onQueryTextSubmit(p0: String): Boolean {
                 binding.searchView.clearFocus()
                 viewModel.setInquiry(p0, requireContext())
                 return false

@@ -13,25 +13,16 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.DARK_MODE
-import com.myproject.alexnews.`object`.DATABASE_NAME
 import com.myproject.alexnews.`object`.OFFLINE_MODE
-import com.myproject.alexnews.repository.room.AppDataBase
-import com.myproject.alexnews.repository.room.ArticleRepositoryImpl
-import com.myproject.alexnews.repository.firebase.FirebaseDB
 import com.myproject.alexnews.fragments.FragmentContentNews
 import com.myproject.alexnews.fragments.FragmentContentNewsOffline
 import com.myproject.alexnews.model.Article
+import com.myproject.alexnews.repository.RepositoryImpl
 import com.squareup.picasso.Picasso
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 class RecyclerAdapter(
     private val newsList: List<Article>,
@@ -40,7 +31,6 @@ class RecyclerAdapter(
 ) : RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder>() {
 
     lateinit var view: View
-    private lateinit var auth: FirebaseAuth
     private lateinit var sharedPreferences: SharedPreferences
 
     inner class RecyclerHolder(item: View) : RecyclerView.ViewHolder(item) {
@@ -53,8 +43,6 @@ class RecyclerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerHolder {
         view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
-        auth = Firebase.auth
-        auth.currentUser
         return RecyclerHolder(view)
     }
 
@@ -62,23 +50,14 @@ class RecyclerAdapter(
     override fun onBindViewHolder(holder: RecyclerHolder, position: Int) {
         holder.apply {
             val news = newsList[position]
-            val firebaseDatabase = FirebaseDB()
+            val repository = RepositoryImpl(context, lifecycleScope)
 
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             fillDataInItem(holder, news)
 
             bookmarks.setOnClickListener {
                 news.bookmarkEnable = !news.bookmarkEnable
-                if (sharedPreferences.getBoolean(OFFLINE_MODE, false)) {
-                    val database = AppDataBase.buildsDatabase(context, DATABASE_NAME)
-                    val repository = ArticleRepositoryImpl(database.ArticleDao())
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        repository.updateElement(news)
-                    }
-                } else {
-                    if (news.bookmarkEnable) firebaseDatabase.addToFirebase(news, lifecycleScope)
-                    else firebaseDatabase.deleteFromFB(news.url, lifecycleScope)
-                }
+                repository.updateElement(news)
                 notifyDataSetChanged()
             }
 
@@ -97,11 +76,10 @@ class RecyclerAdapter(
         holder.apply {
             title.text = news.title.substringBeforeLast('-')
             time.text = formatDate(news.publishedAt)
-            if (news.urlToImage.isNullOrEmpty())
+            if (news.urlToImage != "")
                 Picasso.get().load(news.urlToImage).into(imageNews)
             else
                 imageNews.setImageResource(R.drawable.no_image)
-
             if (news.bookmarkEnable)
                 bookmarks.setImageResource(R.drawable.bookmark_enable_icon_item)
             else {
@@ -118,7 +96,7 @@ class RecyclerAdapter(
         val formatInputDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         val formatOutputDate = SimpleDateFormat("dd MMMM HH:mm")
         formatInputDate.timeZone = TimeZone.getTimeZone("UTC")
-        val docDate = formatInputDate.parse(publishedAt)
+        val docDate: Date? = formatInputDate.parse(publishedAt)
         return formatOutputDate.format(docDate!!)
     }
 

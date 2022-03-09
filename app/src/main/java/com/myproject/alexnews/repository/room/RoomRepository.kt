@@ -5,7 +5,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
-class RoomRepository(private val articleDao: ArticleDao) : ArticleRepository {
+class RoomRepository(private val articleDao: ArticleDao) : RoomNewsRepository {
 
     private val _news = MutableSharedFlow<List<Article>>(
         replay = 1,
@@ -18,7 +18,9 @@ class RoomRepository(private val articleDao: ArticleDao) : ArticleRepository {
             articleDao.insert(element)
     }
 
-    override suspend fun getAllPersons() = articleDao.getAllArticles()
+    override suspend fun getAllPersons() {
+        _news.emit(articleDao.getAllArticles())
+    }
 
     override suspend fun deleteAll() {
         articleDao.deleteAll()

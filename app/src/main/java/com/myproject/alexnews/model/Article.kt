@@ -1,11 +1,9 @@
 package com.myproject.alexnews.model
 
-import android.provider.ContactsContract
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.myproject.alexnews.`object`.*
-import java.util.*
 
 @Entity(
     tableName = TABLE_NAME

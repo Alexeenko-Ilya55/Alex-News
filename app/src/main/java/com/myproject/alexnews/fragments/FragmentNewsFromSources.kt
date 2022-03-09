@@ -30,7 +30,7 @@ class FragmentNewsFromSources : Fragment() {
         val viewModel = ViewModelProvider(this)[FragmentNewsFromSourcesViewModel::class.java]
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(sourceName: String?): Boolean {
+            override fun onQueryTextSubmit(sourceName: String): Boolean {
                 binding.searchView.clearFocus()
                 viewModel.setInquiry(sourceName, requireContext())
                 return false

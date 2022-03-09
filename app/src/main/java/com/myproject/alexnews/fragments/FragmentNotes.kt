@@ -25,7 +25,7 @@ class FragmentNotes : Fragment() {
         requireActivity().setTitle(R.string.menu_Notes)
         binding = FragmentNotesBinding.inflate(inflater, container, false)
         val viewModel = ViewModelProvider(this)[FragmentNotesViewModel::class.java]
-        viewModel.loadNews()
+        context?.let { viewModel.loadNews(it) }
         lifecycleScope.launchWhenStarted {
             viewModel.news.collectLatest {
                 initAdapter(it)

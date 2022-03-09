@@ -20,7 +20,6 @@ import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.NO_PASSWORD
 import com.myproject.alexnews.`object`.PASSWORD_NOTES
-import com.myproject.alexnews.repository.firebase.FirebaseDB
 import com.myproject.alexnews.databinding.FragmentContentNewsBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentContentNewsViewModel
@@ -29,12 +28,9 @@ import java.util.concurrent.Executor
 class FragmentContentNews(private val news: Article) : Fragment() {
 
     lateinit var binding: FragmentContentNewsBinding
-
     private lateinit var auth: FirebaseAuth
-    private val firebaseDatabase = FirebaseDB()
     private lateinit var sharedPreferences: SharedPreferences
     private val newsUrl = news.url
-
     private lateinit var executor: Executor
     private lateinit var biometricPrompt: androidx.biometric.BiometricPrompt
     private lateinit var promptInfo: androidx.biometric.BiometricPrompt.PromptInfo
@@ -54,7 +50,6 @@ class FragmentContentNews(private val news: Article) : Fragment() {
         setHasOptionsMenu(true)
         auth = Firebase.auth
         auth.currentUser
-        viewModel.init(firebaseDatabase)
 
         binding.apply {
             WebView.webViewClient = WebViewClient()
@@ -95,9 +90,9 @@ class FragmentContentNews(private val news: Article) : Fragment() {
             setPositiveButton(getString(R.string.ok)) { _, _ ->
                 if (!(editText.text.toString() == "" && editText.text == null)) {
                     news.notes = editText.text.toString()
-                    if (!news.bookmarkEnable) news.bookmarkEnable = true
-                    viewModel.deleteFromFirebase(news.url)
-                    viewModel.addToFirebase(news)
+                    if (!news.bookmarkEnable)
+                        news.bookmarkEnable = true
+                    viewModel.updateElement(requireContext(), news)
                 }
             }
             setNegativeButton(getString(R.string.goBack)) { _, _ ->
@@ -155,10 +150,10 @@ class FragmentContentNews(private val news: Article) : Fragment() {
         news.bookmarkEnable = !news.bookmarkEnable
         if (news.bookmarkEnable) {
             item.setIcon(R.drawable.bookmark_enable_icon_item)
-            viewModel.addToFirebase(news)
+            viewModel.updateElement(requireContext(), news)
         } else {
             item.setIcon(R.drawable.bookmark_action_bar_content)
-            viewModel.deleteFromFirebase(news.url)
+            viewModel.updateElement(requireContext(), news)
         }
     }
 

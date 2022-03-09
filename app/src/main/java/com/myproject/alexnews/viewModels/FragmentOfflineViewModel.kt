@@ -3,14 +3,13 @@ package com.myproject.alexnews.viewModels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myproject.alexnews.`object`.DATABASE_NAME
-import com.myproject.alexnews.repository.room.AppDataBase
-import com.myproject.alexnews.repository.room.ArticleRepositoryImpl
 import com.myproject.alexnews.model.Article
+import com.myproject.alexnews.repository.RepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class FragmentOfflineViewModel : ViewModel() {
@@ -22,10 +21,14 @@ class FragmentOfflineViewModel : ViewModel() {
     val news = _news.asSharedFlow()
 
     fun loadNews(context: Context) {
-        val database = AppDataBase.buildsDatabase(context, DATABASE_NAME)
-        val repository = ArticleRepositoryImpl(database.ArticleDao())
         viewModelScope.launch(Dispatchers.IO) {
-            _news.emit(repository.getAllPersons())
+            val repository = RepositoryImpl(context, viewModelScope)
+            repository.getNews(0)
+            viewModelScope.launch {
+                repository.news.collectLatest {
+                    _news.emit(it)
+                }
+            }
         }
     }
 }
