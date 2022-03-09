@@ -1,4 +1,4 @@
-package com.myproject.alexnews.dao
+package com.myproject.alexnews.repository.firebase
 
 import android.util.Log
 import com.google.firebase.auth.ktx.auth

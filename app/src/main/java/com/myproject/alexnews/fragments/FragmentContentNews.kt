@@ -20,7 +20,7 @@ import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.NO_PASSWORD
 import com.myproject.alexnews.`object`.PASSWORD_NOTES
-import com.myproject.alexnews.dao.FirebaseDB
+import com.myproject.alexnews.repository.firebase.FirebaseDB
 import com.myproject.alexnews.databinding.FragmentContentNewsBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentContentNewsViewModel

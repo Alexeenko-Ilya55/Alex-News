@@ -54,5 +54,7 @@ enum class Page(val index: Int) {
     GLOBAL(4),
     HEALTH(5),
     SCIENCE(6),
-    ENTERTAINMENT(7)
+    ENTERTAINMENT(7),
+    COUNT(8),
+    COUNT_OF_SCREEN_PAGE_LIMIT(7)
 }

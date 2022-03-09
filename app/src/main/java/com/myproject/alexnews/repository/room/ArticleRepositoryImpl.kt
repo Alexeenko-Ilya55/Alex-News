@@ -1,4 +1,4 @@
-package com.myproject.alexnews.dao
+package com.myproject.alexnews.repository.room
 
 import com.myproject.alexnews.model.Article
 

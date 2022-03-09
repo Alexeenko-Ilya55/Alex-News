@@ -1,4 +1,4 @@
-package com.myproject.alexnews.dao
+package com.myproject.alexnews.repository.room
 
 import android.content.Context
 import androidx.room.Database

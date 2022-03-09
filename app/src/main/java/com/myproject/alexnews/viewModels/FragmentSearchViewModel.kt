@@ -20,8 +20,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class FragmentSearchViewModel : ViewModel() {
-    @SuppressLint("StaticFieldLeak")
-    private lateinit var context: Context
 
     private val _news = MutableSharedFlow<List<Article>>(
         replay = 1,
@@ -29,7 +27,8 @@ class FragmentSearchViewModel : ViewModel() {
     )
     val news = _news.asSharedFlow()
 
-    private fun loadNews(url: String) {
+
+    private fun loadNews(url: String, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             AndroidNetworking.initialize(context)
             AndroidNetworking.get(url)
@@ -59,9 +58,8 @@ class FragmentSearchViewModel : ViewModel() {
     }
 
     fun setInquiry(searchQuery: String?, context: Context) {
-        this.context = context
         val url = URL_START + "everything?" + "q=$searchQuery" + BuildConfig.API_KEY
-        loadNews(url)
+        loadNews(url,context)
     }
 }
 

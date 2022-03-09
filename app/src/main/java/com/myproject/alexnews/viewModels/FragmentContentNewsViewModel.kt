@@ -2,7 +2,7 @@ package com.myproject.alexnews.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myproject.alexnews.dao.FirebaseDB
+import com.myproject.alexnews.repository.firebase.FirebaseDB
 import com.myproject.alexnews.model.Article
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.POSITION_VIEW_PAGER
+import com.myproject.alexnews.`object`.Page
 import com.myproject.alexnews.adapter.ViewPagerAdapter
 import com.myproject.alexnews.databinding.FragmentMainBinding
 import kotlin.properties.Delegates
@@ -30,7 +31,7 @@ class FragmentMain : Fragment() {
 
         viewPagerAdapter = ViewPagerAdapter(context as FragmentActivity)
         binding.viewPager.adapter = viewPagerAdapter
-        binding.viewPager.offscreenPageLimit = 7
+        binding.viewPager.offscreenPageLimit = Page.COUNT_OF_SCREEN_PAGE_LIMIT.index
 
         val tabNames: Array<String> = arrayOf(
             getString(R.string.menu_category_MyNews),

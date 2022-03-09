@@ -40,7 +40,7 @@ class FragmentMyNews : Fragment() {
     private fun refreshInit() {
         binding.refresh.setColorSchemeResources(R.color.purple_200, R.color.purple_700)
         binding.refresh.setOnRefreshListener {
-            viewModel.refresh()
+            viewModel.refresh(requireContext())
             binding.refresh.isRefreshing = false
         }
     }

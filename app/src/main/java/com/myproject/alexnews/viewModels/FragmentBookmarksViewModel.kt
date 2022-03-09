@@ -1,6 +1,5 @@
 package com.myproject.alexnews.viewModels
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -15,8 +14,8 @@ import com.myproject.alexnews.`object`.DATABASE_NAME
 import com.myproject.alexnews.`object`.NODE_USERS
 import com.myproject.alexnews.`object`.OFFLINE_MODE
 import com.myproject.alexnews.`object`.REF_DATABASE_ROOT
-import com.myproject.alexnews.dao.AppDataBase
-import com.myproject.alexnews.dao.ArticleRepositoryImpl
+import com.myproject.alexnews.repository.room.AppDataBase
+import com.myproject.alexnews.repository.room.ArticleRepositoryImpl
 import com.myproject.alexnews.model.Article
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,28 +24,25 @@ import kotlinx.coroutines.launch
 
 class FragmentBookmarksViewModel : ViewModel() {
 
-    @SuppressLint("StaticFieldLeak")
-    private lateinit var context: Context
-
     private val _news = MutableSharedFlow<List<Article>>()
     val news = _news.asSharedFlow()
 
     fun loadNews(context: Context) {
-        this.context = context
         viewModelScope.launch(Dispatchers.IO) {
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
-                getNewsFromRoom()
+                getNewsFromRoom(context)
             else
                 getNewsFromFirebase()
         }
     }
 
-    private fun getNewsFromRoom() {
+    private fun getNewsFromRoom(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val database = AppDataBase.buildsDatabase(context, DATABASE_NAME)
             val repository = ArticleRepositoryImpl(database.ArticleDao())
-            _news.emit(repository.getAllPersons().filter { it.bookmarkEnable })
+            _news.emit(repository.getAllPersons().filter { it.bookmarkEnable }
+            )
         }
     }
 

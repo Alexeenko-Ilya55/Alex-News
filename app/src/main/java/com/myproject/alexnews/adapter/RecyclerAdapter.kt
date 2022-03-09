@@ -20,9 +20,9 @@ import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.DARK_MODE
 import com.myproject.alexnews.`object`.DATABASE_NAME
 import com.myproject.alexnews.`object`.OFFLINE_MODE
-import com.myproject.alexnews.dao.AppDataBase
-import com.myproject.alexnews.dao.ArticleRepositoryImpl
-import com.myproject.alexnews.dao.FirebaseDB
+import com.myproject.alexnews.repository.room.AppDataBase
+import com.myproject.alexnews.repository.room.ArticleRepositoryImpl
+import com.myproject.alexnews.repository.firebase.FirebaseDB
 import com.myproject.alexnews.fragments.FragmentContentNews
 import com.myproject.alexnews.fragments.FragmentContentNewsOffline
 import com.myproject.alexnews.model.Article
@@ -97,7 +97,7 @@ class RecyclerAdapter(
         holder.apply {
             title.text = news.title.substringBeforeLast('-')
             time.text = formatDate(news.publishedAt)
-            if (news.urlToImage != null && news.urlToImage != "")
+            if (news.urlToImage.isNullOrEmpty())
                 Picasso.get().load(news.urlToImage).into(imageNews)
             else
                 imageNews.setImageResource(R.drawable.no_image)

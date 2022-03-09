@@ -1,6 +1,5 @@
 package com.myproject.alexnews.viewModels
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -14,8 +13,8 @@ import com.androidnetworking.interfaces.ParsedRequestListener
 import com.myproject.alexnews.BuildConfig
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.*
-import com.myproject.alexnews.dao.AppDataBase
-import com.myproject.alexnews.dao.ArticleRepositoryImpl
+import com.myproject.alexnews.repository.room.AppDataBase
+import com.myproject.alexnews.repository.room.ArticleRepositoryImpl
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.model.DataFromApi
 import kotlinx.coroutines.Dispatchers
@@ -37,9 +36,6 @@ class FragmentMyNewsViewModel : ViewModel() {
     private lateinit var category: String
     private lateinit var database: AppDataBase
 
-    @SuppressLint("StaticFieldLeak")
-    private lateinit var context: Context
-
     private val _news = MutableSharedFlow<List<Article>>(
         replay = 1,
         extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
@@ -52,12 +48,11 @@ class FragmentMyNewsViewModel : ViewModel() {
         repository = ArticleRepositoryImpl(database.ArticleDao())
         headlinesType = sharedPreferences.getString(TYPE_NEWS, "").toString()
         countryIndex = sharedPreferences.getString(COUNTRY, "").toString()
-        this.context = context
         positionViewPager = bundle.getInt(ARG_OBJECT)
-        categoryByPosition(positionViewPager)
+        categoryByPosition(positionViewPager, context)
     }
 
-    private fun apiRequest() {
+    private fun apiRequest(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             AndroidNetworking.initialize(context)
             AndroidNetworking.get(url).build()
@@ -78,9 +73,9 @@ class FragmentMyNewsViewModel : ViewModel() {
         }
     }
 
-    fun refresh() {
+    fun refresh(context: Context) {
         if (!sharedPreferences.getBoolean(OFFLINE_MODE, false)) {
-            updateInfo(category)
+            updateInfo(category, context)
         }
     }
 
@@ -109,26 +104,26 @@ class FragmentMyNewsViewModel : ViewModel() {
         }
     }
 
-    private fun updateInfo(strCategory: String) {
+    private fun updateInfo(strCategory: String, context: Context) {
         if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
             extractArticles()
         else {
             category = strCategory
             generateUrl(strCategory)
-            apiRequest()
+            apiRequest(context)
         }
     }
 
-    private fun categoryByPosition(positionViewPager: Int) {
+    private fun categoryByPosition(positionViewPager: Int, context: Context) {
         when (positionViewPager) {
-            Page.MY_NEWS.index -> updateInfo(CATEGORY_MY_NEWS)
-            Page.TECHNOLOGY.index -> updateInfo(CATEGORY_TECHNOLOGY)
-            Page.SPORTS.index -> updateInfo(CATEGORY_SPORTS)
-            Page.BUSINESS.index -> updateInfo(CATEGORY_BUSINESS)
-            Page.GLOBAL.index -> updateInfo(CATEGORY_GLOBAL)
-            Page.HEALTH.index -> updateInfo(CATEGORY_HEALTH)
-            Page.SCIENCE.index -> updateInfo(CATEGORY_SCIENCE)
-            Page.ENTERTAINMENT.index -> updateInfo(CATEGORY_ENTERTAINMENT)
+            Page.MY_NEWS.index -> updateInfo(CATEGORY_MY_NEWS, context)
+            Page.TECHNOLOGY.index -> updateInfo(CATEGORY_TECHNOLOGY, context)
+            Page.SPORTS.index -> updateInfo(CATEGORY_SPORTS, context)
+            Page.BUSINESS.index -> updateInfo(CATEGORY_BUSINESS, context)
+            Page.GLOBAL.index -> updateInfo(CATEGORY_GLOBAL, context)
+            Page.HEALTH.index -> updateInfo(CATEGORY_HEALTH, context)
+            Page.SCIENCE.index -> updateInfo(CATEGORY_SCIENCE, context)
+            Page.ENTERTAINMENT.index -> updateInfo(CATEGORY_ENTERTAINMENT, context)
         }
     }
 

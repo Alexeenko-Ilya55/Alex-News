@@ -1,4 +1,4 @@
-package com.myproject.alexnews.dao
+package com.myproject.alexnews.repository.room
 
 import androidx.room.*
 import com.myproject.alexnews.`object`.TABLE_NAME
