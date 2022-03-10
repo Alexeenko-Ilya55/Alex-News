@@ -22,7 +22,7 @@ class FragmentSearchViewModel : ViewModel() {
     fun setInquiry(searchQuery: String, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val repository = RepositoryImpl(context, viewModelScope)
-            _news = repository.searchNews(searchQuery)
+            _news.emit(repository.searchNews(searchQuery))
         }
     }
 }

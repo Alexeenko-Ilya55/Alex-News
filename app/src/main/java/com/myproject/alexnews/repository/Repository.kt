@@ -1,14 +1,12 @@
 package com.myproject.alexnews.repository
 
 import com.myproject.alexnews.model.Article
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 
 interface Repository {
-    suspend fun searchNews(searchQuery: String): MutableSharedFlow<List<Article>>
-    suspend fun searchNewsFromSources(nameSource: String): MutableSharedFlow<List<Article>>
-    suspend fun getNewsBookmarks(): MutableSharedFlow<List<Article>>
-    suspend fun getNewsNotes(): MutableSharedFlow<List<Article>>
-    suspend fun getNews(positionViewPager: Int): MutableSharedFlow<List<Article>>
+    suspend fun searchNews(searchQuery: String): List<Article>
+    suspend fun searchNewsFromSources(nameSource: String): List<Article>
+    suspend fun getNewsBookmarks(): List<Article>
+    suspend fun getNewsNotes(): List<Article>
+    suspend fun getNews(positionViewPager: Int): List<Article>
     suspend fun updateElement(news: Article)
 }

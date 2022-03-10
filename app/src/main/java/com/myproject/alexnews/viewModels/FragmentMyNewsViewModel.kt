@@ -25,7 +25,7 @@ class FragmentMyNewsViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val positionViewPager = bundle.getInt(ARG_OBJECT)
             val repository = RepositoryImpl(context, viewModelScope)
-            _news = repository.getNews(positionViewPager)
+            _news.emit(repository.getNews(positionViewPager))
         }
     }
 }

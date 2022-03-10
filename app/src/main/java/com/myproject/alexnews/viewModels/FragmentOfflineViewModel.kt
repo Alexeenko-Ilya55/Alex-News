@@ -22,7 +22,7 @@ class FragmentOfflineViewModel : ViewModel() {
     fun loadNews(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val repository = RepositoryImpl(context, viewModelScope)
-            _news= repository.getNews(0)
+            _news.emit(repository.getNews(0))
         }
     }
 }

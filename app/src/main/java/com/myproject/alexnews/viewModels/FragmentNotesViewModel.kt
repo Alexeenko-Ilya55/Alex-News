@@ -22,7 +22,7 @@ class FragmentNotesViewModel : ViewModel() {
     fun loadNews(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val repository = RepositoryImpl(context, viewModelScope)
-            _news = repository.getNewsNotes()
+            _news.emit(repository.getNewsNotes())
         }
     }
 }

@@ -11,8 +11,6 @@ import com.myproject.alexnews.repository.room.AppDataBase
 import com.myproject.alexnews.repository.room.RoomRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 class RepositoryImpl(
@@ -24,7 +22,7 @@ class RepositoryImpl(
         PreferenceManager.getDefaultSharedPreferences(context)
     private val database = AppDataBase.buildsDatabase(context, DATABASE_NAME)
     private val roomRepository = RoomRepository(database.ArticleDao())
-    private val apiRepository: ApiRepository = ApiRepository(context, lifecycleCoroutineScope)
+    private val apiRepository: ApiRepository = ApiRepository(context)
 
 
     override suspend fun searchNews(searchQuery: String) =
@@ -34,8 +32,7 @@ class RepositoryImpl(
     override suspend fun searchNewsFromSources(nameSource: String) =
         apiRepository.loadNewsFromSources(nameSource)
 
-
-    override suspend fun getNewsBookmarks(): MutableSharedFlow<List<Article>> {
+    override suspend fun getNewsBookmarks(): List<Article> {
 
         return if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
             roomRepository.getAllPersons()
@@ -46,8 +43,7 @@ class RepositoryImpl(
     override suspend fun getNewsNotes() =
         apiRepository.getNotes()
 
-
-    override suspend fun getNews(positionViewPager: Int): MutableSharedFlow<List<Article>> {
+    override suspend fun getNews(positionViewPager: Int): List<Article> {
         return if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
             roomRepository.getAllPersons()
         else

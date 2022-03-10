@@ -22,7 +22,7 @@ class FragmentNewsFromSourcesViewModel : ViewModel() {
     fun setInquiry(sourceName: String, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val repository = RepositoryImpl(context, viewModelScope)
-            _news = repository.searchNewsFromSources(sourceName)
+            _news.emit(repository.searchNewsFromSources(sourceName))
         }
     }
 }

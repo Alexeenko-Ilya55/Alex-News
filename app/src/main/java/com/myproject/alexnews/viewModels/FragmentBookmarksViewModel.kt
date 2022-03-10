@@ -18,7 +18,7 @@ class FragmentBookmarksViewModel : ViewModel() {
     fun loadNews(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val repository = RepositoryImpl(context, viewModelScope)
-            _news = repository.getNewsBookmarks()
+            _news.emit(repository.getNewsBookmarks())
         }
     }
 }

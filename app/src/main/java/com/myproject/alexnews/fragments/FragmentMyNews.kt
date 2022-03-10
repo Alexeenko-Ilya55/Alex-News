@@ -28,12 +28,12 @@ class FragmentMyNews : Fragment() {
         binding = FragmentMyNewsBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this)[FragmentMyNewsViewModel::class.java]
         refreshInit()
-        viewModel.loadNews(requireArguments(), requireContext())
         lifecycleScope.launchWhenStarted {
             viewModel.news.collectLatest {
                 initRecyclerAdapter(it)
             }
         }
+        viewModel.loadNews(requireArguments(), requireContext())
         return binding.root
     }
 
