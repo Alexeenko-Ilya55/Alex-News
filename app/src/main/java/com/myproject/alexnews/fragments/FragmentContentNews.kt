@@ -92,6 +92,7 @@ class FragmentContentNews(private val news: Article) : Fragment() {
                     news.notes = editText.text.toString()
                     if (!news.bookmarkEnable)
                         news.bookmarkEnable = true
+
                     viewModel.updateElement(requireContext(), news)
                 }
             }

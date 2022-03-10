@@ -21,6 +21,8 @@ import com.myproject.alexnews.fragments.FragmentContentNewsOffline
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.repository.RepositoryImpl
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -57,7 +59,9 @@ class RecyclerAdapter(
 
             bookmarks.setOnClickListener {
                 news.bookmarkEnable = !news.bookmarkEnable
-                repository.updateElement(news)
+                lifecycleScope.launch(Dispatchers.IO) {
+                    repository.updateElement(news)
+                }
                 notifyDataSetChanged()
             }
 

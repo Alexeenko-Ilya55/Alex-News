@@ -17,75 +17,64 @@ import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.*
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.model.DataFromApi
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 
 class ApiRepository(
     private val context: Context,
     private val viewModelScope: CoroutineScope
 ) : ApiNewsRepository {
 
-    private val _news = MutableSharedFlow<List<Article>>(
-        replay = 1,
-        extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
-    )
-    val news = _news.asSharedFlow()
-
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val headlinesType = sharedPreferences.getString(TYPE_NEWS, "").toString()
     private val countryIndex = sharedPreferences.getString(COUNTRY, "").toString()
     private val auth = Firebase.auth
 
-    override suspend fun loadNewsFromSources(sourceName: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val url = URL_START + headlinesType + "sources=$sourceName" + BuildConfig.API_KEY
-            apiRequest(url)
-        }
+    override suspend fun loadNewsFromSources(sourceName: String): MutableSharedFlow<List<Article>> {
+        val url = URL_START + headlinesType + "sources=$sourceName" + BuildConfig.API_KEY
+        return apiRequest(url)
     }
 
-    override suspend fun loadNews(searchQuery: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val url = URL_START + "everything?" + "q=$searchQuery" + BuildConfig.API_KEY
-            apiRequest(url)
-        }
+    override suspend fun loadNews(searchQuery: String): MutableSharedFlow<List<Article>> {
+        val url = URL_START + "everything?" + "q=$searchQuery" + BuildConfig.API_KEY
+        return apiRequest(url)
     }
 
-    private suspend fun apiRequest(url: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            AndroidNetworking.initialize(context)
-            AndroidNetworking.get(url)
-                .build()
-                .getAsObject(DataFromApi::class.java, object :
-                    ParsedRequestListener<DataFromApi> {
-                    override fun onResponse(response: DataFromApi) {
-                        viewModelScope.launch {
-                            _news.emit(response.articles)
-                        }
-                        if (response.articles.isEmpty()) {
-                            Toast.makeText(
-                                context, R.string.No_data,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-
-                    override fun onError(anError: ANError?) {
+    private suspend fun apiRequest(url: String): MutableSharedFlow<List<Article>>{
+        val news = MutableSharedFlow<List<Article>>(replay = 1,
+            extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND)
+        viewModelScope.launch(Dispatchers.IO){
+        AndroidNetworking.initialize(context)
+        AndroidNetworking.get(url)
+            .build()
+            .getAsObject(DataFromApi::class.java, object :
+                ParsedRequestListener<DataFromApi> {
+                override fun onResponse(response: DataFromApi) {
+                    if (response.articles.isEmpty()) {
                         Toast.makeText(
-                            context,
-                            R.string.No_internet,
+                            context, R.string.No_data,
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                })
-        }
-    }
+                    viewModelScope.launch {
+                        news.emit(response.articles)
+                    }
+                }
 
-    override suspend fun loadNews(positionViewPager: Int) {
-        when (positionViewPager) {
+                override fun onError(anError: ANError?) {
+                    Toast.makeText(
+                        context,
+                        R.string.No_internet,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+            })}
+        return news
+    }
+    override suspend fun loadNews(positionViewPager: Int): MutableSharedFlow<List<Article>> {
+        return when (positionViewPager) {
             Page.MY_NEWS.index -> apiRequest(generateUrl(CATEGORY_MY_NEWS))
             Page.TECHNOLOGY.index -> apiRequest(generateUrl(CATEGORY_TECHNOLOGY))
             Page.SPORTS.index -> apiRequest(generateUrl(CATEGORY_SPORTS))
@@ -94,6 +83,7 @@ class ApiRepository(
             Page.HEALTH.index -> apiRequest(generateUrl(CATEGORY_HEALTH))
             Page.SCIENCE.index -> apiRequest(generateUrl(CATEGORY_SCIENCE))
             Page.ENTERTAINMENT.index -> apiRequest(generateUrl(CATEGORY_ENTERTAINMENT))
+            else -> return MutableSharedFlow()
         }
     }
 
@@ -139,9 +129,10 @@ class ApiRepository(
         else deleteFromFB(news.url)
     }
 
-    override suspend fun getBookmarks() {
+    private fun getNewsFromFirebase(category: String): MutableSharedFlow<List<Article>> {
+        val newsList: MutableList<Article> = mutableListOf()
+        val news = MutableSharedFlow<List<Article>>()
         viewModelScope.launch(Dispatchers.IO) {
-            val newsList: MutableList<Article> = mutableListOf()
             val auth = Firebase.auth
             auth.currentUser
             REF_DATABASE_ROOT.child(NODE_USERS).child(auth.currentUser?.uid.toString())
@@ -151,8 +142,11 @@ class ApiRepository(
                         snapshot.children.forEach {
                             it.getValue(Article::class.java)?.let { it1 -> newsList.add(it1) }
                         }
-                        viewModelScope.launch {
-                            _news.emit(newsList)
+                        viewModelScope.launch{
+                            if(category == BOOKMARK_ENABLE)
+                                news.emit(newsList)
+                            else
+                                news.emit(newsList.filter { it.notes !=""})
                         }
                     }
 
@@ -162,5 +156,13 @@ class ApiRepository(
                 }
                 )
         }
+        return news
+
     }
+
+    override suspend fun getBookmarks()=
+        getNewsFromFirebase(BOOKMARK_ENABLE)
+
+    override suspend fun getNotes()=
+        getNewsFromFirebase(NOTE)
 }

@@ -9,12 +9,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class FragmentNewsFromSourcesViewModel : ViewModel() {
 
-    private val _news = MutableSharedFlow<List<Article>>(
+    private var _news = MutableSharedFlow<List<Article>>(
         replay = 1,
         extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
     )
@@ -23,12 +22,7 @@ class FragmentNewsFromSourcesViewModel : ViewModel() {
     fun setInquiry(sourceName: String, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val repository = RepositoryImpl(context, viewModelScope)
-            repository.searchNewsFromSources(sourceName)
-            viewModelScope.launch {
-                repository.news.collectLatest {
-                    _news.emit(it)
-                }
-            }
+            _news = repository.searchNewsFromSources(sourceName)
         }
     }
 }
