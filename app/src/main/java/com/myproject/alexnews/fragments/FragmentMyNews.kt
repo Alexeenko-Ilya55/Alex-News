@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myproject.alexnews.R
@@ -13,7 +14,9 @@ import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentMyNewsBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentMyNewsViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class FragmentMyNews : Fragment() {
 
@@ -28,12 +31,12 @@ class FragmentMyNews : Fragment() {
         binding = FragmentMyNewsBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this)[FragmentMyNewsViewModel::class.java]
         refreshInit()
-        lifecycleScope.launchWhenStarted {
-            viewModel.news.collectLatest {
+        viewModel.loadNews(requireArguments(), requireContext())
+        lifecycle.coroutineScope.launch(Dispatchers.IO) {
+            viewModel.loadNews(requireArguments(), requireContext()).collectLatest {
                 initRecyclerAdapter(it)
             }
         }
-        viewModel.loadNews(requireArguments(), requireContext())
         return binding.root
     }
 
@@ -46,12 +49,14 @@ class FragmentMyNews : Fragment() {
     }
 
     private fun initRecyclerAdapter(newsList: List<Article>) {
-        binding.rcView.layoutManager = LinearLayoutManager(context)
-        val adapter = RecyclerAdapter(
-            newsList,
-            parentFragmentManager,
-            lifecycleScope
-        )
-        binding.rcView.adapter = adapter
+        lifecycleScope.launch {
+            binding.rcView.layoutManager = LinearLayoutManager(context)
+            val adapter = RecyclerAdapter(
+                newsList,
+                parentFragmentManager,
+                lifecycleScope
+            )
+            binding.rcView.adapter = adapter
+        }
     }
 }

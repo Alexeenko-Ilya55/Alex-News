@@ -5,24 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.repository.RepositoryImpl
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
 
 class FragmentNewsFromSourcesViewModel : ViewModel() {
-
-    private var _news = MutableSharedFlow<List<Article>>(
-        replay = 1,
-        extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
-    )
-    val news = _news.asSharedFlow()
-
-    fun setInquiry(sourceName: String, context: Context) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val repository = RepositoryImpl(context, viewModelScope)
-            _news.emit(repository.searchNewsFromSources(sourceName))
-        }
+    suspend fun setInquiry(sourceName: String, context: Context): Flow<List<Article>> {
+        val repository = RepositoryImpl(context, viewModelScope)
+        return repository.searchNewsFromSources(sourceName)
     }
 }

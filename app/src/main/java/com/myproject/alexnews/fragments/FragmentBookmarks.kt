@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myproject.alexnews.R
@@ -11,7 +12,9 @@ import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentBookmarksBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentBookmarksViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class FragmentBookmarks : Fragment() {
 
@@ -25,9 +28,8 @@ class FragmentBookmarks : Fragment() {
         requireActivity().setTitle(R.string.Bookmark)
         binding = FragmentBookmarksBinding.inflate(inflater, container, false)
         val viewModel = ViewModelProvider(this)[FragmentBookmarksViewModel::class.java]
-        viewModel.loadNews(requireContext())
-        lifecycleScope.launchWhenCreated {
-            viewModel.news.collectLatest {
+        lifecycle.coroutineScope.launch(Dispatchers.IO) {
+            viewModel.loadNews(requireContext()).collectLatest {
                 initAdapter(it)
             }
         }
@@ -35,10 +37,12 @@ class FragmentBookmarks : Fragment() {
     }
 
     private fun initAdapter(newsList: List<Article>) {
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        val recyclerAdapter =
-            RecyclerAdapter(newsList, parentFragmentManager, lifecycleScope)
-        binding.recyclerView.adapter = recyclerAdapter
+        lifecycleScope.launch {
+            binding.recyclerView.layoutManager = LinearLayoutManager(context)
+            val recyclerAdapter =
+                RecyclerAdapter(newsList, parentFragmentManager, lifecycleScope)
+            binding.recyclerView.adapter = recyclerAdapter
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

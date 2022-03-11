@@ -13,6 +13,10 @@ import com.myproject.alexnews.BuildConfig
 import com.myproject.alexnews.`object`.*
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.model.DataFromApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 class ApiRepository(
     private val context: Context
@@ -23,25 +27,27 @@ class ApiRepository(
     private val countryIndex = sharedPreferences.getString(COUNTRY, "").toString()
     private val auth = Firebase.auth
 
-    override suspend fun loadNewsFromSources(sourceName: String): List<Article> {
+    override suspend fun loadNewsFromSources(sourceName: String): Flow<List<Article>> {
         val url = URL_START + headlinesType + "sources=$sourceName" + BuildConfig.API_KEY
         return apiRequest(url)
     }
 
-    override suspend fun loadNews(searchQuery: String): List<Article> {
+    override suspend fun loadNews(searchQuery: String): Flow<List<Article>> {
         val url = URL_START + "everything?" + "q=$searchQuery" + BuildConfig.API_KEY
         return apiRequest(url)
     }
 
-    private fun apiRequest(url: String): List<Article> {
-        AndroidNetworking.initialize(context)
-        val ke = AndroidNetworking.get(url)
-            .build()
-            .executeForObject(DataFromApi::class.java)
-        return (ke.result as DataFromApi).articles
+    private fun apiRequest(url: String): Flow<List<Article>> {
+        return flow {
+            AndroidNetworking.initialize(context)
+            val news = AndroidNetworking.get(url)
+                .build()
+                .executeForObject(DataFromApi::class.java)
+            emit((news.result as DataFromApi).articles)
+        }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun loadNews(positionViewPager: Int): List<Article> {
+    override fun loadNews(positionViewPager: Int): Flow<List<Article>> {
         return when (positionViewPager) {
             Page.MY_NEWS.index -> apiRequest(generateUrl(CATEGORY_MY_NEWS))
             Page.TECHNOLOGY.index -> apiRequest(generateUrl(CATEGORY_TECHNOLOGY))
@@ -51,7 +57,7 @@ class ApiRepository(
             Page.HEALTH.index -> apiRequest(generateUrl(CATEGORY_HEALTH))
             Page.SCIENCE.index -> apiRequest(generateUrl(CATEGORY_SCIENCE))
             Page.ENTERTAINMENT.index -> apiRequest(generateUrl(CATEGORY_ENTERTAINMENT))
-            else -> return emptyList()
+            else -> return flow { }
         }
     }
 
@@ -93,7 +99,7 @@ class ApiRepository(
         else deleteFromFB(news.url)
     }
 
-    private fun getNewsFromFirebase(category: String): List<Article> {
+    private fun getNewsFromFirebase(category: String): Flow<List<Article>> {
         var newsList: MutableList<Article> = mutableListOf()
         val auth = Firebase.auth
         auth.currentUser
@@ -113,7 +119,7 @@ class ApiRepository(
                 }
             }
             )
-        return newsList
+        return flow { emit(newsList) }
     }
 
     override suspend fun getBookmarks() =

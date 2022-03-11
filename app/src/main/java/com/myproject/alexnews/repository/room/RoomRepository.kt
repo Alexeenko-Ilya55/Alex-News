@@ -1,6 +1,7 @@
 package com.myproject.alexnews.repository.room
 
 import com.myproject.alexnews.model.Article
+import kotlinx.coroutines.flow.Flow
 
 class RoomRepository(private val articleDao: ArticleDao) : RoomNewsRepository {
 
@@ -9,7 +10,7 @@ class RoomRepository(private val articleDao: ArticleDao) : RoomNewsRepository {
             articleDao.insert(element)
     }
 
-    override suspend fun getAllPersons(): List<Article> {
+    override fun getAllPersons(): Flow<List<Article>> {
         return articleDao.getAllArticles()
     }
 
