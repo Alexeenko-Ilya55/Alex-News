@@ -5,7 +5,6 @@ import android.view.*
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myproject.alexnews.R
@@ -28,14 +27,15 @@ class FragmentSearch : Fragment() {
         val viewModel = ViewModelProvider(this)[FragmentSearchViewModel::class.java]
         setHasOptionsMenu(true)
         binding = FragmentSearchBinding.inflate(inflater, container, false)
+        lifecycleScope.launchWhenStarted {
+            viewModel.news.collectLatest {
+                init(it)
+            }
+        }
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(p0: String): Boolean {
+            override fun onQueryTextSubmit(searchQuery: String): Boolean {
                 binding.searchView.clearFocus()
-                lifecycle.coroutineScope.launch {
-                    viewModel.setInquiry(p0, requireContext()).collectLatest {
-                        init(it)
-                    }
-                }
+                viewModel.setInquiry(searchQuery, requireContext())
                 return false
             }
 

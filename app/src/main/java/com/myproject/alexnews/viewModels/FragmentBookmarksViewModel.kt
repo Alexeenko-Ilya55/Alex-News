@@ -5,17 +5,28 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.repository.RepositoryImpl
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class FragmentBookmarksViewModel : ViewModel() {
 
-    private var _news = MutableSharedFlow<List<Article>>()
+    private val _news = MutableSharedFlow<List<Article>>(
+        replay = 1,
+        extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
+    )
     val news = _news.asSharedFlow()
 
-    suspend fun loadNews(context: Context): Flow<List<Article>> {
-        val repository = RepositoryImpl(context, viewModelScope)
-        return repository.getNewsBookmarks()
+    fun loadNews(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val repository = RepositoryImpl(context, viewModelScope)
+            repository.getNewsBookmarks()
+            repository.news.collectLatest {
+                _news.emit(it)
+            }
+        }
     }
 }

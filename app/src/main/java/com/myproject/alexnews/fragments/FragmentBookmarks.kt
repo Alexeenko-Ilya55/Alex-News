@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myproject.alexnews.R
@@ -12,7 +11,6 @@ import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentBookmarksBinding
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentBookmarksViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -28,8 +26,9 @@ class FragmentBookmarks : Fragment() {
         requireActivity().setTitle(R.string.Bookmark)
         binding = FragmentBookmarksBinding.inflate(inflater, container, false)
         val viewModel = ViewModelProvider(this)[FragmentBookmarksViewModel::class.java]
-        lifecycle.coroutineScope.launch(Dispatchers.IO) {
-            viewModel.loadNews(requireContext()).collectLatest {
+        viewModel.loadNews(requireContext())
+        lifecycleScope.launchWhenStarted {
+            viewModel.news.collectLatest {
                 initAdapter(it)
             }
         }

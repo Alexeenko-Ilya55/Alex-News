@@ -2,25 +2,34 @@ package com.myproject.alexnews.viewModels
 
 import android.content.Context
 import android.os.Bundle
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.myproject.alexnews.`object`.ARG_OBJECT
 import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.repository.RepositoryImpl
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class FragmentMyNewsViewModel : ViewModel() {
 
-    var news: LiveData<List<Article>> = liveData {  }
+    private val _news = MutableSharedFlow<List<Article>>(
+        replay = 1,
+        extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
+    )
+    val news = _news.asSharedFlow()
 
-    fun loadNews(bundle: Bundle, context: Context): Flow<List<Article>> {
+    fun loadNews(bundle: Bundle, context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
             val positionViewPager = bundle.getInt(ARG_OBJECT)
             val repository = RepositoryImpl(context, viewModelScope)
-            return repository.getNews(positionViewPager)
-                .shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
+            repository.getNews(positionViewPager)
+            repository.news.collectLatest {
+                _news.emit(it)
+            }
+        }
     }
 }
