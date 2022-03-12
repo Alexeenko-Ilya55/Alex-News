@@ -10,14 +10,22 @@ import com.myproject.alexnews.repository.firebase.ApiRepository
 import com.myproject.alexnews.repository.room.AppDataBase
 import com.myproject.alexnews.repository.room.RoomRepository
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class RepositoryImpl(
     val context: Context,
-    private val lifecycleCoroutineScope: CoroutineScope
+    lifecycleCoroutineScope: CoroutineScope
 ) : Repository {
+
+    private val _news = MutableSharedFlow<List<Article>>(
+        replay = 1,
+        extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
+    )
+    val news = _news.asSharedFlow()
 
     private val sharedPreferences: SharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(context)
@@ -25,17 +33,30 @@ class RepositoryImpl(
     private val roomRepository = RoomRepository(database.ArticleDao())
     private val apiRepository: ApiRepository = ApiRepository(context)
 
+    init {
+        lifecycleCoroutineScope.launch {
+            if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
+                roomRepository.news.collectLatest {
+                    _news.emit(it)
+                }
+            else
+                apiRepository.news.collectLatest {
+                    _news.emit(it)
+                }
+        }
+    }
 
-    override suspend fun searchNews(searchQuery: String) =
+    override suspend fun searchNews(searchQuery: String) {
         apiRepository.loadNews(searchQuery)
+    }
 
 
-    override suspend fun searchNewsFromSources(nameSource: String) =
+    override suspend fun searchNewsFromSources(nameSource: String) {
         apiRepository.loadNewsFromSources(nameSource)
+    }
 
-    override suspend fun getNewsBookmarks(): Flow<List<Article>> {
-
-        return if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
+    override suspend fun getNewsBookmarks() {
+        if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
             roomRepository.getAllPersons()
         else
             apiRepository.getBookmarks()
@@ -44,19 +65,18 @@ class RepositoryImpl(
     override suspend fun getNewsNotes() =
         apiRepository.getNotes()
 
-    override fun getNews(positionViewPager: Int): Flow<List<Article>> {
-        return if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
+    override suspend fun getNews(positionViewPager: Int) {
+        if (sharedPreferences.getBoolean(OFFLINE_MODE, false)) {
             roomRepository.getAllPersons()
-        else
+        } else {
             apiRepository.loadNews(positionViewPager)
+        }
     }
 
     override suspend fun updateElement(news: Article) {
-        lifecycleCoroutineScope.launch(Dispatchers.IO) {
-            if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
-                roomRepository.updateElement(news)
-            else
-                apiRepository.updateElement(news)
-        }
+        if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
+            roomRepository.updateElement(news)
+        else
+            apiRepository.updateElement(news)
     }
 }
