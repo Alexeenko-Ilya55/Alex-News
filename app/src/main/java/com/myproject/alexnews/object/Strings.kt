@@ -3,16 +3,18 @@ package com.myproject.alexnews.`object`
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
-var URL_START = "https://newsapi.org/v2/"
+const val URL_START = "https://newsapi.org/v2/"
+const val PAGE_INDEX = "&page="
+const val PAGE_SIZE = "&pageSize="
 
-const val CATEGORY_BUSINESS = "category=business"
-const val CATEGORY_GLOBAL = "category=general"
-const val CATEGORY_HEALTH = "category=health"
-const val CATEGORY_SCIENCE = "category=science"
-const val CATEGORY_SPORTS = "category=sports"
-const val CATEGORY_TECHNOLOGY = "category=technology"
-const val CATEGORY_ENTERTAINMENT = "category=entertainment"
-const val CATEGORY_MY_NEWS = "category=myNews"
+const val CATEGORY_BUSINESS = "&category=business"
+const val CATEGORY_GLOBAL = "&category=general"
+const val CATEGORY_HEALTH = "&category=health"
+const val CATEGORY_SCIENCE = "&category=science"
+const val CATEGORY_SPORTS = "&category=sports"
+const val CATEGORY_TECHNOLOGY = "&category=technology"
+const val CATEGORY_ENTERTAINMENT = "&category=entertainment"
+const val CATEGORY_MY_NEWS = "&category=myNews"
 
 const val OFFLINE_MODE = "OfflineMode"
 const val DARK_MODE = "DarkMode"
@@ -57,5 +59,6 @@ enum class Page(val index: Int) {
     ENTERTAINMENT(7),
     COUNT(8),
     COUNT_OF_SCREEN_PAGE_LIMIT(7),
-    OFFLINE(0)
+    OFFLINE(0),
+    DEFAULT_PAGE_SIZE(20)
 }

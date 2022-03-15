@@ -24,9 +24,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug{
-            buildConfigField("String", "API_KEY", "\"&pageSize=25&apiKey=ed56ec6ac2de42dd8a4fa3f6c5380142\"")
-            buildConfigField("String", "API_KEY1", "\"&pageSize=25&apiKey=fbf83c2f06864a58893d6969ccaf4ff7\"")
-            buildConfigField("String", "API_KEY2", "\"&pageSize=25&apiKey=26c3b8d2516d4aadaf0416e2bcb1ebb8\"")
+            buildConfigField("String", "API_KEY2", "\"&apiKey=ed56ec6ac2de42dd8a4fa3f6c5380142\"")
+            buildConfigField("String", "API_KEY1", "\"&&apiKey=fbf83c2f06864a58893d6969ccaf4ff7\"")
+            buildConfigField("String", "API_KEY", "\"&apiKey=26c3b8d2516d4aadaf0416e2bcb1ebb8\"")
         }
     }
     compileOptions {
@@ -77,7 +77,7 @@ dependencies {
     implementation "androidx.activity:activity-ktx:1.4.0"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
-    implementation("androidx.paging:paging-runtime-ktx:3.1.0")
+    implementation("androidx.paging:paging-runtime-ktx:3.1.1")
     implementation 'com.google.android.material:material:1.5.0'
     implementation ("androidx.core:core-ktx:1.7.0")
 

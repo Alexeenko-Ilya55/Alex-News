@@ -1,18 +1,18 @@
 package com.myproject.alexnews.viewModels
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.myproject.alexnews.`object`.Page
 import com.myproject.alexnews.model.Article
+import com.myproject.alexnews.paging.MyPagingSource
 import com.myproject.alexnews.repository.RepositoryImpl
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 
 class FragmentOfflineViewModel : ViewModel() {
 
@@ -22,14 +22,18 @@ class FragmentOfflineViewModel : ViewModel() {
     )
     val news = _news.asSharedFlow()
 
-    fun loadNews(context: Context) {
-        viewModelScope.launch(Dispatchers.IO) {
-            val repository = RepositoryImpl(context, viewModelScope)
-            repository.getNews(Page.OFFLINE.index)
-            repository.news.collectLatest {
-                Log.i("MyLog", it[0].title)
-                _news.emit(it)
+    fun loadNews(context: Context): Flow<PagingData<Article>> {
+        val repository = RepositoryImpl(context, viewModelScope)
+        return Pager(
+            config = PagingConfig(
+                pageSize = Page.DEFAULT_PAGE_SIZE.index,
+                initialLoadSize = Page.DEFAULT_PAGE_SIZE.index,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                MyPagingSource(repository, Page.OFFLINE.index)
             }
-        }
+        ).flow.stateIn(viewModelScope, SharingStarted.Lazily, PagingData.empty())
+            .cachedIn(viewModelScope)
     }
 }

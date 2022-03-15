@@ -9,8 +9,8 @@ interface ArticleDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(article: Article)
 
-    @Query("SELECT * FROM $TABLE_NAME")
-    fun getAllArticles(): List<Article>
+    @Query("SELECT * FROM $TABLE_NAME LIMIT :limit OFFSET :offset")
+    fun getAllArticles(limit: Int, offset: Int): List<Article>
 
     @Query("DELETE FROM $TABLE_NAME")
     suspend fun deleteAll()
@@ -18,3 +18,4 @@ interface ArticleDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateElement(news: Article)
 }
+

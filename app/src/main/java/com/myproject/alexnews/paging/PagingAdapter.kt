@@ -1,4 +1,4 @@
-package com.myproject.alexnews.adapter
+package com.myproject.alexnews.paging
 
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
@@ -11,7 +11,9 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.paging.PagingDataAdapter
 import androidx.preference.PreferenceManager
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.DARK_MODE
@@ -26,34 +28,18 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
-class RecyclerAdapter(
-    private val newsList: List<Article>,
+class PagingAdapter(
     private val fragmentManager: FragmentManager,
     private val lifecycleScope: LifecycleCoroutineScope
-) : RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder>() {
+) : PagingDataAdapter<Article, PagingAdapter.Holder>(UsersDiffCallback()) {
 
-    lateinit var view: View
     private lateinit var sharedPreferences: SharedPreferences
 
-    inner class RecyclerHolder(item: View) : RecyclerView.ViewHolder(item) {
-        val context = item.context!!
-        val title = item.findViewById<TextView>(R.id.heading)!!
-        val time = item.findViewById<TextView>(R.id.time)!!
-        val imageNews = item.findViewById<ImageView>(R.id.imageNews)!!
-        val bookmarks = item.findViewById<ImageButton>(R.id.Bookmark_Item_Button)!!
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerHolder {
-        view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
-        return RecyclerHolder(view)
-    }
-
-    @SuppressLint("SetTextI18n", "NotifyDataSetChanged")
-    override fun onBindViewHolder(holder: RecyclerHolder, position: Int) {
+    @SuppressLint("NotifyDataSetChanged")
+    override fun onBindViewHolder(holder: Holder, position: Int) {
+        val news = getItem(position)!!
         holder.apply {
-            val news = newsList[position]
             val repository = RepositoryImpl(context, lifecycleScope)
-
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             fillDataInItem(holder, news)
 
@@ -75,8 +61,20 @@ class RecyclerAdapter(
         }
     }
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        Holder(LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false))
+
+
+    class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val context = itemView.context!!
+        val title = itemView.findViewById<TextView>(R.id.heading)!!
+        val time = itemView.findViewById<TextView>(R.id.time)!!
+        val imageNews = itemView.findViewById<ImageView>(R.id.imageNews)!!
+        val bookmarks = itemView.findViewById<ImageButton>(R.id.Bookmark_Item_Button)!!
+    }
+
     @SuppressLint("SetTextI18n", "SimpleDateFormat")
-    fun fillDataInItem(holder: RecyclerHolder, news: Article) {
+    fun fillDataInItem(holder: Holder, news: Article) {
         holder.apply {
             title.text = news.title.substringBeforeLast('-')
             time.text = formatDate(news.publishedAt)
@@ -104,12 +102,19 @@ class RecyclerAdapter(
         return formatOutputDate.format(docDate!!)
     }
 
-    override fun getItemCount(): Int {
-        return newsList.size
-    }
-
     private fun openFragment(fragment: Fragment) =
         fragmentManager.beginTransaction().addToBackStack(null)
             .replace(R.id.fragment_container, fragment).commit()
+}
 
+// ---
+
+class UsersDiffCallback : DiffUtil.ItemCallback<Article>() {
+    override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
+        return oldItem.url == newItem.url
+    }
+
+    override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
+        return oldItem == newItem
+    }
 }

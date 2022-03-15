@@ -57,7 +57,7 @@ class RepositoryImpl(
 
     override suspend fun getNewsBookmarks() {
         if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
-            roomRepository.getAllPersons()
+            roomRepository.getAllPersons(20, 1)
         else
             apiRepository.getBookmarks()
     }
@@ -65,11 +65,15 @@ class RepositoryImpl(
     override suspend fun getNewsNotes() =
         apiRepository.getNotes()
 
-    override suspend fun getNews(positionViewPager: Int) {
-        if (sharedPreferences.getBoolean(OFFLINE_MODE, false)) {
-            roomRepository.getAllPersons()
+    override suspend fun getNews(
+        positionViewPager: Int,
+        pageIndex: Int,
+        pageSize: Int
+    ): List<Article> {
+        return if (sharedPreferences.getBoolean(OFFLINE_MODE, false)) {
+            roomRepository.getAllPersons(pageIndex, pageSize)
         } else {
-            apiRepository.loadNews(positionViewPager)
+            apiRepository.loadNews(positionViewPager, pageIndex, pageSize)
         }
     }
 

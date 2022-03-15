@@ -16,6 +16,7 @@ import com.myproject.alexnews.model.DataFromApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlin.properties.Delegates
 
 class ApiRepository(
     private val context: Context,
@@ -25,6 +26,8 @@ class ApiRepository(
     private val headlinesType = sharedPreferences.getString(TYPE_NEWS, "").toString()
     private val countryIndex = sharedPreferences.getString(COUNTRY, "").toString()
     private val auth = Firebase.auth
+    private var pageIndex by Delegates.notNull<Int>()
+    private var pageSize by Delegates.notNull<Int>()
 
     private val _news = MutableSharedFlow<List<Article>>(
         replay = 1,
@@ -42,16 +45,24 @@ class ApiRepository(
         apiRequest(url)
     }
 
-    private suspend fun apiRequest(url: String) {
+    private fun apiRequest(url: String): List<Article> {
         AndroidNetworking.initialize(context)
         val news = AndroidNetworking.get(url)
             .build()
             .executeForObject(DataFromApi::class.java)
-        _news.emit((news.result as DataFromApi).articles)
+        Log.i("MyLog","Data from api: " + (news.result as DataFromApi).articles[0].title)
+        return (news.result as DataFromApi).articles
     }
 
-    override suspend fun loadNews(positionViewPager: Int) {
-        when (positionViewPager) {
+    override suspend fun loadNews(
+        positionViewPager: Int,
+        pageIndex: Int,
+        pageSize: Int
+    ): List<Article> {
+        this.pageIndex = pageIndex
+        this.pageSize = pageSize
+
+        return when (positionViewPager) {
             Page.MY_NEWS.index -> apiRequest(generateUrl(CATEGORY_MY_NEWS))
             Page.TECHNOLOGY.index -> apiRequest(generateUrl(CATEGORY_TECHNOLOGY))
             Page.SPORTS.index -> apiRequest(generateUrl(CATEGORY_SPORTS))
@@ -60,14 +71,17 @@ class ApiRepository(
             Page.HEALTH.index -> apiRequest(generateUrl(CATEGORY_HEALTH))
             Page.SCIENCE.index -> apiRequest(generateUrl(CATEGORY_SCIENCE))
             Page.ENTERTAINMENT.index -> apiRequest(generateUrl(CATEGORY_ENTERTAINMENT))
+            else -> emptyList()
         }
     }
 
     private fun generateUrl(category: String): String {
         return if (category == CATEGORY_MY_NEWS)
-            URL_START + headlinesType + "country=$countryIndex" + BuildConfig.API_KEY
+            URL_START + headlinesType + "country=$countryIndex" + PAGE_INDEX + PAGE_SIZE +
+                    pageSize + pageIndex + BuildConfig.API_KEY
         else
-            URL_START + headlinesType + "country=$countryIndex" + "&" + category + BuildConfig.API_KEY
+            URL_START + headlinesType + "country=$countryIndex" + category + PAGE_INDEX + pageIndex +
+                    PAGE_SIZE + pageSize + BuildConfig.API_KEY
     }
 
     private fun addToFirebase(data: Article) {

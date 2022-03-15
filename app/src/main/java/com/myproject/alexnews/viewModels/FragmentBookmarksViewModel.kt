@@ -24,8 +24,8 @@ class FragmentBookmarksViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val repository = RepositoryImpl(context, viewModelScope)
             repository.getNewsBookmarks()
-            repository.news.collectLatest {
-                _news.emit(it)
+            repository.news.collectLatest { news ->
+                _news.emit(news.filter { it.bookmarkEnable })
             }
         }
     }
