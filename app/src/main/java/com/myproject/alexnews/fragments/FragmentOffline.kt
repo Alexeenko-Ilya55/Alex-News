@@ -10,9 +10,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myproject.alexnews.databinding.FragmentOfflineBinding
-import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.paging.PagingAdapter
 import com.myproject.alexnews.viewModels.FragmentOfflineViewModel
+import com.myproject.repository.model.Article
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 

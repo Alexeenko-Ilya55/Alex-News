@@ -11,9 +11,9 @@ import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myproject.alexnews.R
 import com.myproject.alexnews.databinding.FragmentMyNewsBinding
-import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.paging.PagingAdapter
 import com.myproject.alexnews.viewModels.FragmentMyNewsViewModel
+import com.myproject.repository.model.Article
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -26,6 +26,7 @@ class FragmentMyNews : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         requireActivity().setTitle(R.string.app_name)
         binding = FragmentMyNewsBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this)[FragmentMyNewsViewModel::class.java]

@@ -1,6 +1,6 @@
-package com.myproject.alexnews.repository.room
+package com.myproject.repository.room
 
-import com.myproject.alexnews.model.Article
+import com.myproject.repository.model.Article
 
 interface RoomNewsRepository {
 

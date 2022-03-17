@@ -1,6 +1,6 @@
-package com.myproject.alexnews.repository.firebase
+package com.myproject.repository.api
 
-import com.myproject.alexnews.model.Article
+import com.myproject.repository.model.Article
 
 interface ApiNewsRepository {
     suspend fun updateElement(news: Article)

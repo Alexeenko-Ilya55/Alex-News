@@ -1,7 +1,7 @@
-package com.myproject.alexnews.repository.room
+package com.myproject.repository.room
 
 import android.util.Log
-import com.myproject.alexnews.model.Article
+import com.myproject.repository.model.Article
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow

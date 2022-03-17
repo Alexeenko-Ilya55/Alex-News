@@ -3,8 +3,8 @@ package com.myproject.alexnews.viewModels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myproject.alexnews.model.Article
-import com.myproject.alexnews.repository.RepositoryImpl
+import com.myproject.repository.RepositoryImpl
+import com.myproject.repository.model.Article
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow

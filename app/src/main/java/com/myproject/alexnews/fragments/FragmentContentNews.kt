@@ -21,8 +21,8 @@ import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.NO_PASSWORD
 import com.myproject.alexnews.`object`.PASSWORD_NOTES
 import com.myproject.alexnews.databinding.FragmentContentNewsBinding
-import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentContentNewsViewModel
+import com.myproject.repository.model.Article
 import java.util.concurrent.Executor
 
 class FragmentContentNews(private val news: Article) : Fragment() {

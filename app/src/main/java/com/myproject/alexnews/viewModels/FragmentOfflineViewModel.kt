@@ -7,10 +7,11 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.myproject.alexnews.`object`.DEFAULT_PAGE_SIZE
 import com.myproject.alexnews.`object`.Page
-import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.paging.MyPagingSource
-import com.myproject.alexnews.repository.RepositoryImpl
+import com.myproject.repository.RepositoryImpl
+import com.myproject.repository.model.Article
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 
@@ -26,8 +27,8 @@ class FragmentOfflineViewModel : ViewModel() {
         val repository = RepositoryImpl(context, viewModelScope)
         return Pager(
             config = PagingConfig(
-                pageSize = Page.DEFAULT_PAGE_SIZE.index,
-                initialLoadSize = Page.DEFAULT_PAGE_SIZE.index,
+                pageSize = DEFAULT_PAGE_SIZE,
+                initialLoadSize = DEFAULT_PAGE_SIZE,
                 enablePlaceholders = false
             ),
             pagingSourceFactory = {

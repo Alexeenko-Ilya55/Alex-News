@@ -20,8 +20,8 @@ import com.myproject.alexnews.`object`.DARK_MODE
 import com.myproject.alexnews.`object`.OFFLINE_MODE
 import com.myproject.alexnews.fragments.FragmentContentNews
 import com.myproject.alexnews.fragments.FragmentContentNewsOffline
-import com.myproject.alexnews.model.Article
-import com.myproject.alexnews.repository.RepositoryImpl
+import com.myproject.repository.RepositoryImpl
+import com.myproject.repository.model.Article
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

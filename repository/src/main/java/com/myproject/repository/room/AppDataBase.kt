@@ -1,10 +1,10 @@
-package com.myproject.alexnews.repository.room
+package com.myproject.repository.room
 
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.myproject.alexnews.model.Article
+import com.myproject.repository.model.Article
 
 @Database(
     entities = [Article::class], version = 1

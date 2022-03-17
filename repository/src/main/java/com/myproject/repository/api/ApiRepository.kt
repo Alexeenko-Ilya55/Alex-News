@@ -1,21 +1,28 @@
-package com.myproject.alexnews.repository.firebase
+package com.myproject.repository.api
 
 import android.content.Context
+import android.preference.PreferenceManager
 import android.util.Log
-import androidx.preference.PreferenceManager
 import com.androidnetworking.AndroidNetworking
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
-import com.myproject.alexnews.BuildConfig
-import com.myproject.alexnews.`object`.*
-import com.myproject.alexnews.model.Article
-import com.myproject.alexnews.model.DataFromApi
+import com.myproject.repository.BuildConfig
+import com.myproject.repository.`object`.*
+import com.myproject.repository.api.retrofit.ApiService
+import com.myproject.repository.model.Article
+import com.myproject.repository.model.DataFromApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.collections.set
 import kotlin.properties.Delegates
 
 class ApiRepository(
@@ -45,14 +52,29 @@ class ApiRepository(
         apiRequest(url)
     }
 
-    private fun apiRequest(url: String): List<Article> {
+    private fun apiRequest2(url: String): List<Article> {
         AndroidNetworking.initialize(context)
         val news = AndroidNetworking.get(url)
             .build()
             .executeForObject(DataFromApi::class.java)
-        Log.i("MyLog","Data from api: " + (news.result as DataFromApi).articles[0].title)
+        Log.i("MyLog", "Data from api: " + (news.result as DataFromApi).articles[0].title)
         return (news.result as DataFromApi).articles
     }
+
+
+    private fun apiRequest(url: String): List<Article> {
+        Log.i("MyLog", url)
+        val retrofit = Retrofit.Builder()
+            .baseUrl(url)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        Log.i("MyLog", url)
+        val apiService: ApiService = retrofit.create(ApiService::class.java)
+        val response = apiService.getNewsList().execute()
+        return response.body()?.articles ?: listOf()
+    }
+
 
     override suspend fun loadNews(
         positionViewPager: Int,
@@ -61,7 +83,6 @@ class ApiRepository(
     ): List<Article> {
         this.pageIndex = pageIndex
         this.pageSize = pageSize
-
         return when (positionViewPager) {
             Page.MY_NEWS.index -> apiRequest(generateUrl(CATEGORY_MY_NEWS))
             Page.TECHNOLOGY.index -> apiRequest(generateUrl(CATEGORY_TECHNOLOGY))
@@ -77,8 +98,8 @@ class ApiRepository(
 
     private fun generateUrl(category: String): String {
         return if (category == CATEGORY_MY_NEWS)
-            URL_START + headlinesType + "country=$countryIndex" + PAGE_INDEX + PAGE_SIZE +
-                    pageSize + pageIndex + BuildConfig.API_KEY
+            URL_START + headlinesType + "country=$countryIndex" + PAGE_INDEX + pageIndex + PAGE_SIZE +
+                    pageSize + BuildConfig.API_KEY
         else
             URL_START + headlinesType + "country=$countryIndex" + category + PAGE_INDEX + pageIndex +
                     PAGE_SIZE + pageSize + BuildConfig.API_KEY

@@ -2,8 +2,8 @@ package com.myproject.alexnews.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.myproject.alexnews.model.Article
-import com.myproject.alexnews.repository.RepositoryImpl
+import com.myproject.repository.RepositoryImpl
+import com.myproject.repository.model.Article
 
 
 class MyPagingSource(

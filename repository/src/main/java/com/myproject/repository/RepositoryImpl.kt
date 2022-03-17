@@ -1,14 +1,13 @@
-package com.myproject.alexnews.repository
+package com.myproject.repository
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
-import com.myproject.alexnews.`object`.DATABASE_NAME
-import com.myproject.alexnews.`object`.OFFLINE_MODE
-import com.myproject.alexnews.model.Article
-import com.myproject.alexnews.repository.firebase.ApiRepository
-import com.myproject.alexnews.repository.room.AppDataBase
-import com.myproject.alexnews.repository.room.RoomRepository
+import android.preference.PreferenceManager
+import com.myproject.repository.`object`.initFirebase
+import com.myproject.repository.model.Article
+import com.myproject.repository.api.ApiRepository
+import com.myproject.repository.room.AppDataBase
+import com.myproject.repository.room.RoomRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,9 +16,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class RepositoryImpl(
-    val context: Context,
+    private val context: Context,
     lifecycleCoroutineScope: CoroutineScope
 ) : Repository {
+    init {
+        initFirebase()
+    }
 
     private val _news = MutableSharedFlow<List<Article>>(
         replay = 1,
@@ -29,13 +31,15 @@ class RepositoryImpl(
 
     private val sharedPreferences: SharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(context)
-    private val database = AppDataBase.buildsDatabase(context, DATABASE_NAME)
+    private val database = AppDataBase.buildsDatabase(context,
+        com.myproject.repository.`object`.DATABASE_NAME
+    )
     private val roomRepository = RoomRepository(database.ArticleDao())
     private val apiRepository: ApiRepository = ApiRepository(context)
 
     init {
         lifecycleCoroutineScope.launch {
-            if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
+            if (sharedPreferences.getBoolean(com.myproject.repository.`object`.OFFLINE_MODE, false))
                 roomRepository.news.collectLatest {
                     _news.emit(it)
                 }
@@ -56,7 +60,7 @@ class RepositoryImpl(
     }
 
     override suspend fun getNewsBookmarks() {
-        if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
+        if (sharedPreferences.getBoolean(com.myproject.repository.`object`.OFFLINE_MODE, false))
             roomRepository.getAllPersons(20, 1)
         else
             apiRepository.getBookmarks()
@@ -70,7 +74,7 @@ class RepositoryImpl(
         pageIndex: Int,
         pageSize: Int
     ): List<Article> {
-        return if (sharedPreferences.getBoolean(OFFLINE_MODE, false)) {
+        return if (sharedPreferences.getBoolean(com.myproject.repository.`object`.OFFLINE_MODE, false)) {
             roomRepository.getAllPersons(pageIndex, pageSize)
         } else {
             apiRepository.loadNews(positionViewPager, pageIndex, pageSize)
@@ -78,7 +82,7 @@ class RepositoryImpl(
     }
 
     override suspend fun updateElement(news: Article) {
-        if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
+        if (sharedPreferences.getBoolean(com.myproject.repository.`object`.OFFLINE_MODE, false))
             roomRepository.updateElement(news)
         else
             apiRepository.updateElement(news)

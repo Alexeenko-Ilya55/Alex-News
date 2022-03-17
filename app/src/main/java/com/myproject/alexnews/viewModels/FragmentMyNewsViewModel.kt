@@ -9,10 +9,10 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.myproject.alexnews.`object`.ARG_OBJECT
-import com.myproject.alexnews.`object`.Page
-import com.myproject.alexnews.model.Article
+import com.myproject.alexnews.`object`.DEFAULT_PAGE_SIZE
 import com.myproject.alexnews.paging.MyPagingSource
-import com.myproject.alexnews.repository.RepositoryImpl
+import com.myproject.repository.RepositoryImpl
+import com.myproject.repository.model.Article
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 
@@ -23,16 +23,14 @@ class FragmentMyNewsViewModel : ViewModel() {
         extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
     )
     val news = _news.asSharedFlow()
-    private var positionViewPager: Int = Page.MY_NEWS.index
-    lateinit var repository: RepositoryImpl
 
     fun loadNews(bundle: Bundle, context: Context): Flow<PagingData<Article>> {
-        positionViewPager = bundle.getInt(ARG_OBJECT)
-        repository = RepositoryImpl(context, viewModelScope)
+        val positionViewPager = bundle.getInt(ARG_OBJECT)
+        val repository = RepositoryImpl(context, viewModelScope)
         return Pager(
             config = PagingConfig(
-                pageSize = Page.DEFAULT_PAGE_SIZE.index,
-                initialLoadSize = Page.DEFAULT_PAGE_SIZE.index,
+                pageSize = DEFAULT_PAGE_SIZE,
+                initialLoadSize = DEFAULT_PAGE_SIZE,
                 enablePlaceholders = false,
             ),
             pagingSourceFactory = {

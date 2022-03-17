@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.myproject.alexnews.R
 import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentSearchBinding
-import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentSearchViewModel
+import com.myproject.repository.model.Article
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

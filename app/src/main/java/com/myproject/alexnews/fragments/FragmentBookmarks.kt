@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.myproject.alexnews.R
 import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentBookmarksBinding
-import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentBookmarksViewModel
+import com.myproject.repository.model.Article
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

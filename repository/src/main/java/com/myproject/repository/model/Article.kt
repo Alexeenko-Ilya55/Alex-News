@@ -1,9 +1,11 @@
-package com.myproject.alexnews.model
+package com.myproject.repository.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import com.myproject.alexnews.`object`.*
+import com.myproject.repository.`object`.*
+import com.myproject.repository.room.TABLE_NAME
+
 
 @Entity(
     tableName = TABLE_NAME
@@ -24,3 +26,4 @@ data class Article(
     var notes: String? = "",
     var bookmarkEnable: Boolean = false
 )
+

@@ -1,6 +1,6 @@
-package com.myproject.alexnews.repository
+package com.myproject.repository
 
-import com.myproject.alexnews.model.Article
+import com.myproject.repository.model.Article
 
 interface Repository {
     suspend fun searchNews(searchQuery: String)

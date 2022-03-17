@@ -1,8 +1,7 @@
-package com.myproject.alexnews.repository.room
+package com.myproject.repository.room
 
 import androidx.room.*
-import com.myproject.alexnews.`object`.TABLE_NAME
-import com.myproject.alexnews.model.Article
+import com.myproject.repository.model.Article
 
 @Dao
 interface ArticleDao {
@@ -18,4 +17,7 @@ interface ArticleDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateElement(news: Article)
 }
+
+const val TABLE_NAME = "News"
+
 
