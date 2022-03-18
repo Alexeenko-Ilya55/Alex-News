@@ -13,16 +13,13 @@ import com.myproject.alexnews.`object`.DEFAULT_PAGE_SIZE
 import com.myproject.alexnews.paging.MyPagingSource
 import com.myproject.repository.RepositoryImpl
 import com.myproject.repository.model.Article
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 
 class FragmentMyNewsViewModel : ViewModel() {
 
-    private val _news = MutableSharedFlow<List<Article>>(
-        replay = 1,
-        extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
-    )
-    val news = _news.asSharedFlow()
+    var news: PagingData<Article> = PagingData.empty()
 
     fun loadNews(bundle: Bundle, context: Context): Flow<PagingData<Article>> {
         val positionViewPager = bundle.getInt(ARG_OBJECT)
@@ -40,3 +37,4 @@ class FragmentMyNewsViewModel : ViewModel() {
             .cachedIn(viewModelScope)
     }
 }
+

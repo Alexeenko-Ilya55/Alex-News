@@ -5,18 +5,16 @@ import androidx.paging.PagingState
 import com.myproject.repository.RepositoryImpl
 import com.myproject.repository.model.Article
 
-
-class MyPagingSource(
+class PagingNewsFromSource(
     private val repository: RepositoryImpl,
-    private val positionViewPager: Int
+    private val sourceName: String
 ) : PagingSource<Int, Article>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
 
-        val news: List<Article>
         val pageIndex = params.key ?: 0
-        news = repository.getNews(positionViewPager, pageIndex, params.loadSize)
-
+        val news: List<Article> =
+            repository.searchNewsFromSources(sourceName, pageIndex, params.loadSize)
         return LoadResult.Page(
             data = news,
             prevKey = null,

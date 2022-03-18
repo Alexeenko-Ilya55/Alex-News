@@ -3,7 +3,6 @@ package com.myproject.repository.api
 import android.content.Context
 import android.preference.PreferenceManager
 import android.util.Log
-import com.androidnetworking.AndroidNetworking
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -13,28 +12,29 @@ import com.myproject.repository.BuildConfig
 import com.myproject.repository.`object`.*
 import com.myproject.repository.api.retrofit.ApiService
 import com.myproject.repository.model.Article
-import com.myproject.repository.model.DataFromApi
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.collections.set
 import kotlin.properties.Delegates
 
 class ApiRepository(
-    private val context: Context,
+    context: Context,
 ) : ApiNewsRepository {
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-    private val headlinesType = sharedPreferences.getString(TYPE_NEWS, "").toString()
     private val countryIndex = sharedPreferences.getString(COUNTRY, "").toString()
     private val auth = Firebase.auth
     private var pageIndex by Delegates.notNull<Int>()
     private var pageSize by Delegates.notNull<Int>()
+
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    private val apiService: ApiService = retrofit.create(ApiService::class.java)
 
     private val _news = MutableSharedFlow<List<Article>>(
         replay = 1,
@@ -42,37 +42,53 @@ class ApiRepository(
     )
     val news = _news.asSharedFlow()
 
-    override suspend fun loadNewsFromSources(sourceName: String) {
-        val url = URL_START + headlinesType + "sources=$sourceName" + BuildConfig.API_KEY
-        apiRequest(url)
+    override suspend fun loadNewsFromSources(
+        sourceName: String,
+        pageIndex: Int,
+        pageSize: Int
+    ): List<Article> {
+        val response = apiService
+            .searchNewsFromSources(
+                typeNews = HEADLINES_NEWS,
+                sourceName = sourceName,
+                pageIndex = pageIndex,
+                pageSize = pageSize,
+                apiKey = BuildConfig.API_KEY1
+            )
+        return response.articles
     }
 
-    override suspend fun loadNews(searchQuery: String) {
-        val url = URL_START + "everything?" + "q=$searchQuery" + BuildConfig.API_KEY
-        apiRequest(url)
+    override suspend fun searchNews(
+        searchQuery: String,
+        pageIndex: Int,
+        pageSize: Int
+    ): List<Article> {
+        val response = apiService
+            .searchNewsList(
+                typeNews = HEADLINES_NEWS,
+                query = searchQuery,
+                pageIndex = pageIndex,
+                pageSize = pageSize,
+                apiKey = BuildConfig.API_KEY1
+            )
+        return response.articles
     }
 
-    private fun apiRequest2(url: String): List<Article> {
-        AndroidNetworking.initialize(context)
-        val news = AndroidNetworking.get(url)
-            .build()
-            .executeForObject(DataFromApi::class.java)
-        Log.i("MyLog", "Data from api: " + (news.result as DataFromApi).articles[0].title)
-        return (news.result as DataFromApi).articles
-    }
+    private suspend fun apiRequest(category: String): List<Article> {
 
+        val options = HashMap<String, String>()
+        options[COUNTRY] = countryIndex
+        options[CATEGORY] = category
+        options[PAGE] = pageIndex.toString()
+        options[PAGE_SIZE] = pageSize.toString()
+        options[API_KEY] = BuildConfig.API_KEY1
 
-    private fun apiRequest(url: String): List<Article> {
-        Log.i("MyLog", url)
-        val retrofit = Retrofit.Builder()
-            .baseUrl(url)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        Log.i("MyLog", url)
-        val apiService: ApiService = retrofit.create(ApiService::class.java)
-        val response = apiService.getNewsList().execute()
-        return response.body()?.articles ?: listOf()
+        val response = apiService
+            .getNewsList(
+                typeNews = HEADLINES_NEWS,
+                options = options
+            )
+        return response.articles
     }
 
 
@@ -84,25 +100,16 @@ class ApiRepository(
         this.pageIndex = pageIndex
         this.pageSize = pageSize
         return when (positionViewPager) {
-            Page.MY_NEWS.index -> apiRequest(generateUrl(CATEGORY_MY_NEWS))
-            Page.TECHNOLOGY.index -> apiRequest(generateUrl(CATEGORY_TECHNOLOGY))
-            Page.SPORTS.index -> apiRequest(generateUrl(CATEGORY_SPORTS))
-            Page.BUSINESS.index -> apiRequest(generateUrl(CATEGORY_BUSINESS))
-            Page.GLOBAL.index -> apiRequest(generateUrl(CATEGORY_GLOBAL))
-            Page.HEALTH.index -> apiRequest(generateUrl(CATEGORY_HEALTH))
-            Page.SCIENCE.index -> apiRequest(generateUrl(CATEGORY_SCIENCE))
-            Page.ENTERTAINMENT.index -> apiRequest(generateUrl(CATEGORY_ENTERTAINMENT))
+            Page.MY_NEWS.index -> apiRequest(CATEGORY_MY_NEWS)
+            Page.TECHNOLOGY.index -> apiRequest(CATEGORY_TECHNOLOGY)
+            Page.SPORTS.index -> apiRequest(CATEGORY_SPORTS)
+            Page.BUSINESS.index -> apiRequest(CATEGORY_BUSINESS)
+            Page.GLOBAL.index -> apiRequest(CATEGORY_GLOBAL)
+            Page.HEALTH.index -> apiRequest(CATEGORY_HEALTH)
+            Page.SCIENCE.index -> apiRequest(CATEGORY_SCIENCE)
+            Page.ENTERTAINMENT.index -> apiRequest(CATEGORY_ENTERTAINMENT)
             else -> emptyList()
         }
-    }
-
-    private fun generateUrl(category: String): String {
-        return if (category == CATEGORY_MY_NEWS)
-            URL_START + headlinesType + "country=$countryIndex" + PAGE_INDEX + pageIndex + PAGE_SIZE +
-                    pageSize + BuildConfig.API_KEY
-        else
-            URL_START + headlinesType + "country=$countryIndex" + category + PAGE_INDEX + pageIndex +
-                    PAGE_SIZE + pageSize + BuildConfig.API_KEY
     }
 
     private fun addToFirebase(data: Article) {
@@ -165,3 +172,4 @@ class ApiRepository(
     override suspend fun getNotes() =
         getNewsFromFirebase(NOTE)
 }
+

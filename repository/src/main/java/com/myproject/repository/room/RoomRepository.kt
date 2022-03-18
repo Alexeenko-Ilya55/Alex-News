@@ -1,6 +1,5 @@
 package com.myproject.repository.room
 
-import android.util.Log
 import com.myproject.repository.model.Article
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,12 +18,9 @@ class RoomRepository(private val articleDao: ArticleDao) : RoomNewsRepository {
             articleDao.insert(element)
     }
 
-    override suspend fun getAllPersons(pageIndex: Int, pageSize: Int): List<Article> {
-        val offset = pageIndex * pageSize
-        Log.i("MyLog", pageIndex.toString())
-        return articleDao.getAllArticles(pageSize, offset)
+    override suspend fun getAllPersons(limit: Int, offset: Int): List<Article> {
+        return articleDao.getAllArticles(limit, offset)
     }
-
 
     override suspend fun deleteAll() {
         articleDao.deleteAll()
@@ -32,5 +28,9 @@ class RoomRepository(private val articleDao: ArticleDao) : RoomNewsRepository {
 
     override suspend fun updateElement(news: Article) {
         articleDao.updateElement(news)
+    }
+
+    override suspend fun getBookmarks() {
+        _news.emit(articleDao.getBookmarks())
     }
 }

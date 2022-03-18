@@ -13,7 +13,8 @@ import com.myproject.alexnews.databinding.FragmentOfflineBinding
 import com.myproject.alexnews.paging.PagingAdapter
 import com.myproject.alexnews.viewModels.FragmentOfflineViewModel
 import com.myproject.repository.model.Article
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class FragmentOffline : Fragment() {
@@ -27,15 +28,15 @@ class FragmentOffline : Fragment() {
         binding = FragmentOfflineBinding.inflate(inflater, container, false)
         val viewModel = ViewModelProvider(this)[FragmentOfflineViewModel::class.java]
         viewModel.loadNews(requireContext())
-        lifecycleScope.launch {
-            viewModel.loadNews(requireContext()).collect {
-                init(it)
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.loadNews(requireContext()).collectLatest {
+                initAdapter(it)
             }
         }
         return binding.root
     }
 
-    private fun init(news: PagingData<Article>) {
+    private fun initAdapter(news: PagingData<Article>) {
         lifecycleScope.launch {
             binding.apply {
                 rcView.layoutManager = LinearLayoutManager(context)

@@ -4,19 +4,25 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 
 
-const val URL_START = "https://newsapi.org/v2/"
-const val PAGE_INDEX = "&page="
-const val PAGE_SIZE = "&pageSize="
+const val BASE_URL = "https://newsapi.org/v2/"
 
+const val PAGE = "https://newsapi.org/v2/"
+const val PAGE_SIZE = "https://newsapi.org/v2/"
+const val QUERY = "q"
+const val API_KEY = "apiKey"
+const val HEADLINES_NEWS = "top-headlines"
+const val SOURCES = "sources"
+const val CATEGORY = "category"
+const val NEWS_TYPE = "typeNews"
 
-const val CATEGORY_BUSINESS = "&category=business"
-const val CATEGORY_GLOBAL = "&category=general"
-const val CATEGORY_HEALTH = "&category=health"
-const val CATEGORY_SCIENCE = "&category=science"
-const val CATEGORY_SPORTS = "&category=sports"
-const val CATEGORY_TECHNOLOGY = "&category=technology"
-const val CATEGORY_ENTERTAINMENT = "&category=entertainment"
-const val CATEGORY_MY_NEWS = "&category=myNews"
+const val CATEGORY_BUSINESS = "business"
+const val CATEGORY_GLOBAL = "general"
+const val CATEGORY_HEALTH = "health"
+const val CATEGORY_SCIENCE = "science"
+const val CATEGORY_SPORTS = "sports"
+const val CATEGORY_TECHNOLOGY = "technology"
+const val CATEGORY_ENTERTAINMENT = "entertainment"
+const val CATEGORY_MY_NEWS = "general"
 
 const val OFFLINE_MODE = "OfflineMode"
 

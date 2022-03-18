@@ -15,7 +15,7 @@
             />
 
         <ListPreference
-            app:defaultValue="top-headlines?"
+            app:defaultValue="top-headlines"
             app:entries="@array/reply_entries"
             app:entryValues="@array/reply_values"
             app:key="TypeNewsContent"

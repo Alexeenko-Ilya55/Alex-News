@@ -31,7 +31,7 @@ import java.util.*
 class PagingAdapter(
     private val fragmentManager: FragmentManager,
     private val lifecycleScope: LifecycleCoroutineScope
-) : PagingDataAdapter<Article, PagingAdapter.Holder>(UsersDiffCallback()) {
+) : PagingDataAdapter<Article, PagingAdapter.Holder>(NewsDiffCallback()) {
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -107,9 +107,7 @@ class PagingAdapter(
             .replace(R.id.fragment_container, fragment).commit()
 }
 
-// ---
-
-class UsersDiffCallback : DiffUtil.ItemCallback<Article>() {
+class NewsDiffCallback : DiffUtil.ItemCallback<Article>() {
     override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
         return oldItem.url == newItem.url
     }

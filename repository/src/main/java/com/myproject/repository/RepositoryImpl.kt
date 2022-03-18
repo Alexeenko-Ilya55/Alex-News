@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.myproject.repository.`object`.initFirebase
-import com.myproject.repository.model.Article
 import com.myproject.repository.api.ApiRepository
+import com.myproject.repository.model.Article
 import com.myproject.repository.room.AppDataBase
 import com.myproject.repository.room.RoomRepository
 import kotlinx.coroutines.CoroutineScope
@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class RepositoryImpl(
-    private val context: Context,
-    lifecycleCoroutineScope: CoroutineScope
+    context: Context,
+    coroutineScope: CoroutineScope
 ) : Repository {
     init {
         initFirebase()
@@ -31,14 +31,16 @@ class RepositoryImpl(
 
     private val sharedPreferences: SharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(context)
-    private val database = AppDataBase.buildsDatabase(context,
+    private val database = AppDataBase.buildsDatabase(
+        context,
         com.myproject.repository.`object`.DATABASE_NAME
     )
     private val roomRepository = RoomRepository(database.ArticleDao())
     private val apiRepository: ApiRepository = ApiRepository(context)
 
+
     init {
-        lifecycleCoroutineScope.launch {
+        coroutineScope.launch {
             if (sharedPreferences.getBoolean(com.myproject.repository.`object`.OFFLINE_MODE, false))
                 roomRepository.news.collectLatest {
                     _news.emit(it)
@@ -50,18 +52,17 @@ class RepositoryImpl(
         }
     }
 
-    override suspend fun searchNews(searchQuery: String) {
-        apiRepository.loadNews(searchQuery)
-    }
+    override suspend fun searchNews(searchQuery: String, pageIndex: Int, pageSize: Int) =
+        apiRepository.searchNews(searchQuery, pageIndex, pageSize)
 
 
-    override suspend fun searchNewsFromSources(nameSource: String) {
-        apiRepository.loadNewsFromSources(nameSource)
-    }
+    override suspend fun searchNewsFromSources(nameSource: String, pageIndex: Int, pageSize: Int) =
+        apiRepository.loadNewsFromSources(nameSource, pageIndex, pageSize)
+
 
     override suspend fun getNewsBookmarks() {
         if (sharedPreferences.getBoolean(com.myproject.repository.`object`.OFFLINE_MODE, false))
-            roomRepository.getAllPersons(20, 1)
+            roomRepository.getBookmarks()
         else
             apiRepository.getBookmarks()
     }
@@ -74,8 +75,12 @@ class RepositoryImpl(
         pageIndex: Int,
         pageSize: Int
     ): List<Article> {
-        return if (sharedPreferences.getBoolean(com.myproject.repository.`object`.OFFLINE_MODE, false)) {
-            roomRepository.getAllPersons(pageIndex, pageSize)
+        return if (sharedPreferences.getBoolean(
+                com.myproject.repository.`object`.OFFLINE_MODE,
+                false
+            )
+        ) {
+            roomRepository.getAllPersons(pageSize, pageIndex * pageSize)
         } else {
             apiRepository.loadNews(positionViewPager, pageIndex, pageSize)
         }

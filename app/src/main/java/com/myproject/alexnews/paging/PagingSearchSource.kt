@@ -4,19 +4,25 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.myproject.repository.RepositoryImpl
 import com.myproject.repository.model.Article
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
-
-class MyPagingSource(
+class PagingSearchSource(
     private val repository: RepositoryImpl,
-    private val positionViewPager: Int
+    private val searchQuery: String
 ) : PagingSource<Int, Article>() {
+
+    private val _news = MutableSharedFlow<List<Article>>(
+        replay = 1,
+        extraBufferCapacity = 0, onBufferOverflow = BufferOverflow.SUSPEND
+    )
+    val news = _news.asSharedFlow()
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
 
-        val news: List<Article>
         val pageIndex = params.key ?: 0
-        news = repository.getNews(positionViewPager, pageIndex, params.loadSize)
-
+        val news: List<Article> = repository.searchNews(searchQuery, pageIndex, params.loadSize)
         return LoadResult.Page(
             data = news,
             prevKey = null,

@@ -14,7 +14,8 @@ import com.myproject.alexnews.databinding.FragmentMyNewsBinding
 import com.myproject.alexnews.paging.PagingAdapter
 import com.myproject.alexnews.viewModels.FragmentMyNewsViewModel
 import com.myproject.repository.model.Article
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class FragmentMyNews : Fragment() {
@@ -31,19 +32,26 @@ class FragmentMyNews : Fragment() {
         binding = FragmentMyNewsBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this)[FragmentMyNewsViewModel::class.java]
         refreshInit()
-        lifecycleScope.launchWhenStarted {
-            viewModel.loadNews(requireArguments(), requireContext()).collect {
-                initAdapter(it)
-            }
-        }
+        if (viewModel.news != PagingData.empty<Article>())
+            initAdapter(viewModel.news)
+        getData()
         return binding.root
     }
 
     private fun refreshInit() {
         binding.refresh.setColorSchemeResources(R.color.purple_200, R.color.purple_700)
         binding.refresh.setOnRefreshListener {
-            viewModel.loadNews(requireArguments(), requireContext())
+            getData()
             binding.refresh.isRefreshing = false
+        }
+    }
+
+    private fun getData() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.loadNews(requireArguments(), requireContext()).collectLatest {
+                initAdapter(it)
+                viewModel.news = it
+            }
         }
     }
 
@@ -54,8 +62,8 @@ class FragmentMyNews : Fragment() {
                 parentFragmentManager,
                 lifecycleScope
             )
-            adapter.submitData(news)
             binding.rcView.adapter = adapter
+            adapter.submitData(news)
         }
     }
 }
