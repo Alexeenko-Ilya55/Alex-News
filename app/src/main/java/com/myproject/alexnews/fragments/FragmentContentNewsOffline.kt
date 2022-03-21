@@ -7,8 +7,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.myproject.alexnews.R
 import com.myproject.alexnews.databinding.FragmentContentNewsOfflineBinding
-import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentContentNewsOfflineViewModel
+import com.myproject.repository.model.Article
 import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.*

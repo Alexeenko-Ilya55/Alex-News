@@ -3,15 +3,17 @@ package com.myproject.alexnews.viewModels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myproject.alexnews.`object`.DATABASE_NAME
-import com.myproject.alexnews.dao.AppDataBase
-import com.myproject.alexnews.dao.ArticleRepositoryImpl
-import com.myproject.alexnews.model.Article
-import kotlinx.coroutines.Dispatchers
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.myproject.alexnews.`object`.DEFAULT_PAGE_SIZE
+import com.myproject.alexnews.`object`.Page
+import com.myproject.alexnews.paging.MyPagingSource
+import com.myproject.repository.RepositoryImpl
+import com.myproject.repository.model.Article
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 
 class FragmentOfflineViewModel : ViewModel() {
 
@@ -21,11 +23,18 @@ class FragmentOfflineViewModel : ViewModel() {
     )
     val news = _news.asSharedFlow()
 
-    fun loadNews(context: Context) {
-        val database = AppDataBase.buildsDatabase(context, DATABASE_NAME)
-        val repository = ArticleRepositoryImpl(database.ArticleDao())
-        viewModelScope.launch(Dispatchers.IO) {
-            _news.emit(repository.getAllPersons())
-        }
+    fun loadNews(context: Context): Flow<PagingData<Article>> {
+        val repository = RepositoryImpl(context, viewModelScope)
+        return Pager(
+            config = PagingConfig(
+                pageSize = DEFAULT_PAGE_SIZE,
+                initialLoadSize = DEFAULT_PAGE_SIZE,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                MyPagingSource(repository, Page.OFFLINE.index)
+            }
+        ).flow.stateIn(viewModelScope, SharingStarted.Lazily, PagingData.empty())
+            .cachedIn(viewModelScope)
     }
 }

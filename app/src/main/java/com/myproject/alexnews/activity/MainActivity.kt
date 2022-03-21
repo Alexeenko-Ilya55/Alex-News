@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             try {
                 val account = task.getResult(ApiException::class.java)
                 if (account != null) {
-                    firebaseAuthWithGoogle(account.idToken!!)
+                    account.idToken?.let { it1 -> firebaseAuthWithGoogle(it1) }
                 }
             } catch (e: ApiException) {
                 Toast.makeText(this, getString(R.string.error_authentication), Toast.LENGTH_SHORT)
@@ -181,7 +181,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
         if (key == DARK_MODE) {
-            if (sharedPreferences!!.getBoolean(DARK_MODE, false))
+            if (sharedPreferences?.getBoolean(DARK_MODE, false) == true)
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             else
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)

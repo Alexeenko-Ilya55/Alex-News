@@ -23,11 +23,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        debug{
-            buildConfigField("String", "API_KEY", "\"&pageSize=25&apiKey=ed56ec6ac2de42dd8a4fa3f6c5380142\"")
-            buildConfigField("String", "API_KEY1", "\"&pageSize=25&apiKey=fbf83c2f06864a58893d6969ccaf4ff7\"")
-            buildConfigField("String", "API_KEY2", "\"&pageSize=25&apiKey=26c3b8d2516d4aadaf0416e2bcb1ebb8\"")
-        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -44,9 +39,10 @@ android {
 dependencies {
     //Корутины
     implementation "androidx.room:room-runtime:2.4.2"
-    implementation 'com.google.firebase:firebase-auth-ktx:21.0.1'
+    implementation 'com.google.firebase:firebase-auth-ktx:21.0.2'
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
-    implementation 'com.google.firebase:firebase-database-ktx:20.0.3'
+    implementation 'com.google.firebase:firebase-database-ktx:20.0.4'
+    implementation project(path: ':repository')
     kapt "androidx.room:room-compiler:2.4.2"
     implementation "androidx.room:room-ktx:2.4.2"
 
@@ -54,10 +50,6 @@ dependencies {
     api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
 
-    //БД
-    implementation("androidx.room:room-runtime:2.4.2")
-    annotationProcessor("androidx.room:room-compiler:2.4.2")
-    kapt("androidx.room:room-compiler:2.4.2")
 
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.4.1'
@@ -71,27 +63,23 @@ dependencies {
     implementation "androidx.viewpager2:viewpager2:1.0.0"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation "org.jetbrains.anko:anko-common:0.9"
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.0'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.4.0'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation "androidx.activity:activity-ktx:1.4.0"
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
-    //implementation 'com.github.Batterii:PagingRecycler:v1.1.1'
-    implementation("androidx.paging:paging-runtime-ktx:3.1.0")
+    implementation("androidx.paging:paging-runtime-ktx:3.1.1")
     implementation 'com.google.android.material:material:1.5.0'
-    implementation ("androidx.core:core-ktx:1.7.0")
+    implementation("androidx.core:core-ktx:1.7.0")
 
     implementation 'androidx.biometric:biometric:1.1.0'
 
 
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-
     //Загрузка изображений
     implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation 'com.amitshekhar.android:android-networking:1.0.2'
+
 
 }

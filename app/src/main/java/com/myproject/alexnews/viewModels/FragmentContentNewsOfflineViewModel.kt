@@ -3,10 +3,8 @@ package com.myproject.alexnews.viewModels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myproject.alexnews.`object`.DATABASE_NAME
-import com.myproject.alexnews.dao.AppDataBase
-import com.myproject.alexnews.dao.ArticleRepositoryImpl
-import com.myproject.alexnews.model.Article
+import com.myproject.repository.RepositoryImpl
+import com.myproject.repository.model.Article
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -14,8 +12,7 @@ class FragmentContentNewsOfflineViewModel : ViewModel() {
 
     fun updateElementInDatabase(news: Article, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            val database = AppDataBase.buildsDatabase(context, DATABASE_NAME)
-            val repository = ArticleRepositoryImpl(database.ArticleDao())
+            val repository = RepositoryImpl(context, viewModelScope)
             repository.updateElement(news)
         }
     }

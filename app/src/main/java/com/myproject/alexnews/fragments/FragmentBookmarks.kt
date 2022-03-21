@@ -9,9 +9,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.myproject.alexnews.R
 import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentBookmarksBinding
-import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentBookmarksViewModel
+import com.myproject.repository.model.Article
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class FragmentBookmarks : Fragment() {
 
@@ -26,7 +27,7 @@ class FragmentBookmarks : Fragment() {
         binding = FragmentBookmarksBinding.inflate(inflater, container, false)
         val viewModel = ViewModelProvider(this)[FragmentBookmarksViewModel::class.java]
         viewModel.loadNews(requireContext())
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launchWhenStarted {
             viewModel.news.collectLatest {
                 initAdapter(it)
             }
@@ -35,10 +36,12 @@ class FragmentBookmarks : Fragment() {
     }
 
     private fun initAdapter(newsList: List<Article>) {
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        val recyclerAdapter =
-            RecyclerAdapter(newsList, parentFragmentManager, lifecycleScope)
-        binding.recyclerView.adapter = recyclerAdapter
+        lifecycleScope.launch {
+            binding.recyclerView.layoutManager = LinearLayoutManager(context)
+            val recyclerAdapter =
+                RecyclerAdapter(newsList, parentFragmentManager, lifecycleScope)
+            binding.recyclerView.adapter = recyclerAdapter
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

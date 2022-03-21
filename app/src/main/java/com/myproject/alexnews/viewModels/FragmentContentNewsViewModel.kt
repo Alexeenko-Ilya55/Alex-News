@@ -1,30 +1,19 @@
 package com.myproject.alexnews.viewModels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myproject.alexnews.dao.FirebaseDB
-import com.myproject.alexnews.model.Article
+import com.myproject.repository.RepositoryImpl
+import com.myproject.repository.model.Article
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class FragmentContentNewsViewModel : ViewModel() {
 
-    private lateinit var firebaseDatabase: FirebaseDB
-
-    fun init(firebaseDatabase: FirebaseDB) {
-        this.firebaseDatabase = firebaseDatabase
-    }
-
-    fun addToFirebase(data: Article) {
+    fun updateElement(context: Context, news: Article) {
+        val repository = RepositoryImpl(context, viewModelScope)
         viewModelScope.launch(Dispatchers.IO) {
-            firebaseDatabase.addToFirebase(data, viewModelScope)
+            repository.updateElement(news)
         }
     }
-
-    fun deleteFromFirebase(urlNews: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            firebaseDatabase.deleteFromFB(urlNews, viewModelScope)
-        }
-    }
-
 }
