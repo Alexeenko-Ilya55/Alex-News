@@ -3,6 +3,7 @@ package com.myproject.repository
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import android.util.Log
 import com.myproject.repository.`object`.initFirebase
 import com.myproject.repository.api.ApiRepository
 import com.myproject.repository.model.Article
@@ -80,6 +81,7 @@ class RepositoryImpl(
                 false
             )
         ) {
+            Log.i("MyLog", "pageSize $pageSize, pageIndex $pageIndex, offset: ${pageIndex*pageSize}")
             roomRepository.getAllPersons(pageSize, pageIndex * pageSize)
         } else {
             apiRepository.loadNews(positionViewPager, pageIndex, pageSize)

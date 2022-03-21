@@ -12,7 +12,7 @@ class PagingNewsFromSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
 
-        val pageIndex = params.key ?: 0
+        val pageIndex = params.key ?: 1
         val news: List<Article> =
             repository.searchNewsFromSources(sourceName, pageIndex, params.loadSize)
         return LoadResult.Page(

@@ -1,7 +1,10 @@
 package com.myproject.repository.model
 
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
+import com.myproject.repository.model.Article
 
+@Serializable
 data class DataFromApi(
 
     @SerializedName("articles")

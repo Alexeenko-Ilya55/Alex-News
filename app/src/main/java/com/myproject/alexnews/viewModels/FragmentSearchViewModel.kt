@@ -8,7 +8,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.myproject.alexnews.`object`.DEFAULT_PAGE_SIZE
-import com.myproject.alexnews.paging.PagingSearchSource
+import com.myproject.alexnews.paging.PagingSearchNews
 import com.myproject.repository.RepositoryImpl
 import com.myproject.repository.model.Article
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +28,7 @@ class FragmentSearchViewModel : ViewModel() {
                 enablePlaceholders = false,
             ),
             pagingSourceFactory = {
-                PagingSearchSource(repository, searchQuery)
+                PagingSearchNews(repository, searchQuery)
             }
         ).flow.stateIn(viewModelScope, SharingStarted.Lazily, PagingData.empty())
             .cachedIn(viewModelScope)

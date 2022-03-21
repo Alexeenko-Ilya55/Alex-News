@@ -8,7 +8,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
-class PagingSearchSource(
+class PagingSearchNews(
     private val repository: RepositoryImpl,
     private val searchQuery: String
 ) : PagingSource<Int, Article>() {
@@ -21,7 +21,7 @@ class PagingSearchSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
 
-        val pageIndex = params.key ?: 0
+        val pageIndex = params.key ?: 1
         val news: List<Article> = repository.searchNews(searchQuery, pageIndex, params.loadSize)
         return LoadResult.Page(
             data = news,

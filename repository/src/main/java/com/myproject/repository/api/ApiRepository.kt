@@ -12,6 +12,13 @@ import com.myproject.repository.BuildConfig
 import com.myproject.repository.`object`.*
 import com.myproject.repository.api.retrofit.ApiService
 import com.myproject.repository.model.Article
+import com.myproject.repository.model.DataFromApi
+import com.myproject.repository.model.DataKtor
+import io.ktor.client.*
+import io.ktor.client.engine.android.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import io.ktor.client.request.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -63,6 +70,37 @@ class ApiRepository(
         pageIndex: Int,
         pageSize: Int
     ): List<Article> {
+        return if (BuildConfig.LOADER == RETROFIT)
+            loadNewsFromSourcesRetrofit(searchQuery, pageIndex, pageSize)
+        else
+            loadNewsFromSourcesKtor(searchQuery, pageIndex, pageSize)
+    }
+
+    private suspend fun loadNewsFromSourcesKtor(
+        searchQuery: String,
+        pageIndex: Int,
+        pageSize: Int
+    ): List<Article> {
+        val client = HttpClient(Android) {
+            install(JsonFeature) {
+                serializer = KotlinxSerializer()
+            }
+        }
+        val url = createUrl(searchQuery, pageIndex, pageSize)
+        val response:DataKtor = client.get(url)
+        Log.i("MyLog", response.status)
+        return emptyList()
+    }
+
+    private fun createUrl(searchQuery: String, pageIndex: Int, pageSize: Int) =
+        "https://newsapi.org/v2/everything?q=bitcoin&apiKey=26c3b8d2516d4aadaf0416e2bcb1ebb8"
+    // BASE_URL + "everything?q=$searchQuery&page=$pageIndex&pageSize=$pageSize&apiKey=" + BuildConfig.API_KEY2
+
+    private suspend fun loadNewsFromSourcesRetrofit(
+        searchQuery: String,
+        pageIndex: Int,
+        pageSize: Int
+    ): List<Article> {
         val response = apiService
             .searchNewsList(
                 typeNews = HEADLINES_NEWS,
@@ -74,6 +112,7 @@ class ApiRepository(
         return response.articles
     }
 
+
     private suspend fun apiRequest(category: String): List<Article> {
 
         val options = HashMap<String, String>()
@@ -81,7 +120,7 @@ class ApiRepository(
         options[CATEGORY] = category
         options[PAGE] = pageIndex.toString()
         options[PAGE_SIZE] = pageSize.toString()
-        options[API_KEY] = BuildConfig.API_KEY1
+        options[API_KEY] = BuildConfig.API_KEY
 
         val response = apiService
             .getNewsList(

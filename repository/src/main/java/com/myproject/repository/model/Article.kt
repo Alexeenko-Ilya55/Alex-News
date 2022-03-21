@@ -5,11 +5,13 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.myproject.repository.`object`.*
 import com.myproject.repository.room.TABLE_NAME
+import kotlinx.serialization.Serializable
 
 
 @Entity(
     tableName = TABLE_NAME
 )
+@Serializable
 data class Article(
     @SerializedName(DESCRIPTION)
     var description: String? = "",
