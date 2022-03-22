@@ -13,7 +13,6 @@ import com.myproject.repository.`object`.*
 import com.myproject.repository.api.retrofit.ApiService
 import com.myproject.repository.model.Article
 import com.myproject.repository.model.DataFromApi
-import com.myproject.repository.model.DataKtor
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.features.json.*
@@ -36,6 +35,12 @@ class ApiRepository(
     private val auth = Firebase.auth
     private var pageIndex by Delegates.notNull<Int>()
     private var pageSize by Delegates.notNull<Int>()
+    private val loaderKtor = BuildConfig.LOADER == KTOR
+    private val client = HttpClient(Android) {
+        install(JsonFeature) {
+            serializer = KotlinxSerializer()
+        }
+    }
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
@@ -54,15 +59,36 @@ class ApiRepository(
         pageIndex: Int,
         pageSize: Int
     ): List<Article> {
-        val response = apiService
+        return if (loaderKtor)
+            loadNewsFromSourcesKtor(sourceName, pageIndex, pageSize)
+        else
+            loadNewsFromSourcesRetrofit(sourceName, pageIndex, pageSize)
+    }
+
+    private suspend fun loadNewsFromSourcesRetrofit(
+        sourceName: String,
+        pageIndex: Int,
+        pageSize: Int
+    ): List<Article> {
+        return apiService
             .searchNewsFromSources(
                 typeNews = HEADLINES_NEWS,
                 sourceName = sourceName,
                 pageIndex = pageIndex,
                 pageSize = pageSize,
                 apiKey = BuildConfig.API_KEY1
-            )
-        return response.articles
+            ).articles
+    }
+
+    private suspend fun loadNewsFromSourcesKtor(
+        sourceName: String,
+        pageIndex: Int,
+        pageSize: Int
+    ): List<Article> {
+        val url =
+            BASE_URL + "$SOURCE=$sourceName&$PAGE=${pageIndex}" +
+                    "&$PAGE_SIZE=${pageSize}&$API_KEY=" + BuildConfig.API_KEY
+        return client.get<DataFromApi>(url).articles
     }
 
     override suspend fun searchNews(
@@ -70,33 +96,27 @@ class ApiRepository(
         pageIndex: Int,
         pageSize: Int
     ): List<Article> {
-        return if (BuildConfig.LOADER == RETROFIT)
-            loadNewsFromSourcesRetrofit(searchQuery, pageIndex, pageSize)
+        return if (loaderKtor)
+            searchNewsKtor(searchQuery, pageIndex, pageSize)
         else
-            loadNewsFromSourcesKtor(searchQuery, pageIndex, pageSize)
+            searchNewsRetrofit(searchQuery, pageIndex, pageSize)
     }
 
-    private suspend fun loadNewsFromSourcesKtor(
+    private suspend fun searchNewsKtor(
         searchQuery: String,
         pageIndex: Int,
         pageSize: Int
     ): List<Article> {
-        val client = HttpClient(Android) {
-            install(JsonFeature) {
-                serializer = KotlinxSerializer()
-            }
-        }
         val url = createUrl(searchQuery, pageIndex, pageSize)
-        val response:DataKtor = client.get(url)
-        Log.i("MyLog", response.status)
-        return emptyList()
+        val response: DataFromApi = client.get(url)
+        return response.articles
     }
 
     private fun createUrl(searchQuery: String, pageIndex: Int, pageSize: Int) =
-        "https://newsapi.org/v2/everything?q=bitcoin&apiKey=26c3b8d2516d4aadaf0416e2bcb1ebb8"
-    // BASE_URL + "everything?q=$searchQuery&page=$pageIndex&pageSize=$pageSize&apiKey=" + BuildConfig.API_KEY2
+        BASE_URL + "$HEADLINES_NEWS?q=$searchQuery&$PAGE=$pageIndex&$PAGE_SIZE=$pageSize&$API_KEY="+
+                BuildConfig.API_KEY
 
-    private suspend fun loadNewsFromSourcesRetrofit(
+    private suspend fun searchNewsRetrofit(
         searchQuery: String,
         pageIndex: Int,
         pageSize: Int
@@ -107,13 +127,13 @@ class ApiRepository(
                 query = searchQuery,
                 pageIndex = pageIndex,
                 pageSize = pageSize,
-                apiKey = BuildConfig.API_KEY1
+                apiKey = BuildConfig.API_KEY
             )
         return response.articles
     }
 
 
-    private suspend fun apiRequest(category: String): List<Article> {
+    private suspend fun loadNewsRetrofit(category: String): List<Article> {
 
         val options = HashMap<String, String>()
         options[COUNTRY] = countryIndex
@@ -136,18 +156,37 @@ class ApiRepository(
         pageIndex: Int,
         pageSize: Int
     ): List<Article> {
-        this.pageIndex = pageIndex
         this.pageSize = pageSize
+        this.pageIndex = pageIndex
+        return if (loaderKtor)
+            loadNewsKtor(positionViewPager, pageIndex, pageSize)
+        else
+            loadNewsRetrofit(categoryByIndex(positionViewPager))
+    }
+
+    private suspend fun loadNewsKtor(
+        positionViewPager: Int,
+        pageIndex: Int,
+        pageSize: Int
+    ): List<Article> {
+        val url =
+            BASE_URL + "$HEADLINES_NEWS?$CATEGORY=${categoryByIndex(positionViewPager)}&"+
+                    "$COUNTRY=$countryIndex&$PAGE=$pageIndex" +
+                    "&$PAGE_SIZE=$pageSize&$API_KEY=" + BuildConfig.API_KEY
+        return client.get<DataFromApi>(url).articles
+    }
+
+    private fun categoryByIndex(positionViewPager: Int): String {
         return when (positionViewPager) {
-            Page.MY_NEWS.index -> apiRequest(CATEGORY_MY_NEWS)
-            Page.TECHNOLOGY.index -> apiRequest(CATEGORY_TECHNOLOGY)
-            Page.SPORTS.index -> apiRequest(CATEGORY_SPORTS)
-            Page.BUSINESS.index -> apiRequest(CATEGORY_BUSINESS)
-            Page.GLOBAL.index -> apiRequest(CATEGORY_GLOBAL)
-            Page.HEALTH.index -> apiRequest(CATEGORY_HEALTH)
-            Page.SCIENCE.index -> apiRequest(CATEGORY_SCIENCE)
-            Page.ENTERTAINMENT.index -> apiRequest(CATEGORY_ENTERTAINMENT)
-            else -> emptyList()
+            Page.MY_NEWS.index -> CATEGORY_MY_NEWS
+            Page.TECHNOLOGY.index -> CATEGORY_TECHNOLOGY
+            Page.SPORTS.index -> CATEGORY_SPORTS
+            Page.BUSINESS.index -> CATEGORY_BUSINESS
+            Page.GLOBAL.index -> CATEGORY_GLOBAL
+            Page.HEALTH.index -> CATEGORY_HEALTH
+            Page.SCIENCE.index -> CATEGORY_SCIENCE
+            Page.ENTERTAINMENT.index -> CATEGORY_ENTERTAINMENT
+            else -> CATEGORY_MY_NEWS
         }
     }
 
@@ -167,7 +206,7 @@ class ApiRepository(
         REF_DATABASE_ROOT.child(NODE_USERS).child(uid).child(str).updateChildren(dataMap)
             .addOnCompleteListener {
                 if (!it.isSuccessful)
-                    Log.d("MyLog", "Error, problems with connect to database")
+                    Log.d("MyLog", "Error, problems with connect to firebase")
             }
     }
 

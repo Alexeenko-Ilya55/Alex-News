@@ -14,6 +14,8 @@ const val HEADLINES_NEWS = "top-headlines"
 const val SOURCES = "sources"
 const val CATEGORY = "category"
 const val NEWS_TYPE = "typeNews"
+const val SOURCE = "everything?source"
+const val KTOR = "ktor"
 
 const val RETROFIT = "retrofit"
 
