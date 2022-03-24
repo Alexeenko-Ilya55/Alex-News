@@ -30,7 +30,5 @@ class RoomRepository(private val articleDao: ArticleDao) : RoomNewsRepository {
         articleDao.updateElement(news)
     }
 
-    override suspend fun getBookmarks() {
-        _news.emit(articleDao.getBookmarks())
-    }
+    override suspend fun getBookmarks() = articleDao.getBookmarks()
 }

@@ -12,6 +12,6 @@ interface ApiNewsRepository {
 
     suspend fun searchNews(searchQuery: String, pageIndex: Int, pageSize: Int): List<Article>
     suspend fun loadNews(positionViewPager: Int, pageIndex: Int, pageSize: Int): List<Article>
-    suspend fun getBookmarks()
-    suspend fun getNotes()
+    suspend fun getBookmarks(): List<Article>
+    suspend fun getNotes(): List<Article>
 }

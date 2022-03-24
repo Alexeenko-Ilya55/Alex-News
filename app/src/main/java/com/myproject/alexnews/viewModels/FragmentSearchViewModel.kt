@@ -1,6 +1,5 @@
 package com.myproject.alexnews.viewModels
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -15,12 +14,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 
-class FragmentSearchViewModel : ViewModel() {
+class FragmentSearchViewModel(
+    private val repository: RepositoryImpl
+) : ViewModel() {
 
     var news: PagingData<Article> = PagingData.empty()
 
-    fun searchNews(searchQuery: String, context: Context): Flow<PagingData<Article>> {
-        val repository = RepositoryImpl(context, viewModelScope)
+
+    fun searchNews(searchQuery: String): Flow<PagingData<Article>> {
         return Pager(
             config = PagingConfig(
                 pageSize = DEFAULT_PAGE_SIZE,
@@ -34,4 +35,3 @@ class FragmentSearchViewModel : ViewModel() {
             .cachedIn(viewModelScope)
     }
 }
-

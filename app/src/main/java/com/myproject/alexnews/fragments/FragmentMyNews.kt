@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,11 +16,14 @@ import com.myproject.repository.model.Article
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class FragmentMyNews : Fragment() {
 
     private lateinit var binding: FragmentMyNewsBinding
-    private lateinit var viewModel: FragmentMyNewsViewModel
+    private val viewModel: FragmentMyNewsViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -30,7 +32,6 @@ class FragmentMyNews : Fragment() {
         setHasOptionsMenu(true)
         requireActivity().setTitle(R.string.app_name)
         binding = FragmentMyNewsBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(this)[FragmentMyNewsViewModel::class.java]
         refreshInit()
         if (viewModel.news != PagingData.empty<Article>())
             initAdapter(viewModel.news)
@@ -48,7 +49,7 @@ class FragmentMyNews : Fragment() {
 
     private fun getData() {
         lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.loadNews(requireArguments(), requireContext()).collectLatest {
+            viewModel.loadNews(requireArguments()).collectLatest {
                 initAdapter(it)
                 viewModel.news = it
             }
@@ -58,10 +59,12 @@ class FragmentMyNews : Fragment() {
     private fun initAdapter(news: PagingData<Article>) {
         lifecycleScope.launch {
             binding.rcView.layoutManager = LinearLayoutManager(context)
-            val adapter = PagingAdapter(
-                parentFragmentManager,
-                lifecycleScope
-            )
+            val adapter: PagingAdapter by inject {
+                parametersOf(
+                    parentFragmentManager,
+                    lifecycleScope
+                )
+            }
             binding.rcView.adapter = adapter
             adapter.submitData(news)
         }

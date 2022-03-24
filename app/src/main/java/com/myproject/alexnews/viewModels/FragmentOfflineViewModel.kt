@@ -1,6 +1,5 @@
 package com.myproject.alexnews.viewModels
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -15,7 +14,9 @@ import com.myproject.repository.model.Article
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.*
 
-class FragmentOfflineViewModel : ViewModel() {
+class FragmentOfflineViewModel(
+    private val repository: RepositoryImpl
+) : ViewModel() {
 
     private val _news = MutableSharedFlow<List<Article>>(
         replay = 1,
@@ -23,8 +24,7 @@ class FragmentOfflineViewModel : ViewModel() {
     )
     val news = _news.asSharedFlow()
 
-    fun loadNews(context: Context): Flow<PagingData<Article>> {
-        val repository = RepositoryImpl(context, viewModelScope)
+    fun loadNews(): Flow<PagingData<Article>> {
         return Pager(
             config = PagingConfig(
                 pageSize = DEFAULT_PAGE_SIZE,

@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.DARK_MODE
@@ -28,11 +27,9 @@ import java.util.*
 class RecyclerAdapter(
     private val newsList: List<Article>,
     private val fragmentManager: FragmentManager,
-    private val lifecycleScope: LifecycleCoroutineScope
+    private val lifecycleScope: LifecycleCoroutineScope,
+    private val sharedPreferences: SharedPreferences
 ) : RecyclerView.Adapter<RecyclerAdapter.RecyclerHolder>() {
-
-    lateinit var view: View
-    private lateinit var sharedPreferences: SharedPreferences
 
     inner class RecyclerHolder(item: View) : RecyclerView.ViewHolder(item) {
         val context = item.context!!
@@ -43,7 +40,7 @@ class RecyclerAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerHolder {
-        view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
         return RecyclerHolder(view)
     }
 
@@ -51,7 +48,6 @@ class RecyclerAdapter(
     override fun onBindViewHolder(holder: RecyclerHolder, position: Int) {
         holder.apply {
             val news = newsList[position]
-            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             fillDataInItem(holder, news)
 
             bookmarks.setOnClickListener {
@@ -108,5 +104,4 @@ class RecyclerAdapter(
     private fun openFragment(fragment: Fragment) =
         fragmentManager.beginTransaction().addToBackStack(null)
             .replace(R.id.fragment_container, fragment).commit()
-
 }

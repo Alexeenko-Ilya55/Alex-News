@@ -22,13 +22,11 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.*
 import com.myproject.alexnews.databinding.ActivityMainBinding
 import com.myproject.alexnews.fragments.*
-import java.util.*
+import org.koin.android.ext.android.inject
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     SharedPreferences.OnSharedPreferenceChangeListener {
@@ -37,14 +35,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var binding: ActivityMainBinding
     private lateinit var fragmentMain: FragmentMain
     private lateinit var launcher: ActivityResultLauncher<Intent>
-    private lateinit var auth: FirebaseAuth
-    private lateinit var sharedPreferences: SharedPreferences
+    private val auth: FirebaseAuth by inject()
+    private val sharedPreferences: SharedPreferences by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         nawViewInit()
         sharedPreferences()
         actionBarInit()
@@ -61,7 +59,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun signInAccountInit() {
-        auth = Firebase.auth
         auth.currentUser
         launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
@@ -92,7 +89,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun sharedPreferences() {
-        when (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("DarkMode", false)) {
+        when (PreferenceManager.getDefaultSharedPreferences(this).getBoolean(DARK_MODE, false)) {
             true -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             false -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
@@ -165,10 +162,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun checkOfflineMode(position: Int) {
-        if (!sharedPreferences.getBoolean(OFFLINE_MODE, false)) fragmentMain.navigationViewPager(
-            position
-        )
-        else openFragment(FragmentOffline())
+        if (!sharedPreferences.getBoolean(OFFLINE_MODE, false))
+            fragmentMain.navigationViewPager(position)
+        else
+            openFragment(FragmentOffline())
     }
 
     private fun openFragment(fragment: Fragment) {
