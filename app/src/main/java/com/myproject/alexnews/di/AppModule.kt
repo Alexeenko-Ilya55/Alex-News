@@ -2,16 +2,15 @@ package com.myproject.alexnews.di
 
 import android.app.AlertDialog
 import android.content.SharedPreferences
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
 import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.adapter.ViewPagerAdapter
 import com.myproject.alexnews.paging.PagingAdapter
-import com.myproject.alexnews.paging.PagingSearchSource
 import com.myproject.alexnews.viewModels.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -64,10 +63,11 @@ val appModule = module {
         )
     }
 
-    single { params ->
-        ActionBarDrawerToggle(params.get(), params.get(), R.string.open, R.string.close)
-    }
-    single{ params->
-        PagingSearchSource(get(),params.get())
+    single {
+        GoogleSignInOptions
+            .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(androidContext().getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
     }
 }

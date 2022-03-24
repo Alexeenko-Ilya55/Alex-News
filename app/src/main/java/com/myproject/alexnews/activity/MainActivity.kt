@@ -192,11 +192,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun getClient(): GoogleSignInClient {
-        val gso = GoogleSignInOptions
-            .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
+        val gso:GoogleSignInOptions by inject()
         return GoogleSignIn.getClient(this, gso)
     }
 
