@@ -17,8 +17,6 @@ const val NEWS_TYPE = "typeNews"
 const val SOURCE = "everything?source"
 const val KTOR = "ktor"
 
-const val RETROFIT = "retrofit"
-
 const val CATEGORY_BUSINESS = "business"
 const val CATEGORY_GLOBAL = "general"
 const val CATEGORY_HEALTH = "health"

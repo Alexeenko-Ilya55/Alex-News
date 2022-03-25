@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import com.myproject.repository.room.TABLE_NAME
 import kotlinx.serialization.Serializable
 
-
 @Entity(
     tableName = TABLE_NAME
 )

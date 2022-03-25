@@ -26,7 +26,7 @@ android {
             buildConfigField("String", "API_KEY2", "\"ed56ec6ac2de42dd8a4fa3f6c5380142\"")
             buildConfigField("String", "API_KEY1", "\"bf83c2f06864a58893d6969ccaf4ff7\"")
             buildConfigField("String", "API_KEY", "\"26c3b8d2516d4aadaf0416e2bcb1ebb8\"")
-            buildConfigField("String", "LOADER", "\"ktor\"")
+            buildConfigField("String", "LOADER", "\"ktor12\"")
         }
     }
     compileOptions {
@@ -42,6 +42,7 @@ android {
 dependencies {
 
     implementation("androidx.room:room-runtime:2.4.2")
+    implementation 'com.google.firebase:firebase-crashlytics-buildtools:2.8.1'
     annotationProcessor("androidx.room:room-compiler:2.4.2")
     kapt("androidx.room:room-compiler:2.4.2")
 
@@ -68,7 +69,6 @@ dependencies {
 
     implementation "io.ktor:ktor-client-core:1.6.8"
     implementation "io.ktor:ktor-client-android:1.6.8"
-
     implementation "io.ktor:ktor-client-serialization:1.6.8"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2"
 }

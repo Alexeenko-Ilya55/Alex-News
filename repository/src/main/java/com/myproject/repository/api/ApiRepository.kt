@@ -6,40 +6,30 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.ktx.Firebase
 import com.myproject.repository.BuildConfig
 import com.myproject.repository.`object`.*
 import com.myproject.repository.api.retrofit.ApiService
 import com.myproject.repository.model.Article
 import com.myproject.repository.model.DataFromApi
 import io.ktor.client.*
-import io.ktor.client.engine.android.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.collections.set
 import kotlin.properties.Delegates
 
 class ApiRepository(
     sharedPreferences: SharedPreferences,
-    private val apiService: ApiService,
-    private val auth: FirebaseAuth
+    private val retrofit: ApiService,
+    private val auth: FirebaseAuth,
+    private var ktor: HttpClient
 ) : ApiNewsRepository {
 
     private val countryIndex = sharedPreferences.getString(COUNTRY, "").toString()
     private var pageIndex by Delegates.notNull<Int>()
     private var pageSize by Delegates.notNull<Int>()
     private val loaderKtor = BuildConfig.LOADER == KTOR
-    private val client = HttpClient(Android) {
-        install(JsonFeature) {
-            serializer = KotlinxSerializer()
-        }
-    }
 
     private val _news = MutableSharedFlow<List<Article>>(
         replay = 1,
@@ -63,7 +53,7 @@ class ApiRepository(
         pageIndex: Int,
         pageSize: Int
     ): List<Article> {
-        return apiService
+        return retrofit
             .searchNewsFromSources(
                 typeNews = HEADLINES_NEWS,
                 sourceName = sourceName,
@@ -81,7 +71,7 @@ class ApiRepository(
         val url =
             BASE_URL + "$SOURCE=$sourceName&$PAGE=${pageIndex}" +
                     "&$PAGE_SIZE=${pageSize}&$API_KEY=" + BuildConfig.API_KEY
-        return client.get<DataFromApi>(url).articles
+        return ktor.get<DataFromApi>(url).articles
     }
 
     override suspend fun searchNews(
@@ -100,31 +90,25 @@ class ApiRepository(
         pageIndex: Int,
         pageSize: Int
     ): List<Article> {
-        val url = createUrl(searchQuery, pageIndex, pageSize)
-        val response: DataFromApi = client.get(url)
-        return response.articles
+        val url = BASE_URL + "$HEADLINES_NEWS?q=$searchQuery&$PAGE=$pageIndex&" +
+                "$PAGE_SIZE=$pageSize&$API_KEY=" + BuildConfig.API_KEY
+        return ktor.get<DataFromApi>(url).articles
     }
-
-    private fun createUrl(searchQuery: String, pageIndex: Int, pageSize: Int) =
-        BASE_URL + "$HEADLINES_NEWS?q=$searchQuery&$PAGE=$pageIndex&$PAGE_SIZE=$pageSize&$API_KEY="+
-                BuildConfig.API_KEY
 
     private suspend fun searchNewsRetrofit(
         searchQuery: String,
         pageIndex: Int,
         pageSize: Int
     ): List<Article> {
-        val response = apiService
+        return retrofit
             .searchNewsList(
                 typeNews = HEADLINES_NEWS,
                 query = searchQuery,
                 pageIndex = pageIndex,
                 pageSize = pageSize,
                 apiKey = BuildConfig.API_KEY
-            )
-        return response.articles
+            ).articles
     }
-
 
     private suspend fun loadNewsRetrofit(category: String): List<Article> {
 
@@ -135,7 +119,7 @@ class ApiRepository(
         options[PAGE_SIZE] = pageSize.toString()
         options[API_KEY] = BuildConfig.API_KEY
 
-        return apiService
+        return retrofit
             .getNewsList(
                 typeNews = HEADLINES_NEWS,
                 options = options
@@ -162,10 +146,10 @@ class ApiRepository(
         pageSize: Int
     ): List<Article> {
         val url =
-            BASE_URL + "$HEADLINES_NEWS?$CATEGORY=${categoryByIndex(positionViewPager)}&"+
+            BASE_URL + "$HEADLINES_NEWS?$CATEGORY=${categoryByIndex(positionViewPager)}&" +
                     "$COUNTRY=$countryIndex&$PAGE=$pageIndex" +
                     "&$PAGE_SIZE=$pageSize&$API_KEY=" + BuildConfig.API_KEY
-        return client.get<DataFromApi>(url).articles
+        return ktor.get<DataFromApi>(url).articles
     }
 
     private fun categoryByIndex(positionViewPager: Int): String {
