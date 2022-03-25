@@ -12,7 +12,6 @@ class MyPagingSource(
 ) : PagingSource<Int, Article>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
-
         val news: List<Article>
         val pageIndex = params.key ?: 0
         news = repository.getNews(positionViewPager, pageIndex, params.loadSize)

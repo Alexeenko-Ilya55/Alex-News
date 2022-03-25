@@ -1,5 +1,6 @@
 package com.myproject.repository.room
 
+import android.util.Log
 import com.myproject.repository.model.Article
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,6 +20,7 @@ class RoomRepository(private val articleDao: ArticleDao) : RoomNewsRepository {
     }
 
     override suspend fun getAllPersons(limit: Int, offset: Int): List<Article> {
+        Log.i("MyLog","Limit: $limit, Offset: $offset")
         return articleDao.getAllArticles(limit, offset)
     }
 

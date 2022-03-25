@@ -1,27 +1,29 @@
 package com.myproject.repository.model
 
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
-import com.myproject.repository.`object`.*
 import com.myproject.repository.room.TABLE_NAME
+import kotlinx.serialization.Serializable
 
 
 @Entity(
     tableName = TABLE_NAME
 )
+@Serializable
 data class Article(
-    @SerializedName(DESCRIPTION)
     var description: String? = "",
-    @SerializedName(PUBLISHED_AT)
     var publishedAt: String = "",
-    @SerializedName(TITLE)
     var title: String = "",
     @PrimaryKey
-    @SerializedName(URL)
     var url: String = "",
-    @SerializedName(URL_TO_IMAGE)
     var urlToImage: String? = "",
+    @Ignore
+    var author: String? = "",
+    @Ignore
+    var content: String? = "",
+    @Ignore
+    var source: Source? = Source("", ""),
 
     var notes: String? = "",
     var bookmarkEnable: Boolean = false

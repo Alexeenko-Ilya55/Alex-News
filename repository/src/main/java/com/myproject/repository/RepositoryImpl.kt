@@ -1,6 +1,8 @@
 package com.myproject.repository
 
 import android.content.SharedPreferences
+import android.preference.PreferenceManager
+import android.util.Log
 import com.myproject.repository.`object`.initFirebase
 import com.myproject.repository.api.ApiNewsRepository
 import com.myproject.repository.model.Article
