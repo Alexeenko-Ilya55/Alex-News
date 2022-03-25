@@ -55,11 +55,11 @@ class ApiRepository(
     ): List<Article> {
         return retrofit
             .searchNewsFromSources(
-                typeNews = HEADLINES_NEWS,
+                typeNews = EVERYTHING_NEWS,
                 sourceName = sourceName,
                 pageIndex = pageIndex,
                 pageSize = pageSize,
-                apiKey = BuildConfig.API_KEY1
+                apiKey = BuildConfig.API_KEY
             ).articles
     }
 

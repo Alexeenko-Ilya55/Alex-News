@@ -73,7 +73,7 @@ class PagingAdapter(
     fun fillDataInItem(holder: Holder, news: Article) {
         holder.apply {
             title.text = news.title.substringBeforeLast('-')
-            time.text = formatDate(news.publishedAt)
+            time.text = formatDate(news.publishedAt.substringBeforeLast(":"))
             if (news.urlToImage != "")
                 Picasso.get().load(news.urlToImage).into(imageNews)
             else
@@ -91,7 +91,7 @@ class PagingAdapter(
 
     @SuppressLint("SimpleDateFormat")
     private fun formatDate(publishedAt: String): String {
-        val formatInputDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        val formatInputDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm")
         val formatOutputDate = SimpleDateFormat("dd MMMM HH:mm")
         formatInputDate.timeZone = TimeZone.getTimeZone("UTC")
         val docDate = formatInputDate.parse(publishedAt)
@@ -111,4 +111,5 @@ class NewsDiffCallback : DiffUtil.ItemCallback<Article>() {
     override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
         return oldItem == newItem
     }
+
 }
