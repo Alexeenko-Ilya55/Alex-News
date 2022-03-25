@@ -15,8 +15,8 @@ interface Repository {
         pageSize: Int
     ): List<Article>
 
-    suspend fun getNewsBookmarks()
-    suspend fun getNewsNotes()
+    suspend fun getNewsBookmarks(): List<Article>
+    suspend fun getNewsNotes(): List<Article>
     suspend fun getNews(positionViewPager: Int, pageIndex: Int, pageSize: Int): List<Article>
     suspend fun updateElement(news: Article)
 }

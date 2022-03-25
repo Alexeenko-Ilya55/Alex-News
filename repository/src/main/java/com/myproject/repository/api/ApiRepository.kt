@@ -1,13 +1,11 @@
 package com.myproject.repository.api
 
-import android.content.Context
-import android.preference.PreferenceManager
+import android.content.SharedPreferences
 import android.util.Log
-import com.google.firebase.auth.ktx.auth
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.ktx.Firebase
 import com.myproject.repository.BuildConfig
 import com.myproject.repository.`object`.*
 import com.myproject.repository.api.retrofit.ApiService
@@ -15,26 +13,18 @@ import com.myproject.repository.model.Article
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.collections.set
 import kotlin.properties.Delegates
 
 class ApiRepository(
-    context: Context,
+    sharedPreferences: SharedPreferences,
+    private val apiService: ApiService,
+    private val auth: FirebaseAuth
 ) : ApiNewsRepository {
 
-    private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
     private val countryIndex = sharedPreferences.getString(COUNTRY, "").toString()
-    private val auth = Firebase.auth
     private var pageIndex by Delegates.notNull<Int>()
     private var pageSize by Delegates.notNull<Int>()
-
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val apiService: ApiService = retrofit.create(ApiService::class.java)
 
     private val _news = MutableSharedFlow<List<Article>>(
         replay = 1,
@@ -47,15 +37,14 @@ class ApiRepository(
         pageIndex: Int,
         pageSize: Int
     ): List<Article> {
-        val response = apiService
+        return apiService
             .searchNewsFromSources(
                 typeNews = HEADLINES_NEWS,
                 sourceName = sourceName,
                 pageIndex = pageIndex,
                 pageSize = pageSize,
                 apiKey = BuildConfig.API_KEY1
-            )
-        return response.articles
+            ).articles
     }
 
     override suspend fun searchNews(
@@ -63,15 +52,14 @@ class ApiRepository(
         pageIndex: Int,
         pageSize: Int
     ): List<Article> {
-        val response = apiService
+        return apiService
             .searchNewsList(
                 typeNews = HEADLINES_NEWS,
                 query = searchQuery,
                 pageIndex = pageIndex,
                 pageSize = pageSize,
                 apiKey = BuildConfig.API_KEY1
-            )
-        return response.articles
+            ).articles
     }
 
     private suspend fun apiRequest(category: String): List<Article> {
@@ -83,12 +71,11 @@ class ApiRepository(
         options[PAGE_SIZE] = pageSize.toString()
         options[API_KEY] = BuildConfig.API_KEY1
 
-        val response = apiService
+        return apiService
             .getNewsList(
                 typeNews = HEADLINES_NEWS,
                 options = options
-            )
-        return response.articles
+            ).articles
     }
 
 
@@ -143,9 +130,8 @@ class ApiRepository(
         else deleteFromFB(news.url)
     }
 
-    private suspend fun getNewsFromFirebase(category: String) {
+    private fun getNewsFromFirebase(category: String): List<Article> {
         var newsList: MutableList<Article> = mutableListOf()
-        val auth = Firebase.auth
         auth.currentUser
         REF_DATABASE_ROOT.child(NODE_USERS).child(auth.currentUser?.uid.toString())
             .addValueEventListener(object : ValueEventListener {
@@ -163,7 +149,7 @@ class ApiRepository(
                 }
             }
             )
-        _news.emit(newsList)
+        return newsList
     }
 
     override suspend fun getBookmarks() =

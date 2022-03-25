@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.paging.PagingDataAdapter
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.myproject.alexnews.R
@@ -29,18 +28,17 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class PagingAdapter(
+    private val sharedPreferences: SharedPreferences,
+    private val repository: RepositoryImpl,
     private val fragmentManager: FragmentManager,
     private val lifecycleScope: LifecycleCoroutineScope
 ) : PagingDataAdapter<Article, PagingAdapter.Holder>(NewsDiffCallback()) {
 
-    private lateinit var sharedPreferences: SharedPreferences
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val news = getItem(position)!!
         holder.apply {
-            val repository = RepositoryImpl(context, lifecycleScope)
-            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
             fillDataInItem(holder, news)
 
             bookmarks.setOnClickListener {
@@ -57,13 +55,11 @@ class PagingAdapter(
                 } else
                     openFragment(FragmentContentNews(news))
             }
-
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         Holder(LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false))
-
 
     class Holder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val context = itemView.context!!

@@ -17,7 +17,6 @@ import kotlin.properties.Delegates
 
 class FragmentMain : Fragment() {
 
-    private lateinit var viewPagerAdapter: ViewPagerAdapter
     private lateinit var binding: FragmentMainBinding
     private var positionViewPager by Delegates.notNull<Int>()
 
@@ -25,11 +24,11 @@ class FragmentMain : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val viewPagerAdapter = ViewPagerAdapter(context as FragmentActivity)
         positionViewPager = requireArguments().getInt(POSITION_VIEW_PAGER)
         requireActivity().setTitle(R.string.app_name)
         binding = FragmentMainBinding.inflate(inflater, container, false)
 
-        viewPagerAdapter = ViewPagerAdapter(context as FragmentActivity)
         binding.viewPager.adapter = viewPagerAdapter
         binding.viewPager.offscreenPageLimit = Page.COUNT_OF_SCREEN_PAGE_LIMIT.index
 
@@ -66,7 +65,6 @@ class FragmentMain : Fragment() {
                 .replace(R.id.fragment_container, fragment).commit()
         }
     }
-
 }
 
 

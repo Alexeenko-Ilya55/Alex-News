@@ -8,5 +8,5 @@ interface RoomNewsRepository {
     suspend fun getAllPersons(limit: Int, offset: Int): List<Article>
     suspend fun deleteAll()
     suspend fun updateElement(news: Article)
-    suspend fun getBookmarks()
+    suspend fun getBookmarks(): List<Article>
 }

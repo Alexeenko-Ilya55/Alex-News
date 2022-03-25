@@ -3,7 +3,6 @@ package com.myproject.alexnews.fragments
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.myproject.alexnews.R
@@ -13,10 +12,14 @@ import com.myproject.alexnews.viewModels.FragmentNotesViewModel
 import com.myproject.repository.model.Article
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class FragmentNotes : Fragment() {
 
     lateinit var binding: FragmentNotesBinding
+    private val viewModel: FragmentNotesViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -25,8 +28,7 @@ class FragmentNotes : Fragment() {
         setHasOptionsMenu(true)
         requireActivity().setTitle(R.string.menu_Notes)
         binding = FragmentNotesBinding.inflate(inflater, container, false)
-        val viewModel = ViewModelProvider(this)[FragmentNotesViewModel::class.java]
-        viewModel.loadNews(requireContext())
+        viewModel.loadNews()
         lifecycleScope.launchWhenStarted {
             viewModel.news.collectLatest {
                 initAdapter(it)
@@ -38,11 +40,9 @@ class FragmentNotes : Fragment() {
     private fun initAdapter(newsList: List<Article>) {
         lifecycleScope.launch {
             binding.rcView.layoutManager = LinearLayoutManager(context)
-            val adapter = RecyclerAdapter(
-                newsList,
-                parentFragmentManager,
-                lifecycleScope
-            )
+            val adapter: RecyclerAdapter by inject {
+                parametersOf(newsList, parentFragmentManager, lifecycleScope)
+            }
             binding.rcView.adapter = adapter
         }
     }
