@@ -6,15 +6,16 @@ import com.google.firebase.database.FirebaseDatabase
 
 const val BASE_URL = "https://newsapi.org/v2/"
 
-const val PAGE = "https://newsapi.org/v2/"
-const val PAGE_SIZE = "https://newsapi.org/v2/"
+const val PAGE = "page"
+const val PAGE_SIZE = "pageSize"
 const val QUERY = "q"
 const val API_KEY = "apiKey"
 const val HEADLINES_NEWS = "top-headlines"
 const val SOURCES = "sources"
 const val CATEGORY = "category"
 const val NEWS_TYPE = "typeNews"
-const val SOURCE = "everything?source"
+const val SOURCE = "everything?sources"
+const val EVERYTHING_NEWS = "everything"
 const val KTOR = "ktor"
 
 const val CATEGORY_BUSINESS = "business"

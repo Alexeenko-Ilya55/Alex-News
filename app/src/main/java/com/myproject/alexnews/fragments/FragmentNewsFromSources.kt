@@ -14,7 +14,6 @@ import com.myproject.alexnews.databinding.FragmentNewFromSourcesBinding
 import com.myproject.alexnews.paging.PagingAdapter
 import com.myproject.alexnews.viewModels.FragmentNewsFromSourcesViewModel
 import com.myproject.repository.model.Article
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -37,7 +36,7 @@ class FragmentNewsFromSources : Fragment() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(sourceName: String): Boolean {
                 binding.searchView.clearFocus()
-                lifecycleScope.launch(Dispatchers.IO) {
+                lifecycleScope.launch {
                     viewModel.newsFromSources(sourceName).collectLatest {
                         initAdapter(it)
                     }
@@ -51,7 +50,6 @@ class FragmentNewsFromSources : Fragment() {
         })
         return binding.root
     }
-
 
     private fun initAdapter(news: PagingData<Article>) {
         lifecycleScope.launch {
