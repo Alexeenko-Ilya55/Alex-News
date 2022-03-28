@@ -41,8 +41,8 @@ const val URL_TO_IMAGE = "urlToImage"
 const val DESCRIPTION = "description"
 const val DATABASE_NAME = "AlexNews"
 const val COUNTRY = "country"
-const val TYPE_NEWS = "TypeNewsContent"
 const val BOOKMARK_ENABLE = "bookmarkEnable"
+const val AUTOMATIC_DOWNLOAD = "AutomaticDownload"
 
 fun initFirebase() {
     REF_DATABASE_ROOT = FirebaseDatabase.getInstance().reference
