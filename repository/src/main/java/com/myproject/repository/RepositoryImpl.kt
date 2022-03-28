@@ -1,6 +1,7 @@
 package com.myproject.repository
 
 import android.content.SharedPreferences
+import com.myproject.repository.`object`.AUTOMATIC_DOWNLOAD
 import com.myproject.repository.`object`.initFirebase
 import com.myproject.repository.api.ApiNewsRepository
 import com.myproject.repository.model.Article
@@ -56,8 +57,16 @@ class RepositoryImpl(
         ) {
             roomRepository.getAllPersons(pageSize, pageIndex * pageSize)
         } else {
-            apiRepository.loadNews(positionViewPager, pageIndex, pageSize)
+            val newsList = apiRepository.loadNews(positionViewPager, pageIndex, pageSize)
+            if (sharedPreferences.getBoolean(AUTOMATIC_DOWNLOAD, false) && pageIndex == 0)
+                downloadInRoom(newsList)
+            newsList
         }
+    }
+
+    private suspend fun downloadInRoom(newsList: List<Article>) {
+        roomRepository.deleteAll()
+        roomRepository.insert(newsList)
     }
 
     override suspend fun updateElement(news: Article) {
