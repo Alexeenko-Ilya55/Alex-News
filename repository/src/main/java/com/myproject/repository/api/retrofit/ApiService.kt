@@ -1,7 +1,7 @@
 package com.myproject.repository.api.retrofit
 
 import com.myproject.repository.`object`.*
-import com.myproject.repository.model.DataFromApi
+import com.myproject.repository.model.DataFromApiEntity
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -13,7 +13,7 @@ interface ApiService {
     suspend fun getNewsList(
         @Path(NEWS_TYPE) typeNews: String,
         @QueryMap options: Map<String, String>
-    ): DataFromApi
+    ): DataFromApiEntity
 
     @GET("{typeNews}")
     suspend fun searchNewsList(
@@ -22,7 +22,7 @@ interface ApiService {
         @Query(PAGE) pageIndex: Int,
         @Query(PAGE_SIZE) pageSize: Int,
         @Query(API_KEY) apiKey: String
-    ): DataFromApi
+    ): DataFromApiEntity
 
     @GET("{typeNews}")
     suspend fun searchNewsFromSources(
@@ -31,5 +31,5 @@ interface ApiService {
         @Query(PAGE) pageIndex: Int,
         @Query(PAGE_SIZE) pageSize: Int,
         @Query(API_KEY) apiKey: String
-    ): DataFromApi
+    ): DataFromApiEntity
 }

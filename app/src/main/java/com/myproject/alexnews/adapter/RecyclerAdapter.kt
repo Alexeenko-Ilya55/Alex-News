@@ -12,12 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.recyclerview.widget.RecyclerView
+import com.myProject.domain.models.Article
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.DARK_MODE
 import com.myproject.alexnews.`object`.OFFLINE_MODE
 import com.myproject.alexnews.fragments.FragmentContentNews
 import com.myproject.alexnews.fragments.FragmentContentNewsOffline
-import com.myproject.repository.model.Article
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

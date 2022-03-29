@@ -2,15 +2,15 @@ package com.myproject.alexnews.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.myproject.repository.RepositoryImpl
-import com.myproject.repository.model.Article
+import com.myProject.domain.models.Article
+import com.myProject.domain.useCases.SearchNewsUseCase
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
 class PagingSearchNews(
-    private val repository: RepositoryImpl,
-    private val searchQuery: String
+    private val searchQuery: String,
+    private val searchNewsUseCase: SearchNewsUseCase
 ) : PagingSource<Int, Article>() {
 
     private val _news = MutableSharedFlow<List<Article>>(
@@ -22,7 +22,8 @@ class PagingSearchNews(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
 
         val pageIndex = params.key ?: 1
-        val news: List<Article> = repository.searchNews(searchQuery, pageIndex, params.loadSize)
+        val news: List<Article> =
+            searchNewsUseCase.searchNews(searchQuery, pageIndex, params.loadSize)
         return LoadResult.Page(
             data = news,
             prevKey = null,

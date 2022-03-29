@@ -2,17 +2,16 @@ package com.myproject.alexnews.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myproject.repository.RepositoryImpl
-import com.myproject.repository.model.Article
+import com.myProject.domain.models.Article
+import com.myProject.domain.useCases.GetNotesUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class FragmentNotesViewModel(
-    private val repository: RepositoryImpl
+    private val getNotesUseCase: GetNotesUseCase
 ) : ViewModel() {
 
     private val _news = MutableSharedFlow<List<Article>>(
@@ -23,10 +22,7 @@ class FragmentNotesViewModel(
 
     fun loadNews() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getNewsNotes()
-            repository.news.collectLatest {
-                _news.emit(it)
-            }
+            _news.emit(getNotesUseCase.getNotes())
         }
     }
 }

@@ -6,17 +6,18 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.myProject.domain.models.Article
 import com.myproject.alexnews.`object`.DEFAULT_PAGE_SIZE
 import com.myproject.alexnews.paging.PagingBookmarksSource
-import com.myproject.repository.RepositoryImpl
-import com.myproject.repository.model.Article
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class FragmentBookmarksViewModel(
-    private val repository: RepositoryImpl
-) : ViewModel() {
+class FragmentBookmarksViewModel : ViewModel(), KoinComponent {
+
+    private val pagingBookmarksSource: PagingBookmarksSource by inject()
 
     fun loadNews(): Flow<PagingData<Article>> {
         return Pager(
@@ -26,7 +27,7 @@ class FragmentBookmarksViewModel(
                 enablePlaceholders = false,
             ),
             pagingSourceFactory = {
-                PagingBookmarksSource(repository)
+                pagingBookmarksSource
             }
         ).flow.stateIn(viewModelScope, SharingStarted.Lazily, PagingData.empty())
             .cachedIn(viewModelScope)

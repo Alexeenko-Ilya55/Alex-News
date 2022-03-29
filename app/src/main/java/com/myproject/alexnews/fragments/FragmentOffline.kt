@@ -8,10 +8,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.myProject.domain.models.Article
 import com.myproject.alexnews.databinding.FragmentOfflineBinding
 import com.myproject.alexnews.paging.PagingAdapter
 import com.myproject.alexnews.viewModels.FragmentOfflineViewModel
-import com.myproject.repository.model.Article
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch

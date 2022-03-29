@@ -10,22 +10,23 @@ import com.google.firebase.ktx.Firebase
 import com.myproject.alexnews.R
 import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.adapter.ViewPagerAdapter
-import com.myproject.alexnews.paging.PagingAdapter
+import com.myproject.alexnews.paging.*
 import com.myproject.alexnews.viewModels.*
+import io.ktor.http.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
 
-    viewModel { FragmentBookmarksViewModel(get()) }
-    viewModel { FragmentContentNewsOfflineViewModel(get()) }
-    viewModel { FragmentContentNewsViewModel(get()) }
-    viewModel { FragmentMyNewsViewModel(get()) }
-    viewModel { FragmentNewsFromSourcesViewModel(get()) }
+    viewModel { FragmentBookmarksViewModel() }
+    viewModel { FragmentContentNewsOfflineViewModel() }
+    viewModel { FragmentContentNewsViewModel() }
+    viewModel { FragmentMyNewsViewModel() }
+    viewModel { FragmentNewsFromSourcesViewModel() }
     viewModel { FragmentNotesViewModel(get()) }
-    viewModel { FragmentOfflineViewModel(get()) }
-    viewModel { FragmentSearchViewModel(get()) }
+    viewModel { FragmentOfflineViewModel() }
+    viewModel { FragmentSearchViewModel() }
 
     single<SharedPreferences> { PreferenceManager.getDefaultSharedPreferences(androidContext()) }
 
@@ -70,4 +71,8 @@ val appModule = module {
             .requestEmail()
             .build()
     }
+    factory { params -> MyPagingSource(params.get(), get()) }
+    single { PagingBookmarksSource(get()) }
+    factory { params -> PagingSearchNews(params.get(), get()) }
+    factory { params -> PagingNewsFromSource(params.get(), get()) }
 }
