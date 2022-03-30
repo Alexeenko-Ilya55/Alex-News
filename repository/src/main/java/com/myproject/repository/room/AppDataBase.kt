@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.myproject.repository.model.Article
+import com.myproject.repository.model.ArticleEntity
 
 @Database(
-    entities = [Article::class], version = 1
+    entities = [ArticleEntity::class], version = 1
 )
 abstract class AppDataBase : RoomDatabase() {
     abstract fun ArticleDao(): ArticleDao

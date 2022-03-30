@@ -3,8 +3,8 @@ package com.myproject.repository.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DataFromApi(
-    var articles: List<Article>,
+data class DataFromApiEntity(
+    var articles: List<ArticleEntity>,
     var status: String,
     var totalResults: Int
 )

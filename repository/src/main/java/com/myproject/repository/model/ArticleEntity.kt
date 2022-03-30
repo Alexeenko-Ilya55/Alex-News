@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
     tableName = TABLE_NAME
 )
 @Serializable
-data class Article(
+data class ArticleEntity(
     var description: String? = "",
     var publishedAt: String = "",
     var title: String = "",

@@ -14,13 +14,13 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.myProject.domain.Repository
+import com.myProject.domain.models.Article
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.DARK_MODE
 import com.myproject.alexnews.`object`.OFFLINE_MODE
 import com.myproject.alexnews.fragments.FragmentContentNews
 import com.myproject.alexnews.fragments.FragmentContentNewsOffline
-import com.myproject.repository.RepositoryImpl
-import com.myproject.repository.model.Article
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,7 +29,7 @@ import java.util.*
 
 class PagingAdapter(
     private val sharedPreferences: SharedPreferences,
-    private val repository: RepositoryImpl,
+    private val repository: Repository,
     private val fragmentManager: FragmentManager,
     private val lifecycleScope: LifecycleCoroutineScope
 ) : PagingDataAdapter<Article, PagingAdapter.Holder>(NewsDiffCallback()) {
@@ -111,5 +111,4 @@ class NewsDiffCallback : DiffUtil.ItemCallback<Article>() {
     override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
         return oldItem == newItem
     }
-
 }

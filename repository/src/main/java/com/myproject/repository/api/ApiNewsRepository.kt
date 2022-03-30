@@ -1,17 +1,17 @@
 package com.myproject.repository.api
 
-import com.myproject.repository.model.Article
+import com.myproject.repository.model.ArticleEntity
 
 interface ApiNewsRepository {
-    suspend fun updateElement(news: Article)
+    suspend fun updateElement(news: ArticleEntity)
     suspend fun loadNewsFromSources(
         sourceName: String,
         pageIndex: Int,
         pageSize: Int
-    ): List<Article>
+    ): List<ArticleEntity>
 
-    suspend fun searchNews(searchQuery: String, pageIndex: Int, pageSize: Int): List<Article>
-    suspend fun loadNews(positionViewPager: Int, pageIndex: Int, pageSize: Int): List<Article>
-    suspend fun getBookmarks(): List<Article>
-    suspend fun getNotes(): List<Article>
+    suspend fun searchNews(searchQuery: String, pageIndex: Int, pageSize: Int): List<ArticleEntity>
+    suspend fun loadNews(positionViewPager: Int, pageIndex: Int, pageSize: Int): List<ArticleEntity>
+    suspend fun getBookmarks(): List<ArticleEntity>
+    suspend fun getNotes(): List<ArticleEntity>
 }

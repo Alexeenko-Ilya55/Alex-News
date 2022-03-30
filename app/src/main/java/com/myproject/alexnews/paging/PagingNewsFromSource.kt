@@ -2,19 +2,19 @@ package com.myproject.alexnews.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.myproject.repository.RepositoryImpl
-import com.myproject.repository.model.Article
+import com.myProject.domain.models.Article
+import com.myProject.domain.useCases.GetNewsFromSourcesUseCase
 
 class PagingNewsFromSource(
-    private val repository: RepositoryImpl,
-    private val sourceName: String
+    private val sourceName: String,
+    private val getNewsFromSourcesUseCase: GetNewsFromSourcesUseCase
 ) : PagingSource<Int, Article>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
 
         val pageIndex = params.key ?: 1
         val news: List<Article> =
-            repository.searchNewsFromSources(sourceName, pageIndex, params.loadSize)
+            getNewsFromSourcesUseCase.getNewsFromSources(sourceName, pageIndex, params.loadSize)
         return LoadResult.Page(
             data = news,
             prevKey = null,

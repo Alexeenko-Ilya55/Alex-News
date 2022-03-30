@@ -2,19 +2,20 @@ package com.myproject.alexnews.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.myproject.repository.RepositoryImpl
-import com.myproject.repository.model.Article
+import com.myProject.domain.models.Article
+import com.myProject.domain.useCases.GetNewsUseCase
+import org.koin.core.component.KoinComponent
 
 
 class MyPagingSource(
-    private val repository: RepositoryImpl,
-    private val positionViewPager: Int
-) : PagingSource<Int, Article>() {
+    private val positionViewPager: Int,
+    private val getNewsUseCase: GetNewsUseCase
+) : PagingSource<Int, Article>(), KoinComponent {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
         val news: List<Article>
         val pageIndex = params.key ?: 0
-        news = repository.getNews(positionViewPager, pageIndex, params.loadSize)
+        news = getNewsUseCase.getNews(positionViewPager, pageIndex, params.loadSize)
 
         return LoadResult.Page(
             data = news,

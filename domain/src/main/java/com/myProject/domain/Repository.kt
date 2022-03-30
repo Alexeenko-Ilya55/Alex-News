@@ -1,6 +1,7 @@
-package com.myproject.repository
+package com.myProject.domain
 
-import com.myproject.repository.model.Article
+import com.myProject.domain.models.Article
+
 
 interface Repository {
     suspend fun searchNews(

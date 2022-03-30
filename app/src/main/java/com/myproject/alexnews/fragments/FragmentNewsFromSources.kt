@@ -9,11 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.myProject.domain.models.Article
 import com.myproject.alexnews.R
 import com.myproject.alexnews.databinding.FragmentNewFromSourcesBinding
 import com.myproject.alexnews.paging.PagingAdapter
 import com.myproject.alexnews.viewModels.FragmentNewsFromSourcesViewModel
-import com.myproject.repository.model.Article
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject

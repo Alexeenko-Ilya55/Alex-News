@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
+import com.myProject.domain.models.Article
 import com.myproject.alexnews.R
 import com.myproject.alexnews.databinding.FragmentContentNewsOfflineBinding
 import com.myproject.alexnews.viewModels.FragmentContentNewsOfflineViewModel
-import com.myproject.repository.model.Article
 import com.squareup.picasso.Picasso
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat

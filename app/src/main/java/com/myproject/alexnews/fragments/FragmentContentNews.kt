@@ -12,12 +12,12 @@ import android.widget.EditText
 import androidx.core.view.doOnAttach
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
+import com.myProject.domain.models.Article
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.NO_PASSWORD
 import com.myproject.alexnews.`object`.PASSWORD_NOTES
 import com.myproject.alexnews.databinding.FragmentContentNewsBinding
 import com.myproject.alexnews.viewModels.FragmentContentNewsViewModel
-import com.myproject.repository.model.Article
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.concurrent.Executor

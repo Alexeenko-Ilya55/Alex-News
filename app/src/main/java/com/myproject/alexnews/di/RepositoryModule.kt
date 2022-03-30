@@ -1,5 +1,6 @@
 package com.myproject.alexnews.di
 
+import com.myProject.domain.Repository
 import com.myproject.repository.RepositoryImpl
 import com.myproject.repository.`object`.BASE_URL
 import com.myproject.repository.`object`.DATABASE_NAME
@@ -20,7 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 val repositoryModule = module {
 
-    single {
+    single<Repository> {
         RepositoryImpl(
             get(),
             get(),
