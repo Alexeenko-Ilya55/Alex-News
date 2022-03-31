@@ -1,11 +1,13 @@
 package com.myproject.alexnews.di
 
 import com.myProject.domain.Repository
+import com.myproject.repository.BuildConfig
 import com.myproject.repository.RepositoryImpl
 import com.myproject.repository.`object`.BASE_URL
 import com.myproject.repository.`object`.DATABASE_NAME
 import com.myproject.repository.api.ApiNewsRepository
 import com.myproject.repository.api.ApiRepository
+import com.myproject.repository.api.ktor.KtorService
 import com.myproject.repository.api.retrofit.ApiService
 import com.myproject.repository.room.AppDataBase
 import com.myproject.repository.room.RoomNewsRepository
@@ -29,7 +31,7 @@ val repositoryModule = module {
         )
     }
 
-    single<ApiNewsRepository> { ApiRepository(get(), get(), get(), get()) }
+    single<ApiNewsRepository> { ApiRepository(get(), get(), get(), get(), get()) }
     single<ApiService> {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -47,4 +49,6 @@ val repositoryModule = module {
             }
         }
     }
+    single { KtorService() }
+    single { BuildConfig.LOADER }
 }

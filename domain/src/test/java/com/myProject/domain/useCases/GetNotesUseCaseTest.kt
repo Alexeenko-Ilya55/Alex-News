@@ -7,17 +7,20 @@ import org.junit.Test
 import org.junit.jupiter.api.Assertions
 import org.mockito.Mockito
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 class GetNotesUseCaseTest {
     private val repository = mock<Repository>()
 
     @Test
-    fun `should return notes from the repository`() = runBlocking {
-        val list = emptyList<Article>()
-        Mockito.`when`(repository.getNewsNotes()).thenReturn(list)
-        Assertions.assertEquals(
-            list,
-            GetNotesUseCase(repository).getNotes()
-        )
+    fun `should return notes from the repository`(): Unit = runBlocking {
+        val expected = emptyList<Article>()
+        Mockito.`when`(repository.getNewsNotes()).thenReturn(expected)
+
+        val actual = GetNotesUseCase(repository).getNotes()
+
+        Assertions.assertEquals(expected, actual)
+        verify(repository, times(1)).getNewsNotes()
     }
 }

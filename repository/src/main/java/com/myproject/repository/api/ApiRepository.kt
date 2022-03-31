@@ -8,28 +8,22 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.myproject.repository.BuildConfig
 import com.myproject.repository.`object`.*
+import com.myproject.repository.api.ktor.KtorService
 import com.myproject.repository.api.retrofit.ApiService
 import com.myproject.repository.model.ArticleEntity
-import com.myproject.repository.model.DataFromApiEntity
-import io.ktor.client.*
-import io.ktor.client.request.*
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlin.collections.set
-import kotlin.properties.Delegates
 
 class ApiRepository(
-    sharedPreferences: SharedPreferences,
+    private val sharedPreferences: SharedPreferences,
     private val retrofit: ApiService,
     private val auth: FirebaseAuth,
-    private var ktor: HttpClient
+    private val ktor: KtorService,
+    private val loader: String
 ) : ApiNewsRepository {
 
-    private val countryIndex = sharedPreferences.getString(COUNTRY, "").toString()
-    private var pageIndex by Delegates.notNull<Int>()
-    private var pageSize by Delegates.notNull<Int>()
-    private val loaderKtor = BuildConfig.LOADER == KTOR
 
     private val _news = MutableSharedFlow<List<ArticleEntity>>(
         replay = 1,
@@ -42,7 +36,7 @@ class ApiRepository(
         pageIndex: Int,
         pageSize: Int
     ): List<ArticleEntity> {
-        return if (loaderKtor)
+        return if (loader == KTOR)
             loadNewsFromSourcesKtor(sourceName, pageIndex, pageSize)
         else
             loadNewsFromSourcesRetrofit(sourceName, pageIndex, pageSize)
@@ -71,7 +65,7 @@ class ApiRepository(
         val url =
             BASE_URL + "$SOURCE=$sourceName&$PAGE=${pageIndex}" +
                     "&$PAGE_SIZE=${pageSize}&$API_KEY=" + BuildConfig.API_KEY
-        return ktor.get<DataFromApiEntity>(url).articles
+        return ktor.getNews(url)
     }
 
     override suspend fun searchNews(
@@ -79,7 +73,7 @@ class ApiRepository(
         pageIndex: Int,
         pageSize: Int
     ): List<ArticleEntity> {
-        return if (loaderKtor)
+        return if (loader == KTOR)
             searchNewsKtor(searchQuery, pageIndex, pageSize)
         else
             searchNewsRetrofit(searchQuery, pageIndex, pageSize)
@@ -90,9 +84,9 @@ class ApiRepository(
         pageIndex: Int,
         pageSize: Int
     ): List<ArticleEntity> {
-        val url = BASE_URL + "$HEADLINES_NEWS?q=$searchQuery&$PAGE=$pageIndex&" +
+        val url = BASE_URL + "$EVERYTHING_NEWS?q=$searchQuery&$PAGE=$pageIndex&" +
                 "$PAGE_SIZE=$pageSize&$API_KEY=" + BuildConfig.API_KEY
-        return ktor.get<DataFromApiEntity>(url).articles
+        return ktor.getNews(url)
     }
 
     private suspend fun searchNewsRetrofit(
@@ -102,7 +96,7 @@ class ApiRepository(
     ): List<ArticleEntity> {
         return retrofit
             .searchNewsList(
-                typeNews = HEADLINES_NEWS,
+                typeNews = EVERYTHING_NEWS,
                 query = searchQuery,
                 pageIndex = pageIndex,
                 pageSize = pageSize,
@@ -110,10 +104,14 @@ class ApiRepository(
             ).articles
     }
 
-    private suspend fun loadNewsRetrofit(category: String): List<ArticleEntity> {
+    private suspend fun loadNewsRetrofit(
+        category: String,
+        pageIndex: Int,
+        pageSize: Int
+    ): List<ArticleEntity> {
 
         val options = HashMap<String, String>()
-        options[COUNTRY] = countryIndex
+        options[COUNTRY] = sharedPreferences.getString(COUNTRY, "").toString()
         options[CATEGORY] = category
         options[PAGE] = pageIndex.toString()
         options[PAGE_SIZE] = pageSize.toString()
@@ -126,18 +124,15 @@ class ApiRepository(
             ).articles
     }
 
-
     override suspend fun loadNews(
         positionViewPager: Int,
         pageIndex: Int,
         pageSize: Int
     ): List<ArticleEntity> {
-        this.pageSize = pageSize
-        this.pageIndex = pageIndex
-        return if (loaderKtor)
+        return if (loader == KTOR)
             loadNewsKtor(positionViewPager, pageIndex, pageSize)
         else
-            loadNewsRetrofit(categoryByIndex(positionViewPager))
+            loadNewsRetrofit(categoryByIndex(positionViewPager), pageIndex, pageSize)
     }
 
     private suspend fun loadNewsKtor(
@@ -147,9 +142,10 @@ class ApiRepository(
     ): List<ArticleEntity> {
         val url =
             BASE_URL + "$HEADLINES_NEWS?$CATEGORY=${categoryByIndex(positionViewPager)}&" +
-                    "$COUNTRY=$countryIndex&$PAGE=$pageIndex" +
-                    "&$PAGE_SIZE=$pageSize&$API_KEY=" + BuildConfig.API_KEY
-        return ktor.get<DataFromApiEntity>(url).articles
+                    "$COUNTRY=${
+                        sharedPreferences.getString(COUNTRY, "").toString()
+                    }&$PAGE=$pageIndex&$PAGE_SIZE=$pageSize&$API_KEY=" + BuildConfig.API_KEY
+        return ktor.getNews(url)
     }
 
     private fun categoryByIndex(positionViewPager: Int): String {
@@ -200,6 +196,7 @@ class ApiRepository(
     private fun getNewsFromFirebase(category: String): List<ArticleEntity> {
         var newsList: MutableList<ArticleEntity> = mutableListOf()
         auth.currentUser
+        initFirebase()
         REF_DATABASE_ROOT.child(NODE_USERS).child(auth.currentUser?.uid.toString())
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -222,7 +219,7 @@ class ApiRepository(
     override suspend fun getBookmarks() =
         getNewsFromFirebase(BOOKMARK_ENABLE)
 
-    override suspend fun getNotes() =
+    override suspend fun getNotes(): List<ArticleEntity> =
         getNewsFromFirebase(NOTE)
 }
 

@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import com.myProject.domain.Repository
 import com.myProject.domain.models.Article
 import com.myproject.repository.`object`.AUTOMATIC_DOWNLOAD
-import com.myproject.repository.`object`.initFirebase
+import com.myproject.repository.`object`.OFFLINE_MODE
 import com.myproject.repository.api.ApiNewsRepository
 import com.myproject.repository.model.ArticleEntity
 import com.myproject.repository.room.RoomNewsRepository
@@ -17,9 +17,7 @@ class RepositoryImpl(
     private val apiRepository: ApiNewsRepository,
     private val sharedPreferences: SharedPreferences
 ) : Repository {
-    init {
-        initFirebase()
-    }
+
 
     private val _news = MutableSharedFlow<List<Article>>(
         replay = 1,
@@ -34,11 +32,7 @@ class RepositoryImpl(
         apiRepository.loadNewsFromSources(nameSource, pageIndex, pageSize).transform()
 
     override suspend fun getNewsBookmarks(): List<Article> {
-        return if (sharedPreferences.getBoolean(
-                com.myproject.repository.`object`.OFFLINE_MODE,
-                false
-            )
-        )
+        return if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
             roomRepository.getBookmarks().transform()
         else
             apiRepository.getBookmarks().transform()
@@ -52,48 +46,30 @@ class RepositoryImpl(
         pageIndex: Int,
         pageSize: Int
     ): List<Article> {
-        return if (sharedPreferences.getBoolean(
-                com.myproject.repository.`object`.OFFLINE_MODE,
-                false
-            )
+        return if (sharedPreferences.getBoolean(OFFLINE_MODE, false)
         ) {
-            roomRepository.getAllPersons(pageSize, pageIndex * pageSize).transform()
+            roomRepository.getAllArticles(pageSize, pageIndex * pageSize).transform()
         } else {
             val newsList = apiRepository.loadNews(positionViewPager, pageIndex, pageSize)
-            if (sharedPreferences.getBoolean(AUTOMATIC_DOWNLOAD, false) && pageIndex == 0)
-                downloadInRoom(newsList)
+            if (sharedPreferences.getBoolean(AUTOMATIC_DOWNLOAD, false) && pageIndex == 0) {
+                if (positionViewPager == 0) roomRepository.deleteAll()
+                roomRepository.insert(newsList)
+            }
             newsList.transform()
         }
     }
 
-    private suspend fun downloadInRoom(newsList: List<ArticleEntity>) {
-        roomRepository.deleteAll()
-        roomRepository.insert(newsList)
-    }
-
     override suspend fun updateElement(news: Article) {
-        if (sharedPreferences.getBoolean(com.myproject.repository.`object`.OFFLINE_MODE, false))
+        if (sharedPreferences.getBoolean(OFFLINE_MODE, false))
             roomRepository.updateElement(toArticleEntity(news))
         else
             apiRepository.updateElement(toArticleEntity(news))
     }
+}
 
-    private fun List<ArticleEntity>.transform(): List<Article> {
-        return map { article ->
-            Article(
-                title = article.title,
-                description = article.description,
-                publishedAt = article.publishedAt,
-                urlToImage = article.urlToImage,
-                url = article.url,
-                bookmarkEnable = article.bookmarkEnable,
-                notes = article.notes
-            )
-        }
-    }
-
-    private fun toArticleEntity(article: Article): ArticleEntity {
-        return ArticleEntity(
+fun List<ArticleEntity>.transform(): List<Article> {
+    return map { article ->
+        Article(
             title = article.title,
             description = article.description,
             publishedAt = article.publishedAt,
@@ -103,4 +79,16 @@ class RepositoryImpl(
             notes = article.notes
         )
     }
+}
+
+fun toArticleEntity(article: Article): ArticleEntity {
+    return ArticleEntity(
+        title = article.title,
+        description = article.description,
+        publishedAt = article.publishedAt,
+        urlToImage = article.urlToImage,
+        url = article.url,
+        bookmarkEnable = article.bookmarkEnable,
+        notes = article.notes
+    )
 }

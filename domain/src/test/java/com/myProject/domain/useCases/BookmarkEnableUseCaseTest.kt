@@ -4,8 +4,10 @@ import com.myProject.domain.Repository
 import com.myProject.domain.models.Article
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
-import org.junit.jupiter.api.Assertions
+import org.mockito.Mockito
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 class BookmarkEnableUseCaseTest {
 
@@ -14,9 +16,7 @@ class BookmarkEnableUseCaseTest {
     @Test
     fun `should update News in repository`() = runBlocking {
         val article = Article()
-        Assertions.assertEquals(
-            repository.updateElement(article),
-            BookmarkEnableUseCase(repository).updateElementNews(article)
-        )
+        BookmarkEnableUseCase(repository).updateElementNews(article)
+        verify(repository, times(1)).updateElement(article)
     }
 }

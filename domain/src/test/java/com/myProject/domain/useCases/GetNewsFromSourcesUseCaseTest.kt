@@ -13,21 +13,21 @@ class GetNewsFromSourcesUseCaseTest {
 
     @Test
     fun `should return results of search from sources`() = runBlocking {
-        val list = emptyList<Article>()
+        val expected = emptyList<Article>()
         Mockito.`when`(
             repository.searchNewsFromSources(
                 nameSource = "Name Source",
                 pageIndex = 1,
                 pageSize = 20
             )
-        ).thenReturn(list)
-        Assertions.assertEquals(
-            list,
-            GetNewsFromSourcesUseCase(repository).getNewsFromSources(
-                sourceName = "Name Source",
-                pageIndex = 1,
-                loadSize = 20
-            )
+        ).thenReturn(expected)
+
+        val actual = GetNewsFromSourcesUseCase(repository).getNewsFromSources(
+            sourceName = "Name Source",
+            pageIndex = 1,
+            loadSize = 20
         )
+
+        Assertions.assertEquals(expected, actual)
     }
 }
