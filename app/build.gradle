@@ -18,8 +18,14 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    testOptions {
+        unitTests.all {
+            useJUnitPlatform()
+        }
+    }
+
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
@@ -34,12 +40,13 @@ android {
     buildFeatures {
         viewBinding true
     }
+
 }
 
 dependencies {
     //Корутины
     implementation "androidx.room:room-runtime:2.4.2"
-    implementation 'com.google.firebase:firebase-auth-ktx:21.0.2'
+    implementation 'com.google.firebase:firebase-auth-ktx:21.0.3'
     implementation 'com.google.android.gms:play-services-auth:20.1.0'
     implementation 'com.google.firebase:firebase-database-ktx:20.0.4'
     implementation project(path: ':repository')
@@ -47,8 +54,8 @@ dependencies {
     implementation "androidx.room:room-ktx:2.4.2"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.10"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
+    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
 
 
     implementation 'androidx.core:core-ktx:1.7.0'
@@ -96,4 +103,9 @@ dependencies {
     implementation "io.insert-koin:koin-core:3.1.5"
 
     implementation project(path: ':domain')
+
+    testImplementation "org.junit.jupiter:junit-jupiter:5.8.2"
+    testImplementation "org.mockito:mockito-core:4.0.0"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0'
 }

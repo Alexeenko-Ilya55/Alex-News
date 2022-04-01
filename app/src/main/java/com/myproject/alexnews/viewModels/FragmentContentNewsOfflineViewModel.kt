@@ -7,11 +7,10 @@ import com.myProject.domain.useCases.BookmarkEnableUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
-class FragmentContentNewsOfflineViewModel : ViewModel(), KoinComponent {
-
-    private val bookmarkEnableUseCase: BookmarkEnableUseCase by inject()
+class FragmentContentNewsOfflineViewModel(
+    private val bookmarkEnableUseCase: BookmarkEnableUseCase
+) : ViewModel(), KoinComponent {
 
     fun updateElementInDatabase(news: Article) {
         viewModelScope.launch(Dispatchers.IO) {

@@ -19,9 +19,9 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-    viewModel { FragmentBookmarksViewModel() }
-    viewModel { FragmentContentNewsOfflineViewModel() }
-    viewModel { FragmentContentNewsViewModel() }
+    viewModel { FragmentBookmarksViewModel(get()) }
+    viewModel { FragmentContentNewsOfflineViewModel(get()) }
+    viewModel { FragmentContentNewsViewModel(get()) }
     viewModel { FragmentMyNewsViewModel() }
     viewModel { FragmentNewsFromSourcesViewModel() }
     viewModel { FragmentNotesViewModel(get()) }
