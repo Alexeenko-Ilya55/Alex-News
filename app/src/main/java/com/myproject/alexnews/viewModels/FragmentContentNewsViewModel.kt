@@ -9,9 +9,9 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class FragmentContentNewsViewModel : ViewModel(), KoinComponent {
-
-    private val bookmarkEnableUseCase: BookmarkEnableUseCase by inject()
+class FragmentContentNewsViewModel(
+    private val bookmarkEnableUseCase: BookmarkEnableUseCase
+) : ViewModel(), KoinComponent {
 
     fun updateElement(news: Article) {
         viewModelScope.launch(Dispatchers.IO) {

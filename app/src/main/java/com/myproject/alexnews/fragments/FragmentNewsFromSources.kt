@@ -32,6 +32,8 @@ class FragmentNewsFromSources : Fragment() {
     ): View {
         binding = FragmentNewFromSourcesBinding.inflate(inflater, container, false)
         requireActivity().setTitle(R.string.fromSource)
+        if (viewModel.news != PagingData.empty<Article>())
+            initAdapter(viewModel.news)
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(sourceName: String): Boolean {
@@ -39,6 +41,7 @@ class FragmentNewsFromSources : Fragment() {
                 lifecycleScope.launch {
                     viewModel.newsFromSources(sourceName).collectLatest {
                         initAdapter(it)
+                        viewModel.news = it
                     }
                 }
                 return false

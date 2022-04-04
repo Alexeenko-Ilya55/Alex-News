@@ -18,6 +18,8 @@ import org.koin.core.parameter.parametersOf
 
 class FragmentNewsFromSourcesViewModel : ViewModel(), KoinComponent {
 
+    var news: PagingData<Article> = PagingData.empty()
+
     fun newsFromSources(sourceName: String): Flow<PagingData<Article>> {
         val pagingNewsFromSource: PagingNewsFromSource by inject { parametersOf(sourceName) }
         return Pager(

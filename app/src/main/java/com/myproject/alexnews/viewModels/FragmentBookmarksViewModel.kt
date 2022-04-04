@@ -13,11 +13,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
-class FragmentBookmarksViewModel : ViewModel(), KoinComponent {
 
-    private val pagingBookmarksSource: PagingBookmarksSource by inject()
+class FragmentBookmarksViewModel(
+    private val pagingBookmarksSource: PagingBookmarksSource
+) : ViewModel(), KoinComponent {
 
     fun loadNews(): Flow<PagingData<Article>> {
         return Pager(
