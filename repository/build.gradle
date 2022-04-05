@@ -23,10 +23,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            buildConfigField("String", "API_KEY2", "\"ed56ec6ac2de42dd8a4fa3f6c5380142\"")
+            buildConfigField("String", "API_KEY", "\"ed56ec6ac2de42dd8a4fa3f6c5380142\"")
             buildConfigField("String", "API_KEY1", "\"bf83c2f06864a58893d6969ccaf4ff7\"")
-            buildConfigField("String", "API_KEY", "\"26c3b8d2516d4aadaf0416e2bcb1ebb8\"")
-            buildConfigField("String", "LOADER", "\"ktor12\"")
+            buildConfigField("String", "API_KEY2", "\"26c3b8d2516d4aadaf0416e2bcb1ebb8\"")
+            buildConfigField("String", "LOADER", "\"ktor\"")
         }
     }
     compileOptions {

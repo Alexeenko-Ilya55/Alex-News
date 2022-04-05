@@ -4,9 +4,11 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.myProject.domain.models.Article
 import com.myProject.domain.useCases.SearchNewsUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.withContext
 
 class PagingSearchNews(
     private val searchQuery: String,
@@ -22,8 +24,9 @@ class PagingSearchNews(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
 
         val pageIndex = params.key ?: 1
-        val news: List<Article> =
+        val news: List<Article> = withContext(Dispatchers.IO) {
             searchNewsUseCase.searchNews(searchQuery, pageIndex, params.loadSize)
+        }
         return LoadResult.Page(
             data = news,
             prevKey = null,

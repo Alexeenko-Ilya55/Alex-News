@@ -4,6 +4,8 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.myProject.domain.models.Article
 import com.myProject.domain.useCases.GetBookmarksUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class PagingBookmarksSource(
     private val getBookmarksUseCase: GetBookmarksUseCase
@@ -11,7 +13,9 @@ class PagingBookmarksSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
         val pageIndex = params.key ?: 0
-        val news: List<Article> = getBookmarksUseCase.getBookmarks()
+        val news: List<Article> = withContext(Dispatchers.IO) {
+            getBookmarksUseCase.getBookmarks()
+        }
         return LoadResult.Page(
             data = news,
             prevKey = null,
