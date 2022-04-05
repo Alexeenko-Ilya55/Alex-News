@@ -29,7 +29,6 @@ class FragmentBookmarks : Fragment() {
         setHasOptionsMenu(true)
         requireActivity().setTitle(R.string.Bookmark)
         binding = FragmentBookmarksBinding.inflate(inflater, container, false)
-        viewModel.loadNews()
         lifecycleScope.launchWhenStarted {
             viewModel.loadNews().collectLatest {
                 initAdapter(it)

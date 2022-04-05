@@ -7,7 +7,6 @@ import com.myProject.domain.useCases.BookmarkEnableUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 class FragmentContentNewsViewModel(
     private val bookmarkEnableUseCase: BookmarkEnableUseCase

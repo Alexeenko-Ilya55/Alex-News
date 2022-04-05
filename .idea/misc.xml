@@ -95,11 +95,17 @@
         <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/mipmap-anydpi-v26/launcher_icon.xml" value="0.2483108108108108" />
         <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/mipmap-anydpi-v26/launcher_icon_round.xml" value="0.2483108108108108" />
         <entry key="..\:/Kotlin_Proga/AlexNews/app/src/main/res/xml/root_preferences.xml" value="0.22" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/edit_notes_dialog.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/edit_password_dialog.xml" value="0.18177083333333333" />
+        <entry key="app/src/main/res/layout/fragment_change_my_news.xml" value="0.35625" />
+        <entry key="app/src/main/res/layout/fragment_content_news_offline.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/fragment_main.xml" value="0.13728470111448834" />
         <entry key="app/src/main/res/layout/fragment_new_from_sources.xml" value="0.18177083333333333" />
+        <entry key="app/src/main/res/layout/fragment_notes.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/fragment_offline.xml" value="0.20989583333333334" />
         <entry key="app/src/main/res/layout/fragment_search.xml" value="0.23958333333333334" />
+        <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.35625" />
         <entry key="app/src/main/res/layout/item_layout.xml" value="0.21145833333333333" />
         <entry key="app/src/main/res/xml/root_preferences.xml" value="0.35625" />
       </map>
