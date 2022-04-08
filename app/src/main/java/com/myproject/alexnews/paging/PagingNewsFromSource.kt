@@ -4,6 +4,8 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.myProject.domain.models.Article
 import com.myProject.domain.useCases.GetNewsFromSourcesUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class PagingNewsFromSource(
     private val sourceName: String,
@@ -13,8 +15,9 @@ class PagingNewsFromSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
 
         val pageIndex = params.key ?: 1
-        val news: List<Article> =
+        val news: List<Article> = withContext(Dispatchers.IO) {
             getNewsFromSourcesUseCase.getNewsFromSources(sourceName, pageIndex, params.loadSize)
+        }
         return LoadResult.Page(
             data = news,
             prevKey = null,

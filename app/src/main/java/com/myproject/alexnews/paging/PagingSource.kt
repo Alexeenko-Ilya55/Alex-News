@@ -4,6 +4,8 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.myProject.domain.models.Article
 import com.myProject.domain.useCases.GetNewsUseCase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
 
 
@@ -15,8 +17,9 @@ class MyPagingSource(
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
         val news: List<Article>
         val pageIndex = params.key ?: 0
-        news = getNewsUseCase.getNews(positionViewPager, pageIndex, params.loadSize)
-
+        news = withContext(Dispatchers.IO) {
+            getNewsUseCase.getNews(positionViewPager, pageIndex, params.loadSize)
+        }
         return LoadResult.Page(
             data = news,
             prevKey = null,

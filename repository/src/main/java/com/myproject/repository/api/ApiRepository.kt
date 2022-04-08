@@ -47,14 +47,18 @@ class ApiRepository(
         pageIndex: Int,
         pageSize: Int
     ): List<ArticleEntity> {
-        return retrofit
-            .searchNewsFromSources(
-                typeNews = EVERYTHING_NEWS,
-                sourceName = sourceName,
-                pageIndex = pageIndex,
-                pageSize = pageSize,
-                apiKey = BuildConfig.API_KEY
-            ).articles
+        return try {
+            retrofit
+                .searchNewsFromSources(
+                    typeNews = EVERYTHING_NEWS,
+                    sourceName = sourceName,
+                    pageIndex = pageIndex,
+                    pageSize = pageSize,
+                    apiKey = BuildConfig.API_KEY
+                ).articles
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     private suspend fun loadNewsFromSourcesKtor(
@@ -94,14 +98,18 @@ class ApiRepository(
         pageIndex: Int,
         pageSize: Int
     ): List<ArticleEntity> {
-        return retrofit
-            .searchNewsList(
-                typeNews = EVERYTHING_NEWS,
-                query = searchQuery,
-                pageIndex = pageIndex,
-                pageSize = pageSize,
-                apiKey = BuildConfig.API_KEY
-            ).articles
+        return try {
+            retrofit
+                .searchNewsList(
+                    typeNews = EVERYTHING_NEWS,
+                    query = searchQuery,
+                    pageIndex = pageIndex,
+                    pageSize = pageSize,
+                    apiKey = BuildConfig.API_KEY
+                ).articles
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     private suspend fun loadNewsRetrofit(
@@ -117,11 +125,15 @@ class ApiRepository(
         options[PAGE_SIZE] = pageSize.toString()
         options[API_KEY] = BuildConfig.API_KEY
 
-        return retrofit
-            .getNewsList(
-                typeNews = HEADLINES_NEWS,
-                options = options
-            ).articles
+        return try {
+            retrofit
+                .getNewsList(
+                    typeNews = HEADLINES_NEWS,
+                    options = options
+                ).articles
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     override suspend fun loadNews(

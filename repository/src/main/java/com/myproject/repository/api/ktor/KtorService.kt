@@ -9,6 +9,10 @@ import org.koin.core.component.get
 
 class KtorService : KoinComponent {
     suspend fun getNews(url: String): List<ArticleEntity> {
-        return get<HttpClient>().get<DataFromApiEntity>(url).articles
+        return try {
+            get<HttpClient>().get<DataFromApiEntity>(url).articles
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 }

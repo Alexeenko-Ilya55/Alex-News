@@ -51,7 +51,11 @@ class RepositoryImpl(
             roomRepository.getAllArticles(pageSize, pageIndex * pageSize).transform()
         } else {
             val newsList = apiRepository.loadNews(positionViewPager, pageIndex, pageSize)
-            if (sharedPreferences.getBoolean(AUTOMATIC_DOWNLOAD, false) && pageIndex == 0) {
+            if (sharedPreferences.getBoolean(
+                    AUTOMATIC_DOWNLOAD,
+                    false
+                ) && pageIndex == 0 && newsList != emptyList<Article>()
+            ) {
                 if (positionViewPager == 0) roomRepository.deleteAll()
                 roomRepository.insert(newsList)
             }
