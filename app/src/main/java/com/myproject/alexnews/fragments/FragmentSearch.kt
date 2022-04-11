@@ -4,32 +4,45 @@ import android.os.Bundle
 import android.view.*
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.myProject.domain.models.Article
 import com.myproject.alexnews.R
-import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentSearchBinding
-import com.myproject.alexnews.model.Article
+import com.myproject.alexnews.paging.PagingAdapter
 import com.myproject.alexnews.viewModels.FragmentSearchViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class FragmentSearch : Fragment() {
 
     lateinit var binding: FragmentSearchBinding
+    private val viewModel: FragmentSearchViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        requireActivity().setTitle(R.string.Search)
-        val viewModel = ViewModelProvider(this)[FragmentSearchViewModel::class.java]
-        setHasOptionsMenu(true)
         binding = FragmentSearchBinding.inflate(inflater, container, false)
+        requireActivity().setTitle(R.string.Search)
+        setHasOptionsMenu(true)
+        if (viewModel.news != PagingData.empty<Article>())
+            initAdapter(viewModel.news)
+
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(p0: String?): Boolean {
+            override fun onQueryTextSubmit(searchQuery: String): Boolean {
                 binding.searchView.clearFocus()
-                viewModel.setInquiry(p0, requireContext())
+                lifecycleScope.launch(Dispatchers.IO) {
+                    viewModel.searchNews(searchQuery).collectLatest {
+                        initAdapter(it)
+                        viewModel.news = it
+                    }
+                }
                 return false
             }
 
@@ -37,23 +50,20 @@ class FragmentSearch : Fragment() {
                 return false
             }
         })
-        lifecycleScope.launchWhenStarted {
-            viewModel.news.collectLatest {
-                init(it)
-            }
-        }
         return binding.root
     }
 
-    private fun init(dataLister: List<Article>) {
-        binding.apply {
-            recyclerView.layoutManager = LinearLayoutManager(context)
-            val adapter = RecyclerAdapter(
-                dataLister,
-                parentFragmentManager,
-                lifecycleScope
-            )
-            recyclerView.adapter = adapter
+    private fun initAdapter(news: PagingData<Article>) {
+        lifecycleScope.launch {
+            binding.recyclerView.layoutManager = LinearLayoutManager(context)
+            val adapter: PagingAdapter by inject {
+                parametersOf(
+                    parentFragmentManager,
+                    lifecycleScope
+                )
+            }
+            binding.recyclerView.adapter = adapter
+            adapter.submitData(news)
         }
     }
 

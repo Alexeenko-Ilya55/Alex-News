@@ -5,53 +5,68 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.myProject.domain.models.Article
 import com.myproject.alexnews.R
-import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentMyNewsBinding
-import com.myproject.alexnews.model.Article
+import com.myproject.alexnews.paging.PagingAdapter
 import com.myproject.alexnews.viewModels.FragmentMyNewsViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class FragmentMyNews : Fragment() {
 
     private lateinit var binding: FragmentMyNewsBinding
-    private lateinit var viewModel: FragmentMyNewsViewModel
+    private val viewModel: FragmentMyNewsViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        setHasOptionsMenu(true)
         requireActivity().setTitle(R.string.app_name)
         binding = FragmentMyNewsBinding.inflate(inflater, container, false)
-        viewModel = ViewModelProvider(this)[FragmentMyNewsViewModel::class.java]
         refreshInit()
-        viewModel.loadNews(requireArguments(), requireContext())
-        lifecycleScope.launchWhenStarted {
-            viewModel.news.collectLatest {
-                initRecyclerAdapter(it)
-            }
-        }
+        if (viewModel.news != PagingData.empty<Article>())
+            initAdapter(viewModel.news)
+        getData()
         return binding.root
     }
 
     private fun refreshInit() {
         binding.refresh.setColorSchemeResources(R.color.purple_200, R.color.purple_700)
         binding.refresh.setOnRefreshListener {
-            viewModel.refresh()
+            getData()
             binding.refresh.isRefreshing = false
         }
     }
 
-    private fun initRecyclerAdapter(newsList: List<Article>) {
-        binding.rcView.layoutManager = LinearLayoutManager(context)
-        val adapter = RecyclerAdapter(
-            newsList,
-            parentFragmentManager,
-            lifecycleScope
-        )
-        binding.rcView.adapter = adapter
+    private fun getData() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            viewModel.loadNews(requireArguments()).collectLatest {
+                initAdapter(it)
+                viewModel.news = it
+            }
+        }
+    }
+
+    private fun initAdapter(news: PagingData<Article>) {
+        lifecycleScope.launch {
+            binding.rcView.layoutManager = LinearLayoutManager(context)
+            val adapter: PagingAdapter by inject {
+                parametersOf(
+                    parentFragmentManager,
+                    lifecycleScope
+                )
+            }
+            binding.rcView.adapter = adapter
+            adapter.submitData(news)
+        }
     }
 }

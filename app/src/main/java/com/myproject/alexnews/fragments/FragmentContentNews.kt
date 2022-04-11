@@ -9,36 +9,32 @@ import android.util.Log
 import android.view.*
 import android.webkit.WebViewClient
 import android.widget.EditText
-import androidx.core.content.ContextCompat
 import androidx.core.view.doOnAttach
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.preference.PreferenceManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.myProject.domain.models.Article
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.NO_PASSWORD
 import com.myproject.alexnews.`object`.PASSWORD_NOTES
-import com.myproject.alexnews.dao.FirebaseDB
 import com.myproject.alexnews.databinding.FragmentContentNewsBinding
-import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentContentNewsViewModel
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.util.concurrent.Executor
 
-class FragmentContentNews(private val news: Article) : Fragment() {
+class FragmentContentNews(
+    private val news: Article
+) : Fragment() {
 
-    lateinit var binding: FragmentContentNewsBinding
+    private val auth: FirebaseAuth by inject()
+    private val sharedPreferences: SharedPreferences by inject()
+    private val executor: Executor by inject()
+    private val promptInfo: androidx.biometric.BiometricPrompt.PromptInfo by inject()
+    private val builder: AlertDialog.Builder by inject()
 
-    private lateinit var auth: FirebaseAuth
-    private val firebaseDatabase = FirebaseDB()
-    private lateinit var sharedPreferences: SharedPreferences
-    private val newsUrl = news.url
-
-    private lateinit var executor: Executor
+    private lateinit var binding: FragmentContentNewsBinding
     private lateinit var biometricPrompt: androidx.biometric.BiometricPrompt
-    private lateinit var promptInfo: androidx.biometric.BiometricPrompt.PromptInfo
-    private lateinit var viewModel: FragmentContentNewsViewModel
+    private val viewModel: FragmentContentNewsViewModel by viewModel()
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreateView(
@@ -46,20 +42,14 @@ class FragmentContentNews(private val news: Article) : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentContentNewsBinding.inflate(inflater, container, false)
-
-        viewModel = ViewModelProvider(this)[FragmentContentNewsViewModel::class.java]
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
-
         requireActivity().setTitle(R.string.News)
         setHasOptionsMenu(true)
-        auth = Firebase.auth
         auth.currentUser
-        viewModel.init(firebaseDatabase)
 
         binding.apply {
             WebView.webViewClient = WebViewClient()
             WebView.apply {
-                WebView.loadUrl(newsUrl)
+                WebView.loadUrl(news.url)
                 settings.safeBrowsingEnabled = true
                 settings.javaScriptEnabled = true
                 WebView.doOnAttach { }
@@ -68,7 +58,7 @@ class FragmentContentNews(private val news: Article) : Fragment() {
             floatingActionButton.setOnClickListener {
                 val shareIntent = Intent().apply {
                     this.action = Intent.ACTION_SEND
-                    this.putExtra(Intent.EXTRA_TEXT, newsUrl)
+                    this.putExtra(Intent.EXTRA_TEXT, news.url)
                     this.type = "text/plain"
                 }
                 startActivity(shareIntent)
@@ -85,9 +75,7 @@ class FragmentContentNews(private val news: Article) : Fragment() {
 
     @SuppressLint("InflateParams")
     private fun showEditTextNotes() {
-        val builder = AlertDialog.Builder(context)
-        val inflater = layoutInflater
-        val dialogLayout = inflater.inflate(R.layout.edit_notes_dialog, null)
+        val dialogLayout = layoutInflater.inflate(R.layout.edit_notes_dialog, null)
         val editText = dialogLayout.findViewById<EditText>(R.id.editTextNotes)
         editText.setText(news.notes)
         with(builder) {
@@ -95,9 +83,10 @@ class FragmentContentNews(private val news: Article) : Fragment() {
             setPositiveButton(getString(R.string.ok)) { _, _ ->
                 if (!(editText.text.toString() == "" && editText.text == null)) {
                     news.notes = editText.text.toString()
-                    if (!news.bookmarkEnable) news.bookmarkEnable = true
-                    viewModel.deleteFromFirebase(news.url)
-                    viewModel.addToFirebase(news)
+                    if (!news.bookmarkEnable)
+                        news.bookmarkEnable = true
+
+                    viewModel.updateElement(news)
                 }
             }
             setNegativeButton(getString(R.string.goBack)) { _, _ ->
@@ -155,15 +144,14 @@ class FragmentContentNews(private val news: Article) : Fragment() {
         news.bookmarkEnable = !news.bookmarkEnable
         if (news.bookmarkEnable) {
             item.setIcon(R.drawable.bookmark_enable_icon_item)
-            viewModel.addToFirebase(news)
+            viewModel.updateElement(news)
         } else {
             item.setIcon(R.drawable.bookmark_action_bar_content)
-            viewModel.deleteFromFirebase(news.url)
+            viewModel.updateElement(news)
         }
     }
 
     private fun authTouchId() {
-        executor = ContextCompat.getMainExecutor(requireContext())
         biometricPrompt = androidx.biometric.BiometricPrompt(
             this,
             executor,
@@ -178,12 +166,6 @@ class FragmentContentNews(private val news: Article) : Fragment() {
                     showEditTextNotes()
                 }
             })
-        promptInfo = androidx.biometric.BiometricPrompt.PromptInfo.Builder()
-            .setTitle(getString(R.string.Biometric_auth))
-            .setNegativeButtonText(getString(R.string.InputYourPassword))
-            .build()
         biometricPrompt.authenticate(promptInfo)
     }
-
-
 }

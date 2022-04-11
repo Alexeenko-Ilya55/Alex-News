@@ -1,22 +1,20 @@
 package com.myproject.alexnews.viewModels
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.myproject.alexnews.`object`.DATABASE_NAME
-import com.myproject.alexnews.dao.AppDataBase
-import com.myproject.alexnews.dao.ArticleRepositoryImpl
-import com.myproject.alexnews.model.Article
+import com.myProject.domain.models.Article
+import com.myProject.domain.useCases.BookmarkEnableUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
 
-class FragmentContentNewsOfflineViewModel : ViewModel() {
+class FragmentContentNewsOfflineViewModel(
+    private val bookmarkEnableUseCase: BookmarkEnableUseCase
+) : ViewModel(), KoinComponent {
 
-    fun updateElementInDatabase(news: Article, context: Context) {
+    fun updateElementInDatabase(news: Article) {
         viewModelScope.launch(Dispatchers.IO) {
-            val database = AppDataBase.buildsDatabase(context, DATABASE_NAME)
-            val repository = ArticleRepositoryImpl(database.ArticleDao())
-            repository.updateElement(news)
+            bookmarkEnableUseCase.updateElementNews(news)
         }
     }
 }

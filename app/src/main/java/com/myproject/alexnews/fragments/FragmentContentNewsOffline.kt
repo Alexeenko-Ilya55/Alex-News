@@ -4,12 +4,12 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import com.myProject.domain.models.Article
 import com.myproject.alexnews.R
 import com.myproject.alexnews.databinding.FragmentContentNewsOfflineBinding
-import com.myproject.alexnews.model.Article
 import com.myproject.alexnews.viewModels.FragmentContentNewsOfflineViewModel
 import com.squareup.picasso.Picasso
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -70,14 +70,14 @@ class FragmentContentNewsOffline(private val news: Article) : Fragment() {
     }
 
     private fun clickOnBookmark(item: MenuItem) {
-        val viewModel = ViewModelProvider(this)[FragmentContentNewsOfflineViewModel::class.java]
+        val viewModel: FragmentContentNewsOfflineViewModel by viewModel()
         news.bookmarkEnable = !news.bookmarkEnable
         if (news.bookmarkEnable) {
             item.setIcon(R.drawable.bookmark_enable_icon_item)
-            viewModel.updateElementInDatabase(news, requireContext())
+            viewModel.updateElementInDatabase(news)
         } else {
             item.setIcon(R.drawable.bookmark_action_bar_content)
-            viewModel.updateElementInDatabase(news, requireContext())
+            viewModel.updateElementInDatabase(news)
         }
     }
 }

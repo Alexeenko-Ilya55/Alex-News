@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.myproject.alexnews.R
 import com.myproject.alexnews.`object`.POSITION_VIEW_PAGER
+import com.myproject.alexnews.`object`.Page
 import com.myproject.alexnews.adapter.ViewPagerAdapter
 import com.myproject.alexnews.databinding.FragmentMainBinding
 import kotlin.properties.Delegates
@@ -16,7 +17,6 @@ import kotlin.properties.Delegates
 
 class FragmentMain : Fragment() {
 
-    private lateinit var viewPagerAdapter: ViewPagerAdapter
     private lateinit var binding: FragmentMainBinding
     private var positionViewPager by Delegates.notNull<Int>()
 
@@ -24,13 +24,13 @@ class FragmentMain : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        val viewPagerAdapter = ViewPagerAdapter(context as FragmentActivity)
         positionViewPager = requireArguments().getInt(POSITION_VIEW_PAGER)
         requireActivity().setTitle(R.string.app_name)
         binding = FragmentMainBinding.inflate(inflater, container, false)
 
-        viewPagerAdapter = ViewPagerAdapter(context as FragmentActivity)
         binding.viewPager.adapter = viewPagerAdapter
-        binding.viewPager.offscreenPageLimit = 7
+        binding.viewPager.offscreenPageLimit = Page.COUNT_OF_SCREEN_PAGE_LIMIT.index
 
         val tabNames: Array<String> = arrayOf(
             getString(R.string.menu_category_MyNews),
@@ -65,7 +65,6 @@ class FragmentMain : Fragment() {
                 .replace(R.id.fragment_container, fragment).commit()
         }
     }
-
 }
 
 

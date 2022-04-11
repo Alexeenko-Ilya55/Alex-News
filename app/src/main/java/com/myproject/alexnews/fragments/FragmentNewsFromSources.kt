@@ -6,20 +6,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.myProject.domain.models.Article
 import com.myproject.alexnews.R
-import com.myproject.alexnews.adapter.RecyclerAdapter
 import com.myproject.alexnews.databinding.FragmentNewFromSourcesBinding
-import com.myproject.alexnews.model.Article
+import com.myproject.alexnews.paging.PagingAdapter
 import com.myproject.alexnews.viewModels.FragmentNewsFromSourcesViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
 class FragmentNewsFromSources : Fragment() {
 
     lateinit var binding: FragmentNewFromSourcesBinding
+    private val viewModel: FragmentNewsFromSourcesViewModel by viewModel()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,12 +32,18 @@ class FragmentNewsFromSources : Fragment() {
     ): View {
         binding = FragmentNewFromSourcesBinding.inflate(inflater, container, false)
         requireActivity().setTitle(R.string.fromSource)
-        val viewModel = ViewModelProvider(this)[FragmentNewsFromSourcesViewModel::class.java]
+        if (viewModel.news != PagingData.empty<Article>())
+            initAdapter(viewModel.news)
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(sourceName: String?): Boolean {
+            override fun onQueryTextSubmit(sourceName: String): Boolean {
                 binding.searchView.clearFocus()
-                viewModel.setInquiry(sourceName, requireContext())
+                lifecycleScope.launch {
+                    viewModel.newsFromSources(sourceName).collectLatest {
+                        initAdapter(it)
+                        viewModel.news = it
+                    }
+                }
                 return false
             }
 
@@ -40,23 +51,20 @@ class FragmentNewsFromSources : Fragment() {
                 return false
             }
         })
-        lifecycleScope.launchWhenStarted {
-            viewModel.news.collectLatest {
-                init(it)
-            }
-        }
         return binding.root
     }
 
-    private fun init(dataLister: List<Article>) {
-        binding.apply {
-            recyclerView.layoutManager = LinearLayoutManager(context)
-            val adapter = RecyclerAdapter(
-                dataLister,
-                parentFragmentManager,
-                lifecycleScope
-            )
-            recyclerView.adapter = adapter
+    private fun initAdapter(news: PagingData<Article>) {
+        lifecycleScope.launch {
+            binding.recyclerView.layoutManager = LinearLayoutManager(context)
+            val adapter: PagingAdapter by inject {
+                parametersOf(
+                    parentFragmentManager,
+                    lifecycleScope
+                )
+            }
+            binding.recyclerView.adapter = adapter
+            adapter.submitData(news)
         }
     }
 }
